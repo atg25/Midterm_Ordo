@@ -59,6 +59,9 @@ Pick one named framework you often use and write:
 
 Execute both on a non-trivial task and compare correction load. You should see a large reduction in rework with the qualified version.
 
+## Diagram Prompt
+Create a side-by-side flow diagram: left side “name-only directive,” right side “name + scope + local interpretation + acceptance checks.” Show where ambiguity is removed.
+
 ## Chapter Checklist
 - Does the chapter show why semantic compression is valuable?
 - Does it show how ambiguity appears and how to control it?

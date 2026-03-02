@@ -70,6 +70,9 @@ Take one active architectural concern and run a miniature loop:
 
 Repeat once. By the second cycle, your team will feel the reduction in ambiguity.
 
+## Diagram Prompt
+Draw the five-stage loop (Audit -> Plan -> Execute -> Verify -> Archive) and annotate each stage with one concrete repository artifact path.
+
 ## Chapter Checklist
 - Are all five stages present and operationalized?
 - Can each stage be traced to a repository artifact?

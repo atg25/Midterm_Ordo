@@ -70,6 +70,9 @@ Execute both against the same codebase and compare:
 - validation pass rate,
 - artifact completeness.
 
+## Diagram Prompt
+Draw a component diagram of the seven orchestration primitives and show how they map to one execution loop: role -> scope -> invariants -> acceptance -> sequence -> validation -> artifacts.
+
 ## Chapter Checklist
 - Are primitives defined clearly enough to reuse?
 - Are examples tied to this repository’s execution history?

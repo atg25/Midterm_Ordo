@@ -72,5 +72,8 @@ Attach measurable success signals to each item.
 - Are recommendations actionable now?
 - Is the human role explicitly preserved in governance and verification?
 
+## Diagram Prompt
+Draw a three-horizon roadmap with near, mid, and long-term lanes. For each lane, attach one capability milestone, one verification milestone, and one team-operating-model milestone.
+
 Future-proofing in AI-native engineering is less about predicting models and more about building resilient execution systems.
 

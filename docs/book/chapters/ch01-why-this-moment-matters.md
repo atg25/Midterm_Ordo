@@ -49,6 +49,9 @@ Take one feature request and write two versions:
 
 Then compare output quality and correction effort. In most teams, this single exercise makes the difference obvious.
 
+## Diagram Prompt
+Draw a three-layer diagram: (1) language intent layer, (2) implementation layer, (3) validation/evidence layer. Show arrows from intent to code changes and from validation back to intent refinement.
+
 ## Chapter Checklist
 - Can each major claim point to a repository artifact?
 - Are strategy statements paired with testable outcomes?

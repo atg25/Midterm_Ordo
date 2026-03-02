@@ -8,6 +8,8 @@ Many books explain principles in isolation. This case study shows what it looks 
 
 The important value here is not that every change was perfect on the first attempt. The value is that the process was structured enough to absorb corrections while still moving forward.
 
+This project’s teaching value is the architecture pairing itself: Next.js as application/runtime shell, MCP as capability/tool protocol, and operational scripts as reliability spine.
+
 ## Initial State
 The project began as a straightforward Next.js application scaffold. At that point, the architecture was serviceable but not yet intentionally optimized for:
 
@@ -89,5 +91,8 @@ For each phase, require one evidence artifact and one validation command set.
 - Does the chapter describe sequence, not only outcomes?
 - Are maturity claims backed by concrete artifacts?
 - Can the process be reused by another team without hidden context?
+
+## Diagram Prompt
+Draw a phase timeline diagram with four bands: feature delivery, structural cleanup, 12-factor hardening, and GoF refactors. Annotate each band with one artifact and one validation gate.
 
 If yes, this case study functions as method, not just story.

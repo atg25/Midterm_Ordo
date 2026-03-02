@@ -50,7 +50,7 @@ For each factor, require three proofs:
 
 Without all three, compliance is incomplete.
 
-## Repository Example
+## Additional Evidence
 - Config hardening and compatibility handling were centralized in `src/lib/config/env.ts`.
 - Build-release-run separation and release metadata are encoded in `package.json` + `scripts/generate-release-manifest.mjs`.
 - Health/readiness and admin process scripts are implemented as executable operations, not just documentation.
@@ -64,6 +64,9 @@ Run a 12-factor mini-audit on one service in your organization:
 3. Execute two sprints and publish a QA artifact with objective results.
 
 This exercise usually reveals whether your team treats operations as engineering or as policy.
+
+## Diagram Prompt
+Create a matrix diagram with 12-factor rows and three proof columns: implementation proof, command proof, artifact proof. Fill one concrete example per row.
 
 ## Chapter Checklist
 - Is each factor mapped to concrete implementation and validation evidence?

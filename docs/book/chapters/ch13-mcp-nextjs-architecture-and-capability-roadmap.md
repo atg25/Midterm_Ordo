@@ -1,0 +1,93 @@
+# Chapter 13 - MCP + Next.js: Architecture and Capability Roadmap
+
+## Abstract
+This chapter explains what MCP is, how it works in this project, why pairing MCP with Next.js creates high leverage, and which capabilities should be added next for maximum audience and product value.
+
+## What MCP Is
+Model Context Protocol (MCP) is a standard interface for exposing tools and resources to models.  
+At a practical level, MCP gives you a contract so model-driven tool use is explicit, typed, and interoperable.
+
+MCP helps answer a core reliability question: when a model needs to act, how do we make that action deterministic, inspectable, and extensible?
+
+## What This Project Is Doing with MCP
+In this repository, MCP is used to expose a calculator capability as a tool process (`mcp/calculator-server.ts`) while Next.js handles user-facing app and API orchestration.
+
+Current architecture split:
+
+- **Next.js layer** (`src/app`, `src/lib/chat`): UI, API routes, orchestration policy, provider wiring, validation.
+- **MCP tool layer** (`mcp/`): deterministic executable tools with explicit schemas.
+- **Operations layer** (`scripts/`, `docs/operations/`): validation, release controls, health/admin workflows.
+
+This separation keeps conversational reasoning in one domain and deterministic execution in another.
+
+## Why MCP + Next.js Is a Great Combo
+
+1. **Clear boundary between interaction and execution**  
+   Next.js manages HTTP/UI/runtime concerns; MCP manages tool contracts.
+
+2. **Fast product iteration with controlled capability growth**  
+   You can add or revise tools without redesigning the app shell.
+
+3. **Stronger safety posture**  
+   Tool input schemas and explicit invocation paths reduce ad hoc execution risk.
+
+4. **Better interoperability**  
+   MCP-aligned tools are easier to reuse across clients and orchestrators.
+
+5. **Teachable architecture**  
+   This split is easy to explain: app routes coordinate, tools execute, ops validates.
+
+## End-to-End Flow in This Repo
+1. User sends request through Next.js UI.
+2. API route decides whether tool usage is required (e.g., math policy).
+3. Provider/orchestrator loops until model output or tool-result completion.
+4. Tool computation is executed deterministically through calculator logic.
+5. Responses carry observability metadata (`requestId`, `errorCode`) and structured events.
+6. Quality/ops scripts provide deployment and runtime guarantees.
+
+## Capability Roadmap (High-Value Additions)
+
+### Tier 1 - Immediate Audience Value
+- **MCP capability explorer page** in the app (discover tools, schemas, examples).
+- **Tool invocation trace view** for teaching and debugging.
+- **Failure-mode demos** (validation errors, retries, fallback behavior).
+
+### Tier 2 - Production Readiness
+- **Tool-level auth and policy enforcement**.
+- **Rate and budget controls per capability**.
+- **Evaluation harness for tool-selection accuracy and latency**.
+
+### Tier 3 - Platform Evolution
+- **Multi-tool registry** (calculator + retrieval + transform + policy checker).
+- **Human approval checkpoints for high-risk actions**.
+- **Cross-session memory and retrieval with strict scope controls**.
+
+## Practical Build Plan
+If you are teaching or productizing this stack, sequence work in this order:
+
+1. Capability visibility (what tools exist and when they run).
+2. Capability reliability (validation, retries, deterministic errors).
+3. Capability governance (permissions, auditability, eval loops).
+4. Capability scale (multi-tool registry and policy orchestration).
+
+## Exercise
+Design your next three MCP tools and define for each:
+
+- schema,
+- permission model,
+- success metric,
+- failure modes,
+- observability signal requirements.
+
+Then implement one tool end-to-end and validate with test/lint/build plus one runtime trace.
+
+## Chapter Checklist
+- Can a new reader explain MCP after reading this chapter?
+- Is the architecture split between Next.js and MCP clear?
+- Are roadmap items prioritized by audience and product value?
+- Is there a practical next step that can be implemented this week?
+
+## Diagram Prompt
+Create a layered architecture diagram with Next.js application layer, MCP tool layer, and operations layer; then overlay a roadmap ribbon showing Tier 1/2/3 capability additions.
+
+When those checks pass, this project becomes both a system and a curriculum.

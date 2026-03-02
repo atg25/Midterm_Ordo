@@ -68,4 +68,7 @@ Then document who owns each metric and what action triggers when thresholds are 
 - Do eval loops feed directly into execution planning?
 - Can new signal sinks be added without route rewrites?
 
+## Diagram Prompt
+Draw a closed-loop feedback diagram: runtime event emission -> aggregation/query -> threshold detection -> sprint backlog update -> implementation -> validation -> runtime re-measurement.
+
 If yes, observability is functioning as a true engineering feedback system.

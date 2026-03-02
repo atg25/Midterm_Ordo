@@ -76,4 +76,7 @@ Then run one simulated failure in each domain and confirm the control activates 
 - Are failures deterministic and observable?
 - Are governance outcomes captured in durable artifacts?
 
+## Diagram Prompt
+Create a governance control matrix diagram with rows for risk domains and columns for enforcement point, owner, automation hook, and evidence artifact.
+
 When these answers are yes, governance stops being friction and becomes reliability infrastructure.

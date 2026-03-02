@@ -55,6 +55,9 @@ Pick one chapter of your current engineering process (planning, coding, review, 
 
 Document the answers as a migration note. This becomes your bridge from theory to implementation.
 
+## Diagram Prompt
+Create a timeline diagram with five control surfaces: machine code, assembly, high-level language, frameworks, and orchestration language. Annotate where rigor moves at each transition.
+
 ## Chapter Checklist
 - Does this chapter explain continuity with earlier abstractions?
 - Does it show where rigor moved in an orchestration workflow?

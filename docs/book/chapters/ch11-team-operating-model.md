@@ -84,4 +84,7 @@ Most teams find that explicit roles reduce rework even when they initially feel 
 - Do rituals produce durable artifacts?
 - Can new contributors understand what happened and why?
 
+## Diagram Prompt
+Create a swimlane diagram with roles (architecture lead, orchestration lead, verifier, operations steward) across sprint rituals (audit review, kickoff, validation, archive review), showing handoff artifacts at each checkpoint.
+
 If yes, the operating model is strong enough to scale orchestration quality.

@@ -89,9 +89,13 @@ docker compose up --build
 12. [Chapter 12 - Future Directions](docs/book/chapters/ch12-future-directions.md)  
 	 Abstract: Explores where this practice is heading: language-native tooling, continuous verification, and new hybrids of software and organizational design.
 
+13. [Chapter 13 - MCP + Next.js: Architecture and Capability Roadmap](docs/book/chapters/ch13-mcp-nextjs-architecture-and-capability-roadmap.md)  
+	 Abstract: Explains MCP, shows how this project uses MCP with Next.js, and provides a practical roadmap for high-value capability expansion.
+
 ## Companion Materials
 
 - Book QA report: `docs/book/BOOK-QA.md`
+- Audience value audit: `docs/book/BOOK-AUDIENCE-AUDIT.md`
 - Operations docs: `docs/operations/`
 - Sprint archive: `sprints/completed/`
 - Runtime scripts: `scripts/`

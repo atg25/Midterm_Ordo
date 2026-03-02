@@ -61,4 +61,7 @@ Then measure:
 - Did pattern adoption reduce duplication and clarify boundaries?
 - Are pattern outcomes validated by regression gates?
 
+## Diagram Prompt
+Create a pattern-to-module diagram with four lanes: Observer, Decorator, Chain of Responsibility, Template+Facade. Map each lane to concrete files and one measurable outcome.
+
 When those checks pass, GoF is not legacy theory; it is operational leverage for modern systems.
