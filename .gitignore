@@ -40,3 +40,9 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# lighthouse reports (generated locally, not committed)
+lighthouse-report.json
+lighthouse-prod.json
+lighthouse-*.json
+.lighthouseci/

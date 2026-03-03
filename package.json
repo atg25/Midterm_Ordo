@@ -21,7 +21,12 @@
     "scan:secrets": "node scripts/scan-secrets.mjs",
     "check:stateless": "node scripts/assert-stateless-runtime.mjs",
     "parity:env": "node scripts/validate-env-parity.mjs",
-    "mcp:calculator": "tsx mcp/calculator-server.ts"
+    "mcp:calculator": "tsx mcp/calculator-server.ts",
+    "typecheck": "tsc --noEmit",
+    "lint:strict": "eslint --max-warnings 0",
+    "quality": "npm run typecheck && npm run lint:strict && npm run test",
+    "lhci": "lhci autorun",
+    "lhci:dev": "lhci collect --url=http://localhost:3000 && lhci assert"
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^0.78.0",
@@ -31,14 +36,19 @@
     "react-dom": "19.2.3"
   },
   "devDependencies": {
+    "@lhci/cli": "^0.14.0",
     "@tailwindcss/postcss": "^4",
     "@testing-library/react": "^16.3.2",
     "@types/node": "^20",
     "@types/react": "^19",
     "@types/react-dom": "^19",
+    "@typescript-eslint/eslint-plugin": "^8.56.1",
+    "@typescript-eslint/parser": "^8.56.1",
     "@vitest/coverage-v8": "^4.0.18",
     "eslint": "^9",
     "eslint-config-next": "16.1.6",
+    "eslint-plugin-import": "^2.32.0",
+    "eslint-plugin-jsx-a11y": "^6.10.2",
     "jsdom": "^28.1.0",
     "tailwindcss": "^4",
     "tsx": "^4.21.0",

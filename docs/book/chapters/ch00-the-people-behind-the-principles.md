@@ -220,6 +220,36 @@ The sprint-and-verify loop in Chapter 5 of this book is deeply influenced by thi
 
 ---
 
+## Anders Hejlsberg and the Case for Static Types (2012)
+
+**Anders Hejlsberg** had already built two compilers before TypeScript. He designed Turbo Pascal at 23 and led the development of Delphi before Microsoft hired him to lead C#. By 2012, he was watching the web industry repeat a painful history.
+
+JavaScript was becoming the language running the most software in the world — and it had no type system. Teams were building large, multi-year applications and discovering that the same errors that static types had eliminated from other languages in the 1970s and 1980s were appearing again at industrial scale: calling a method that does not exist, passing a string where a number was required, importing a symbol from the wrong module.
+
+The frustration was specific: *you could look at the code and not know if it was correct.* The interpreter would not tell you until runtime. TypeScript was his answer: a structural type system that could be layered over existing JavaScript, with no runtime overhead, providing the editor and build system with enough information to catch errors before execution.
+
+Hejlsberg made one crucial design decision that shaped the entire adoption curve: TypeScript types are *gradual*. You can add them incrementally. You do not have to rewrite everything. This reflected decades of pragmatism about how real adoption works — tools that require a full rewrite before they help you get used.
+
+**What frustrated him:** Programs that looked syntactically correct but could not be verified to be semantically correct without running them in production.
+
+Entry in this book: TypeScript strict mode is one of the quality gates enforced across this project. The `typecheck` script catches structural errors before Lighthouse or any runtime ever sees the code.
+
+---
+
+## Nicholas Zakas and the Case for Lint-as-Governance (2013)
+
+**Nicholas Zakas** was a principal front-end engineer at Yahoo when he built ESLint. The existing tools — JSLint and JSHint — were not wrong. They were inflexible. JSLint enforced Douglas Crockford's opinions. JSHint was more configurable but still monolithic.
+
+Zakas wanted something different: a linting framework where every rule was a plugin. No central authority on what "correct" JavaScript looked like. A team could install exactly the rules their codebase needed, write custom rules for their own conventions, and disable rules that didn't apply. The linter would become a policy engine, not an opinion.
+
+This design decision matters more now than it did in 2013. In 2013, the concern was stylistic consistency. In the AI-assisted development era, the concern is verifying structural and a11y properties of code that was generated at machine speed and may never be manually reviewed line by line. ESLint is no longer primarily about semicolons. It is a governance mechanism — a deterministic gate that runs on every commit and can catch patterns that no AI reviewer will reliably flag.
+
+**What frustrated him:** The assumption that a single person's opinion about code style should govern everyone's project. The realization that linting infrastructure should be owned by teams, not prescribed by tool authors.
+
+The `lint:strict` script in this project runs ESLint at zero-warnings tolerance. The configuration enforces TypeScript import discipline, accessibility semantics, and structural consistency across every file. That configuration is the team's policy, not anyone else's.
+
+---
+
 ## Anthropic, Claude, and the Model Context Protocol (2023–2024)
 
 The most recent story in this book is still unfolding.
@@ -240,7 +270,7 @@ Chapter 13 of this book is dedicated to MCP's architecture and what it enables w
 
 ## The Thread
 
-Span the timeline. Hoare in 1965. Dijkstra in 1968. Knuth in 1968. Brooks in 1975. Liskov in 1987. Cunningham in 1992. The Gang of Four in 1994. Beck and Fowler in the late 1990s. Martin through the 2000s. Wiggins in 2011. Anthropic and MCP in 2023.
+Span the timeline. Hoare in 1965. Dijkstra in 1968. Knuth in 1968. Brooks in 1975. Liskov in 1987. Cunningham in 1992. The Gang of Four in 1994. Beck and Fowler in the late 1990s. Martin through the 2000s. Wiggins in 2011. Hejlsberg and Zakas in 2012–2013. Anthropic and MCP in 2023.
 
 Six decades of practitioners observing failures, building vocabulary, and handing it forward.
 
@@ -270,7 +300,7 @@ This chapter is the foundation. The remaining chapters build on it in this order
 
 - **Chapters 1–4** (conceptual) establish the thesis: language is now part of the implementation surface, and named frameworks are the vocabulary for working with it precisely.
 - **Chapter 5** (method) presents the audit-to-sprint execution loop that converts concepts into verified outcomes. Every implementation story in later chapters follows this loop.
-- **Chapters 6–9** (implementation frameworks) apply 12-Factor, GoF, observability, and governance in detail with concrete repository evidence.
+- **Chapters 6–9** (implementation frameworks) apply 12-Factor, GoF, observability, and governance in detail with concrete repository evidence. Chapter 9 in particular covers how TypeScript, ESLint, and Lighthouse function as a composite governance layer for AI-generated code — a pattern that Hejlsberg and Zakas made possible.
 - **Chapter 10** (case study) shows the full arc: from baseline scaffold to production-grade architecture, including what went wrong and how it was corrected.
 - **Chapters 11–12** (team and future) address how teams operate effectively with these methods and where the practice is heading.
 - **Chapter 13** (architecture) explains MCP specifically: what it is, how this project uses it, and what to build next.

@@ -1,7 +1,7 @@
-import Anthropic from "@anthropic-ai/sdk";
+import type Anthropic from "@anthropic-ai/sdk";
 import { SYSTEM_PROMPT, getModelCandidates } from "@/lib/chat/policy";
 import { CALCULATOR_TOOL } from "@/lib/chat/tools";
-import { ToolChoice } from "@/lib/chat/types";
+import type { ToolChoice } from "@/lib/chat/types";
 
 type MessageCreateParams = Parameters<Anthropic["messages"]["create"]>[0];
 const CHAT_TOOLS: NonNullable<MessageCreateParams["tools"]> = [CALCULATOR_TOOL];

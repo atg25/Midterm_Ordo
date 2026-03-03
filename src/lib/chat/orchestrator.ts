@@ -1,7 +1,7 @@
-import Anthropic from "@anthropic-ai/sdk";
-import { ChatProvider } from "@/lib/chat/anthropic-client";
+import type Anthropic from "@anthropic-ai/sdk";
+import type { ChatProvider } from "@/lib/chat/anthropic-client";
 import { createToolResults } from "@/lib/chat/tools";
-import { ToolChoice } from "@/lib/chat/types";
+import type { ToolChoice } from "@/lib/chat/types";
 
 export async function orchestrateChatTurn({
   provider,

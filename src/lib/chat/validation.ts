@@ -1,5 +1,5 @@
-import Anthropic from "@anthropic-ai/sdk";
-import { ChatMessage } from "@/lib/chat/types";
+import type Anthropic from "@anthropic-ai/sdk";
+import type { ChatMessage } from "@/lib/chat/types";
 
 export function parseIncomingMessages(body: unknown): ChatMessage[] {
   const maybeMessages = (body as { messages?: ChatMessage[] })?.messages ?? [];

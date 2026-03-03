@@ -1,4 +1,5 @@
-import { NextRequest, NextResponse } from "next/server";
+import type { NextRequest} from "next/server";
+import { NextResponse } from "next/server";
 import { getAnthropicApiKey } from "@/lib/config/env";
 import { getModelCandidates, looksLikeMath, SYSTEM_PROMPT } from "@/lib/chat/policy";
 import { SseTextParser } from "@/lib/chat/sse-parser";

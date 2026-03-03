@@ -31,7 +31,9 @@ describe("POST /api/chat/stream", () => {
     );
 
     expect(fetchMock).toHaveBeenCalledTimes(1);
-    expect(fetchMock.mock.calls[0][0].toString()).toContain("/api/chat");
+    const fetchCalls = fetchMock.mock.calls as unknown as [string | URL | Request, RequestInit?][];
+    expect(fetchCalls[0]).toBeDefined();
+    expect(fetchCalls[0]![0].toString()).toContain("/api/chat");
     expect(await response.text()).toBe("5");
     expect(response.headers.get("x-request-id")).toBeTruthy();
   });

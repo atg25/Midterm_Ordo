@@ -1,4 +1,4 @@
-import Anthropic from "@anthropic-ai/sdk";
+import type Anthropic from "@anthropic-ai/sdk";
 import { calculate, isCalculatorOperation } from "@/lib/calculator";
 
 export const CALCULATOR_TOOL: Anthropic.Tool = {

@@ -1,6 +1,6 @@
-import Anthropic from "@anthropic-ai/sdk";
-import { ChatProvider } from "@/lib/chat/anthropic-client";
-import { ToolChoice } from "@/lib/chat/types";
+import type Anthropic from "@anthropic-ai/sdk";
+import type { ChatProvider } from "@/lib/chat/anthropic-client";
+import type { ToolChoice } from "@/lib/chat/types";
 
 type CreateMessageArgs = {
   messages: Anthropic.MessageParam[];

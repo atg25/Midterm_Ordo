@@ -1,5 +1,5 @@
 import Anthropic from "@anthropic-ai/sdk";
-import { NextRequest } from "next/server";
+import type { NextRequest } from "next/server";
 import { getAnthropicApiKey } from "@/lib/config/env";
 import { looksLikeMath } from "@/lib/chat/policy";
 import { orchestrateChatTurn } from "@/lib/chat/orchestrator";
