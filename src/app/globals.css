@@ -3,24 +3,131 @@
 :root {
   --background: #ffffff;
   --foreground: #171717;
+
+  /* Shared Base Tokens */
+  --border-radius: 0.5rem;
+  --border-width: 1px;
+  --border-color: #e5e7eb;
+  --accent-color: #2563eb;
+  --accent-foreground: #ffffff;
+  --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+  --font-base: var(--font-geist-sans);
 }
 
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
+  --font-sans: var(--font-base);
   --font-mono: var(--font-geist-mono);
+  --radius-custom: var(--border-radius);
+  --border-custom: var(--border-width);
+  --shadow-custom: var(--shadow-sm);
 }
 
 @media (prefers-color-scheme: dark) {
-  :root {
+  :root:not([class*="theme-"]) {
     --background: #0a0a0a;
     --foreground: #ededed;
+    --border-color: #27272a;
   }
+}
+
+/* 1. Bauhaus Mode (1919): High contrast, thick borders, primary colors, sharp corners */
+.theme-bauhaus {
+  --background: #fdfaf6;
+  /* Warm paper white */
+  --foreground: #111111;
+  /* Ink black */
+  --border-radius: 0px;
+  /* Strict geometric corners */
+  --border-width: 4px;
+  /* Heavy rules for UX routing */
+  --border-color: #111111;
+  --accent-color: #e60000;
+  /* Primary red */
+  --accent-foreground: #ffffff;
+  --shadow-sm: 8px 8px 0px 0px #e60000;
+  /* Red geometric drop shadow */
+  --font-base: 'Arial', sans-serif;
+  /* Fallback to geometric sans if needed */
+}
+
+/* 2. Swiss Grid (1950s): Extreme negative space, absolute minimal noise, pure Helvetica/Grotesk feel */
+.theme-swiss {
+  --background: #ffffff;
+  --foreground: #000000;
+  --border-radius: 2px;
+  --border-width: 1px;
+  --border-color: #dddddd;
+  --accent-color: #000000;
+  --accent-foreground: #ffffff;
+  --shadow-sm: none;
+  /* No shadows, entirely flat */
+  --font-base: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+}
+
+/* 3. Postmodern (1990s): Intentional clash, chaotic borders, harsh colors */
+.theme-postmodern {
+  --background: #ffcc00;
+  /* Harsh yellow */
+  --foreground: #0000ff;
+  /* Blue text */
+  --border-radius: 24px 0px 12px 0px;
+  /* Chaotic asymmetry */
+  --border-width: 3px;
+  --border-color: #0000ff;
+  --accent-color: #ff00ff;
+  /* Magenta */
+  --accent-foreground: #ffffff;
+  --shadow-sm: -5px 5px 0px #000, 5px -5px 0px #ff00ff;
+  --font-base: 'Courier New', Courier, monospace;
+  /* Typewriter/grunge feel */
+}
+
+/* 4. Skeuomorphic (2000s): Linen textures, gloss, drop shadows everywhere */
+.theme-skeuomorphic {
+  --background: #e0e4e8;
+  --foreground: #333344;
+  --border-radius: 12px;
+  --border-width: 1px;
+  --border-color: #b0c4de;
+  --accent-color: #5599ff;
+  --accent-foreground: #ffffff;
+  --shadow-sm: inset 0 1px 0 rgba(255, 255, 255, 0.6), 0 2px 4px rgba(0, 0, 0, 0.4);
+  /* Glossy bevel */
 }
 
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: var(--font-sans);
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+/* Add custom utility classes to tap into these variables easily */
+@layer utilities {
+  .rounded-theme {
+    border-radius: var(--border-radius);
+  }
+
+  .border-theme {
+    border-width: var(--border-width);
+  }
+
+  .border-color-theme {
+    border-color: var(--border-color);
+  }
+
+  .shadow-theme {
+    box-shadow: var(--shadow-sm);
+  }
+
+  .bg-accent-theme {
+    background-color: var(--accent-color);
+    color: var(--accent-foreground);
+  }
+
+  .text-accent-theme {
+    color: var(--accent-color);
+  }
 }

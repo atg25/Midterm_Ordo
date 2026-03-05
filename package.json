@@ -33,7 +33,9 @@
     "@modelcontextprotocol/sdk": "^1.27.1",
     "next": "16.1.6",
     "react": "19.2.3",
-    "react-dom": "19.2.3"
+    "react-dom": "19.2.3",
+    "react-markdown": "^10.1.0",
+    "remark-gfm": "^4.0.1"
   },
   "devDependencies": {
     "@lhci/cli": "^0.14.0",

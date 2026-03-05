@@ -18,17 +18,23 @@ export const metadata: Metadata = {
     "An AI orchestration demo built with Next.js 16, Claude, and Model Context Protocol. Math queries are enforced through a deterministic calculator tool.",
 };
 
+import { ThemeProvider } from "@/components/ThemeProvider";
+import { GridInspector } from "@/components/GridInspector";
+
 export default function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
+    <html lang="en" suppressHydrationWarning>
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
-        {children}
+        <ThemeProvider>
+          {children}
+          <GridInspector />
+        </ThemeProvider>
       </body>
     </html>
   );

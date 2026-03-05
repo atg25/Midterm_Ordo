@@ -2,11 +2,11 @@
 
 <div align="center">
 
-![Book Cover — Language as Executable Architecture](docs/book/cover-language-as-architecture.png)
+![Book Cover — Language as Executable Architecture](docs/software-engineering-book/cover-language-as-architecture.png)
 
 **A book on professional software engineering in the AI era — with a working codebase that proves every claim.**
 
-[Read the Chapters](#book-i--ai-orchestration-engineering) · [Try the Prompts](#-prompt-companions) · [Run the Code](#getting-started) · [Read the Model's Preface](docs/book/PREFACE-FROM-THE-MODEL.md)
+[Read the Chapters](#book-i--ai-orchestration-engineering) · [Try the Prompts](#-prompt-companions) · [Run the Code](#getting-started) · [Read the Model's Preface](docs/software-engineering-book/PREFACE-FROM-THE-MODEL.md)
 
 </div>
 
@@ -22,7 +22,7 @@ This repository is both the book and the proof: a **production-grade Next.js + M
 
 ## Quality Baseline
 
-These are not aspirational targets. They are the current state, enforced on every commit by `npm run quality` ([Chapter 9](docs/book/chapters/ch09-risk-safety-and-governance.md)).
+These are not aspirational targets. They are the current state, enforced on every commit by `npm run quality` ([Chapter 9](docs/software-engineering-book/chapters/ch09-risk-safety-and-governance.md)).
 
 | Gate | Command | Result |
 |---|---|---|
@@ -62,11 +62,13 @@ docker compose up --build
 ## What's in This Repository
 
 ```
-├── docs/book/
+├── docs/software-engineering-book/
 │   ├── PREFACE-FROM-THE-MODEL.md     ← The AI breaks the fourth wall
-│   ├── chapters/                      ← 14 engineering + 7 design history chapters
+│   ├── chapters/                      ← 14 engineering chapters
 │   ├── prompts/                       ← 14 prompt companions (71 prompt pairs)
-│   ├── editorial/                     ← 15 editorial review documents
+│   └── editorial/                     ← 15 editorial review documents
+├── docs/design-book/
+│   ├── chapters/                      ← 7 design history chapters
 │   ├── design-editorial/             ← 7 design chapter editorial reviews
 │   └── research/                      ← Design history reference images
 ├── src/                               ← Next.js application (Claude chat + MCP tools)
@@ -87,33 +89,33 @@ Fourteen chapters developing engineering judgment through the human stories behi
 
 | # | Chapter | Prompt Companion |
 |---|---------|-----------------|
-| 0 | [The People Behind the Principles](docs/book/chapters/ch00-the-people-behind-the-principles.md) | [5 prompts](docs/book/prompts/ch00-prompts-the-people-behind-the-principles.md) |
+| 0 | [The People Behind the Principles](docs/software-engineering-book/chapters/ch00-the-people-behind-the-principles.md) | [5 prompts](docs/software-engineering-book/prompts/ch00-prompts-the-people-behind-the-principles.md) |
 |   | *Hoare, Dijkstra, Knuth, Brooks, Liskov, Berners-Lee, Van Rossum, Cunningham, the GoF, Lerdorf, Beck, Fowler, Thomas & Hunt, Fielding, Martin, Wiggins, Hejlsberg, Zakas, Dahl, Walke, Rauch, Torvalds, Clark, and the Anthropic team.* | |
-| 1 | [Why This Moment Matters](docs/book/chapters/ch01-why-this-moment-matters.md) | [4 prompts](docs/book/prompts/ch01-prompts-why-this-moment-matters.md) |
+| 1 | [Why This Moment Matters](docs/software-engineering-book/chapters/ch01-why-this-moment-matters.md) | [4 prompts](docs/software-engineering-book/prompts/ch01-prompts-why-this-moment-matters.md) |
 |   | *AI does not eliminate the craft layer — it makes the gap wider, faster.* | |
-| 2 | [A Brief History of Control Surfaces](docs/book/chapters/ch02-history-of-control-surfaces.md) | [4 prompts](docs/book/prompts/ch02-prompts-history-of-control-surfaces.md) |
+| 2 | [A Brief History of Control Surfaces](docs/software-engineering-book/chapters/ch02-history-of-control-surfaces.md) | [4 prompts](docs/software-engineering-book/prompts/ch02-prompts-history-of-control-surfaces.md) |
 |   | *Machine code → assembly → high-level languages → natural-language orchestration. Same failure modes, higher abstraction.* | |
-| 3 | [Prompt Orchestration Primitives](docs/book/chapters/ch03-prompt-orchestration-primitives.md) | [7 prompts](docs/book/prompts/ch03-prompts-orchestration-primitives.md) |
+| 3 | [Prompt Orchestration Primitives](docs/software-engineering-book/chapters/ch03-prompt-orchestration-primitives.md) | [7 prompts](docs/software-engineering-book/prompts/ch03-prompts-orchestration-primitives.md) |
 |   | *Role framing, scope, invariants, acceptance criteria, sequencing, verification, artifact discipline.* | |
-| 4 | [Named Frameworks as Compressed Programs](docs/book/chapters/ch04-named-frameworks-as-compressed-programs.md) | [5 prompts](docs/book/prompts/ch04-prompts-named-frameworks-as-compressed-programs.md) |
+| 4 | [Named Frameworks as Compressed Programs](docs/software-engineering-book/chapters/ch04-named-frameworks-as-compressed-programs.md) | [5 prompts](docs/software-engineering-book/prompts/ch04-prompts-named-frameworks-as-compressed-programs.md) |
 |   | *When you say "12-Factor" or "SOLID" to a model, you are loading a compressed program built by practitioners over decades.* | |
-| 5 | [The Audit-to-Sprint Execution Loop](docs/book/chapters/ch05-audit-to-sprint-loop.md) | [7 prompts](docs/book/prompts/ch05-prompts-audit-to-sprint-loop.md) |
+| 5 | [The Audit-to-Sprint Execution Loop](docs/software-engineering-book/chapters/ch05-audit-to-sprint-loop.md) | [7 prompts](docs/software-engineering-book/prompts/ch05-prompts-audit-to-sprint-loop.md) |
 |   | *Phase Zero inquiry → audit → plan → execute → verify → archive. The method behind this entire project.* | |
-| 6 | [12-Factor in the LLM Era](docs/book/chapters/ch06-12-factor-in-the-llm-era.md) | [5 prompts](docs/book/prompts/ch06-prompts-12-factor-in-the-llm-era.md) |
+| 6 | [12-Factor in the LLM Era](docs/software-engineering-book/chapters/ch06-12-factor-in-the-llm-era.md) | [5 prompts](docs/software-engineering-book/prompts/ch06-prompts-12-factor-in-the-llm-era.md) |
 |   | *Wiggins's twelve factors reinterpreted for LLM-backed applications: config, disposability, parity, and beyond.* | |
-| 7 | [GoF Patterns for AI-Native Systems](docs/book/chapters/ch07-gof-for-ai-native-systems.md) | [5 prompts](docs/book/prompts/ch07-prompts-gof-for-ai-native-systems.md) |
+| 7 | [GoF Patterns for AI-Native Systems](docs/software-engineering-book/chapters/ch07-gof-for-ai-native-systems.md) | [5 prompts](docs/software-engineering-book/prompts/ch07-prompts-gof-for-ai-native-systems.md) |
 |   | *Observer, Decorator, Chain of Responsibility, Template Method, Facade — applied to the actual code in this repository.* | |
-| 8 | [Observability, Feedback, and Evals](docs/book/chapters/ch08-observability-feedback-and-evals.md) | [5 prompts](docs/book/prompts/ch08-prompts-observability-feedback-evals.md) |
+| 8 | [Observability, Feedback, and Evals](docs/software-engineering-book/chapters/ch08-observability-feedback-and-evals.md) | [5 prompts](docs/software-engineering-book/prompts/ch08-prompts-observability-feedback-evals.md) |
 |   | *Request IDs, structured events, error taxonomy, and evaluation loops as engineering primitives.* | |
-| 9 | [Risk, Safety, and Operational Governance](docs/book/chapters/ch09-risk-safety-and-governance.md) | [5 prompts](docs/book/prompts/ch09-prompts-risk-safety-governance.md) |
+| 9 | [Risk, Safety, and Operational Governance](docs/software-engineering-book/chapters/ch09-risk-safety-and-governance.md) | [5 prompts](docs/software-engineering-book/prompts/ch09-prompts-risk-safety-governance.md) |
 |   | *TypeScript strict + ESLint zero-warnings + Lighthouse thresholds = the composite quality gate for AI-generated code velocity.* | |
-| 10 | [Case Study: IS601 Demo](docs/book/chapters/ch10-case-study-is601-demo.md) | [5 prompts](docs/book/prompts/ch10-prompts-case-study-is601-demo.md) |
+| 10 | [Case Study: IS601 Demo](docs/software-engineering-book/chapters/ch10-case-study-is601-demo.md) | [5 prompts](docs/software-engineering-book/prompts/ch10-prompts-case-study-is601-demo.md) |
 |   | *This repository's full arc: scaffold → production-grade architecture. Every decision preserved and traceable.* | |
-| 11 | [Team Operating Model](docs/book/chapters/ch11-team-operating-model.md) | [5 prompts](docs/book/prompts/ch11-prompts-team-operating-model.md) |
+| 11 | [Team Operating Model](docs/software-engineering-book/chapters/ch11-team-operating-model.md) | [5 prompts](docs/software-engineering-book/prompts/ch11-prompts-team-operating-model.md) |
 |   | *Role separation, handoff contracts, and the CEO operating model — build expert-grade systems in domains you don't personally master.* | |
-| 12 | [Future Directions](docs/book/chapters/ch12-future-directions.md) | [4 prompts](docs/book/prompts/ch12-prompts-future-directions.md) |
+| 12 | [Future Directions](docs/software-engineering-book/chapters/ch12-future-directions.md) | [4 prompts](docs/software-engineering-book/prompts/ch12-prompts-future-directions.md) |
 |   | *Language-native tooling, continuous verification loops, and what the field looks like when AI writes the majority of code.* | |
-| 13 | [MCP + Next.js: Architecture and Capability Roadmap](docs/book/chapters/ch13-mcp-nextjs-architecture-and-capability-roadmap.md) | [5 prompts](docs/book/prompts/ch13-prompts-mcp-nextjs-architecture.md) |
+| 13 | [MCP + Next.js: Architecture and Capability Roadmap](docs/software-engineering-book/chapters/ch13-mcp-nextjs-architecture-and-capability-roadmap.md) | [5 prompts](docs/software-engineering-book/prompts/ch13-prompts-mcp-nextjs-architecture.md) |
 |   | *The protocol that makes AI systems doers rather than talkers. Typed schemas, deterministic execution, capability tiers.* | |
 
 ---
@@ -124,19 +126,19 @@ Seven chapters tracing the visual design decisions that shaped modern interfaces
 
 | # | Chapter |
 |---|---------|
-| 0 | [Before the Bauhaus: The People Who Mathematized Art](docs/book/chapters/ch00-before-the-bauhaus.md) |
+| 0 | [Before the Bauhaus: The People Who Mathematized Art](docs/design-book/chapters/ch00-before-the-bauhaus.md) |
 |   | *De Stijl, Constructivism, and the invisible foundation of computational design.* |
-| 1 | [The Bauhaus Experiment: Typography as Infrastructure](docs/book/chapters/ch01-bauhaus-and-the-machine.md) |
+| 1 | [The Bauhaus Experiment: Typography as Infrastructure](docs/design-book/chapters/ch01-bauhaus-and-the-machine.md) |
 |   | *Gropius, Bayer, and how stripping typographic ornamentation created universal standards.* |
-| 2 | [The Swiss Grid: Spatial Rhythm and Mathematics](docs/book/chapters/ch02-the-swiss-grid.md) |
+| 2 | [The Swiss Grid: Spatial Rhythm and Mathematics](docs/design-book/chapters/ch02-the-swiss-grid.md) |
 |   | *Müller-Brockmann turned layout into pure mathematical rhythm — the logical foundation of responsive web design.* |
-| 3 | [Postmodernism and Rebellion: Why We Break the Grid](docs/book/chapters/ch03-postmodernism-and-rebellion.md) |
+| 3 | [Postmodernism and Rebellion: Why We Break the Grid](docs/design-book/chapters/ch03-postmodernism-and-rebellion.md) |
 |   | *Carson, Scher, and the proof that rules must be understood before they can be effectively broken.* |
-| 4 | [The Digital Transition: Translating Physics to Pixels](docs/book/chapters/ch04-the-digital-transition.md) |
+| 4 | [The Digital Transition: Translating Physics to Pixels](docs/design-book/chapters/ch04-the-digital-transition.md) |
 |   | *Susan Kare's 16×16 pixel icons established the rules of visual affordance and digital wayfinding.* |
-| 5 | [Skeuomorphism to Flat Design: Reducing the Noise](docs/book/chapters/ch05-skeuomorphism-to-flat-design.md) |
+| 5 | [Skeuomorphism to Flat Design: Reducing the Noise](docs/design-book/chapters/ch05-skeuomorphism-to-flat-design.md) |
 |   | *Why photorealistic UI died, how flat design replaced it, and Material Design's z-axis physics engine.* |
-| 6 | [The Motion and Fluid Web Era: Design as a Calculus](docs/book/chapters/ch06-the-motion-and-fluid-era.md) |
+| 6 | [The Motion and Fluid Web Era: Design as a Calculus](docs/design-book/chapters/ch06-the-motion-and-fluid-era.md) |
 |   | *`clamp()`, finite state machines, fluid scaling — modern design is a live equation solving for infinite viewports.* |
 
 ---
@@ -147,27 +149,27 @@ Seven chapters tracing the visual design decisions that shaped modern interfaces
 
 > *"When your context window contains vague intent, broad scope, and no acceptance criteria, the most probable output is generic, plausible, and often subtly wrong. When it contains a named framework, explicit scope boundaries, clear invariants, and testable acceptance criteria, the probability distribution narrows dramatically. The difference is not magic. It is math."*
 >
-> — [Preface from the Model](docs/book/PREFACE-FROM-THE-MODEL.md)
+> — [Preface from the Model](docs/software-engineering-book/PREFACE-FROM-THE-MODEL.md)
 
 Start with any chapter's companion that matches your current work:
 
 | If you are... | Start here |
 |---|---|
-| Writing your first structured prompt | [Ch 3 — Primitives](docs/book/prompts/ch03-prompts-orchestration-primitives.md) |
-| Running an audit or sprint | [Ch 5 — Audit-to-Sprint Loop](docs/book/prompts/ch05-prompts-audit-to-sprint-loop.md) |
-| Hardening a deployment | [Ch 6 — 12-Factor](docs/book/prompts/ch06-prompts-12-factor-in-the-llm-era.md) |
-| Refactoring architecture | [Ch 7 — GoF Patterns](docs/book/prompts/ch07-prompts-gof-for-ai-native-systems.md) |
-| Setting up quality gates | [Ch 9 — Governance](docs/book/prompts/ch09-prompts-risk-safety-governance.md) |
-| Working solo or in an unfamiliar domain | [Ch 11 — CEO Operating Model](docs/book/prompts/ch11-prompts-team-operating-model.md) |
-| Designing MCP tools | [Ch 13 — MCP Architecture](docs/book/prompts/ch13-prompts-mcp-nextjs-architecture.md) |
+| Writing your first structured prompt | [Ch 3 — Primitives](docs/software-engineering-book/prompts/ch03-prompts-orchestration-primitives.md) |
+| Running an audit or sprint | [Ch 5 — Audit-to-Sprint Loop](docs/software-engineering-book/prompts/ch05-prompts-audit-to-sprint-loop.md) |
+| Hardening a deployment | [Ch 6 — 12-Factor](docs/software-engineering-book/prompts/ch06-prompts-12-factor-in-the-llm-era.md) |
+| Refactoring architecture | [Ch 7 — GoF Patterns](docs/software-engineering-book/prompts/ch07-prompts-gof-for-ai-native-systems.md) |
+| Setting up quality gates | [Ch 9 — Governance](docs/software-engineering-book/prompts/ch09-prompts-risk-safety-governance.md) |
+| Working solo or in an unfamiliar domain | [Ch 11 — CEO Operating Model](docs/software-engineering-book/prompts/ch11-prompts-team-operating-model.md) |
+| Designing MCP tools | [Ch 13 — MCP Architecture](docs/software-engineering-book/prompts/ch13-prompts-mcp-nextjs-architecture.md) |
 
 ---
 
 ## Architecture
 
-![MCP Architecture — Three-Layer Split](docs/book/mcp-architecture-diagram.png)
+![MCP Architecture — Three-Layer Split](docs/software-engineering-book/mcp-architecture-diagram.png)
 
-The architectural principle from [Chapter 13](docs/book/chapters/ch13-mcp-nextjs-architecture-and-capability-roadmap.md):
+The architectural principle from [Chapter 13](docs/software-engineering-book/chapters/ch13-mcp-nextjs-architecture-and-capability-roadmap.md):
 
 | Layer | Responsibility | Location |
 |---|---|---|
@@ -181,7 +183,7 @@ The model reasons. The MCP tool executes. The Next.js layer orchestrates. This s
 
 ## Sprint Archive
 
-This project's evolution is fully documented across **23 sprint artifacts** in [`sprints/completed/`](sprints/completed/). The four-phase sequence from [Chapter 10](docs/book/chapters/ch10-case-study-is601-demo.md):
+This project's evolution is fully documented across **23 sprint artifacts** in [`sprints/completed/`](sprints/completed/). The four-phase sequence from [Chapter 10](docs/software-engineering-book/chapters/ch10-case-study-is601-demo.md):
 
 | Phase | Sprints | What was built |
 |---|---|---|
@@ -215,12 +217,12 @@ See [`docs/operations/`](docs/operations/) for runbooks, environment matrix, and
 
 | Resource | Location |
 |---|---|
-| Model preface (fourth wall) | [`PREFACE-FROM-THE-MODEL.md`](docs/book/PREFACE-FROM-THE-MODEL.md) |
-| Book QA report | [`BOOK-QA.md`](docs/book/BOOK-QA.md) |
-| Audience value audit | [`BOOK-AUDIENCE-AUDIT.md`](docs/book/BOOK-AUDIENCE-AUDIT.md) |
-| Editorial reviews (14 chapters) | [`docs/book/editorial/`](docs/book/editorial/) |
-| Design editorial reviews (7 chapters) | [`docs/book/design-editorial/`](docs/book/design-editorial/) |
-| Design research images | [`docs/book/research/`](docs/book/research/) |
+| Model preface (fourth wall) | [`PREFACE-FROM-THE-MODEL.md`](docs/software-engineering-book/PREFACE-FROM-THE-MODEL.md) |
+| Book QA report | [`BOOK-QA.md`](docs/software-engineering-book/BOOK-QA.md) |
+| Audience value audit | [`BOOK-AUDIENCE-AUDIT.md`](docs/software-engineering-book/BOOK-AUDIENCE-AUDIT.md) |
+| Editorial reviews (14 chapters) | [`docs/software-engineering-book/editorial/`](docs/software-engineering-book/editorial/) |
+| Design editorial reviews (7 chapters) | [`docs/design-book/design-editorial/`](docs/design-book/design-editorial/) |
+| Design research images | [`docs/design-book/research/`](docs/design-book/research/) |
 | Operations runbooks | [`docs/operations/`](docs/operations/) |
 | Sprint archive (23 sprints) | [`sprints/completed/`](sprints/completed/) |
 | Runtime scripts (10) | [`scripts/`](scripts/) |
