@@ -2,12 +2,8 @@
 
 import React, { createContext, useContext, useEffect, useState } from "react";
 
-export type Theme =
-  | "fluid"
-  | "bauhaus"
-  | "swiss"
-  | "postmodern"
-  | "skeuomorphic";
+export type { Theme } from "@/core/entities/theme";
+import type { Theme } from "@/core/entities/theme";
 
 export type FontSize = "xs" | "sm" | "md" | "lg" | "xl";
 export type SpacingLevel = "tight" | "normal" | "relaxed";

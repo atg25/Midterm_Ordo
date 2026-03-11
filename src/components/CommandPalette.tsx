@@ -31,11 +31,12 @@ export default function CommandPalette() {
 
   // Defined dynamic command items using the Command Pattern
   const commands = useMemo<Command[]>(() => {
+    const navigate = (path: string) => router.push(path);
     return [
       // Navigation
-      new NavigationCommand("nav-home", "Home", "Navigation", router, "/"),
-      new NavigationCommand("nav-books", "Library / Books", "Navigation", router, "/books"),
-      new NavigationCommand("nav-dashboard", "Business Dashboard", "Navigation", router, "/dashboard"),
+      new NavigationCommand("nav-home", "Home", "Navigation", navigate, "/"),
+      new NavigationCommand("nav-books", "Library / Books", "Navigation", navigate, "/books"),
+      new NavigationCommand("nav-dashboard", "Business Dashboard", "Navigation", navigate, "/dashboard"),
 
       // Themes
       new ThemeCommand("theme-bauhaus", "Set Theme: Bauhaus", "Themes", setTheme, "bauhaus"),
@@ -45,16 +46,16 @@ export default function CommandPalette() {
       new ThemeCommand("theme-fluid", "Set Theme: Modern Fluid", "Themes", setTheme, "fluid"),
 
       // Books (Shortcuts to main categories)
-      new NavigationCommand("book-ux", "Book: UX Design", "Books", router, "/books/ux-design-book"),
-      new NavigationCommand("book-ui", "Book: UI Design", "Books", router, "/books/ui-design-book"),
-      new NavigationCommand("book-se", "Book: Software Engineering", "Books", router, "/books/software-engineering-book"),
-      new NavigationCommand("book-pm", "Book: Product Management", "Books", router, "/books/product-management-book"),
-      new NavigationCommand("book-marketing", "Book: Marketing & Branding", "Books", router, "/books/marketing-branding-book"),
-      new NavigationCommand("book-data", "Book: Data Analytics", "Books", router, "/books/data-analytics-book"),
-      new NavigationCommand("book-content", "Book: Content Strategy", "Books", router, "/books/content-strategy-book"),
-      new NavigationCommand("book-access", "Book: Accessibility", "Books", router, "/books/accessibility-book"),
-      new NavigationCommand("book-entre", "Book: Entrepreneurship", "Books", router, "/books/entrepreneurship-book"),
-      new NavigationCommand("book-design", "Book: Design Systems", "Books", router, "/books/design-book"),
+      new NavigationCommand("book-ux", "Book: UX Design", "Books", navigate, "/books/ux-design-book"),
+      new NavigationCommand("book-ui", "Book: UI Design", "Books", navigate, "/books/ui-design-book"),
+      new NavigationCommand("book-se", "Book: Software Engineering", "Books", navigate, "/books/software-engineering-book"),
+      new NavigationCommand("book-pm", "Book: Product Management", "Books", navigate, "/books/product-management-book"),
+      new NavigationCommand("book-marketing", "Book: Marketing & Branding", "Books", navigate, "/books/marketing-branding-book"),
+      new NavigationCommand("book-data", "Book: Data Analytics", "Books", navigate, "/books/data-analytics-book"),
+      new NavigationCommand("book-content", "Book: Content Strategy", "Books", navigate, "/books/content-strategy-book"),
+      new NavigationCommand("book-access", "Book: Accessibility", "Books", navigate, "/books/accessibility-book"),
+      new NavigationCommand("book-entre", "Book: Entrepreneurship", "Books", navigate, "/books/entrepreneurship-book"),
+      new NavigationCommand("book-design", "Book: Design Systems", "Books", navigate, "/books/design-book"),
     ];
   }, [router, setTheme]);
 

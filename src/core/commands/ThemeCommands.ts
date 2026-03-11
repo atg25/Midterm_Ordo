@@ -1,8 +1,9 @@
 import { Command } from "./Command";
-import { Theme } from "@/components/ThemeProvider";
+import type { Theme } from "../entities/theme";
 
 /**
  * Concrete Command: Handles Theme Switching
+ * References the core Theme type, not the React component.
  */
 export class ThemeCommand implements Command {
   constructor(

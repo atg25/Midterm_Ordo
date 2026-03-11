@@ -1,10 +1,8 @@
 "use client";
 
 import React, { createContext, useContext, useReducer, useState, useMemo, ReactNode } from "react";
-export type MessagePart =
-  | { type: "text"; text: string }
-  | { type: "tool_call"; name: string; args: Record<string, unknown> }
-  | { type: "tool_result"; name: string; result: unknown };
+export type { MessagePart } from "@/core/entities/message-parts";
+import type { MessagePart } from "@/core/entities/message-parts";
 
 export type ChatMessage = {
   role: "user" | "assistant";

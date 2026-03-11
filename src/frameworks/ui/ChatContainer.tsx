@@ -58,10 +58,11 @@ export const ChatContainer: React.FC<Props> = ({
 
   // Register Commands
   useMemo(() => {
+    const navigate = (path: string) => router.push(path);
     // Navigation
-    commandRegistry.register(new NavigationCommand("library", "Go to Library", "Navigation", router, "/books"));
-    commandRegistry.register(new NavigationCommand("training", "Go to Training", "Navigation", router, "/training"));
-    commandRegistry.register(new NavigationCommand("studio", "Go to Studio", "Navigation", router, "/studio"));
+    commandRegistry.register(new NavigationCommand("library", "Go to Library", "Navigation", navigate, "/books"));
+    commandRegistry.register(new NavigationCommand("training", "Go to Training", "Navigation", navigate, "/training"));
+    commandRegistry.register(new NavigationCommand("studio", "Go to Studio", "Navigation", navigate, "/studio"));
     
     // Themes
     commandRegistry.register(new ThemeCommand("theme-fluid", "Set Theme: Fluid", "Themes", setTheme, "fluid"));

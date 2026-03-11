@@ -1,4 +1,11 @@
-import { ChatMessage, MessagePart } from "@/hooks/useGlobalChat";
+import type { MessagePart } from "./message-parts";
+
+interface ChatMessage {
+  role: "user" | "assistant";
+  content: string;
+  parts?: MessagePart[];
+  timestamp?: Date;
+}
 
 /**
  * Message Factory (GoF Factory Method)

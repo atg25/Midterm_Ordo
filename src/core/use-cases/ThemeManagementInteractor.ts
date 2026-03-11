@@ -1,12 +1,7 @@
-export type ThemeEra =
-  | "bauhaus"
-  | "swiss"
-  | "postmodern"
-  | "skeuomorphic"
-  | "fluid";
+import type { Theme } from "../entities/theme";
 
 export interface ThemeMetadata {
-  id: ThemeEra;
+  id: Theme;
   name: string;
   description: string;
   yearRange: string;
@@ -14,7 +9,7 @@ export interface ThemeMetadata {
 }
 
 export class ThemeManagementInteractor {
-  private eras: Record<ThemeEra, ThemeMetadata> = {
+  private eras: Record<Theme, ThemeMetadata> = {
     bauhaus: {
       id: "bauhaus",
       name: "Bauhaus",
@@ -52,11 +47,11 @@ export class ThemeManagementInteractor {
     },
   };
 
-  validateTheme(themeId: string): themeId is ThemeEra {
+  validateTheme(themeId: string): themeId is Theme {
     return Object.keys(this.eras).includes(themeId);
   }
 
-  getThemeMetadata(themeId: ThemeEra): ThemeMetadata {
+  getThemeMetadata(themeId: Theme): ThemeMetadata {
     return this.eras[themeId];
   }
 
