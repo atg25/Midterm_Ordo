@@ -136,7 +136,7 @@ export const ChatContainer: React.FC<Props> = ({
     return (
       <button
         onClick={() => setIsOpen(true)}
-        className="fixed bottom-6 end-6 z-[60] w-16 h-16 rounded-full bg-[var(--accent-color)] text-[var(--accent-foreground)] shadow-[-20px_20px_60px_rgba(0,0,0,0.4)] flex items-center justify-center hover:scale-110 active:scale-95 transition-all duration-300 group overflow-hidden"
+        className="fixed bottom-6 end-6 z-[60] w-16 h-16 rounded-full accent-fill shadow-[-20px_20px_60px_rgba(0,0,0,0.4)] flex items-center justify-center hover:scale-110 active:scale-95 transition-all duration-300 group overflow-hidden"
         aria-label="Ask PD Advisor"
       >
         <div className="absolute inset-0 bg-white/10 opacity-0 group-hover:opacity-100 transition-opacity" />
@@ -209,7 +209,7 @@ export const ChatContainer: React.FC<Props> = ({
           <div className="absolute bottom-4 left-0 right-0 flex justify-center pointer-events-none z-10">
             <button
               onClick={() => scrollToBottom()}
-              className="pointer-events-auto bg-[var(--accent-color)] text-[var(--accent-foreground)] px-4 py-2 rounded-full text-[11px] font-bold shadow-xl hover:scale-105 transition-all outline-none"
+              className="pointer-events-auto accent-fill px-4 py-2 rounded-full text-[11px] font-bold shadow-xl hover:scale-105 transition-all outline-none"
               aria-label="Scroll to bottom"
             >
               ↓ Scroll to bottom

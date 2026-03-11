@@ -37,7 +37,7 @@ export default function MentionsMenu({
       }}
     >
       <div className="px-3 py-2 border-b border-[var(--border-color)] bg-[var(--surface-muted)] flex items-center justify-between">
-        <span className="text-[10px] font-bold uppercase tracking-widest opacity-50">
+        <span className="text-label opacity-50">
           Suggestions
         </span>
         <span className="text-[9px] opacity-40 font-mono">
@@ -53,8 +53,8 @@ export default function MentionsMenu({
               onClick={() => onSelect(item)}
               className={`flex items-start gap-3 w-full px-3 py-3 rounded-lg text-left transition-all ${
                 index === activeIndex
-                  ? "bg-[var(--accent-color)] text-[var(--accent-foreground)] shadow-lg shadow-[var(--accent-color)]/20"
-                  : "hover:bg-[var(--surface-hover)]"
+                  ? "accent-fill shadow-lg shadow-[var(--accent-color)]/20"
+                  : "hover-surface"
               }`}
             >
               <span className="text-base mt-0.5 shrink-0">

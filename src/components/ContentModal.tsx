@@ -48,7 +48,7 @@ export function ContentModal({
             </Dialog.Title>
             <Dialog.Close asChild>
               <button
-                className="p-2 rounded-xl hover:bg-[var(--surface-hover)] transition-all active:scale-90"
+                className="p-2 rounded-xl hover-surface transition-all active:scale-90"
                 aria-label="Close reader"
               >
                 <svg

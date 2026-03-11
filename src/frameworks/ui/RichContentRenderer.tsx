@@ -172,18 +172,18 @@ const CodeBlock: React.FC<{ code: string; lang?: string }> = ({
   };
   return (
     <div className="my-4 rounded-xl overflow-hidden border border-[var(--border-color)] text-sm">
-      <div className="flex items-center justify-between bg-zinc-900 px-4 py-2">
-        <span className="text-[10px] uppercase tracking-wider text-zinc-400 font-mono">
+      <div className="flex items-center justify-between code-chrome px-4 py-2">
+        <span className="text-label font-mono opacity-70">
           {lang || "code"}
         </span>
         <button
           onClick={copyCode}
-          className="text-[10px] text-zinc-400 hover:text-white transition-colors flex items-center gap-1"
+          className="text-[10px] opacity-60 hover:opacity-100 transition-colors flex items-center gap-1"
         >
           {copied ? "✓ Copied" : "Copy"}
         </button>
       </div>
-      <pre className="bg-[#0d1117] text-[#c9d1d9] px-5 py-4 overflow-x-auto font-mono text-sm leading-relaxed border-t border-[var(--border-color)]">
+      <pre className="code-chrome px-5 py-4 overflow-x-auto font-mono text-sm leading-relaxed border-t border-[var(--border-color)]">
         <code>{code}</code>
       </pre>
     </div>
@@ -200,7 +200,7 @@ const TableRenderer: React.FC<{
       <table className="w-full text-sm border-collapse">
         {header && (
           <thead>
-            <tr className="bg-[var(--accent-color)] text-[var(--accent-foreground)]">
+            <tr className="accent-fill">
               {header.map((cell, i) => (
                 <th
                   key={i}
@@ -218,8 +218,8 @@ const TableRenderer: React.FC<{
               key={ri}
               className={
                 ri % 2 === 0
-                  ? "bg-[var(--surface)] hover:bg-[var(--surface-hover)] transition-colors"
-                  : "bg-[var(--surface-muted)] hover:bg-[var(--surface-hover)] transition-colors"
+                  ? "bg-[var(--surface)] hover-surface transition-colors"
+                  : "bg-[var(--surface-muted)] hover-surface transition-colors"
               }
             >
               {row.map((cell, ci) => (

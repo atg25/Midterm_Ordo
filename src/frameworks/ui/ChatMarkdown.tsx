@@ -134,13 +134,13 @@ export function CodeBlock({ code, lang }: { code: string; lang?: string }) {
   }
   return (
     <div className="my-4 rounded-xl overflow-hidden border border-[var(--border-color)] text-sm">
-      <div className="flex items-center justify-between bg-zinc-900 px-4 py-2">
-        <span className="text-[10px] uppercase tracking-wider text-zinc-400 font-mono">
+      <div className="flex items-center justify-between code-chrome px-4 py-2">
+        <span className="text-label font-mono opacity-70">
           {lang || "code"}
         </span>
         <button
           onClick={copyCode}
-          className="text-[10px] text-zinc-400 hover:text-white transition-colors flex items-center gap-1"
+          className="text-[10px] opacity-60 hover:opacity-100 transition-colors flex items-center gap-1"
         >
           {copied ? (
             <>
@@ -166,7 +166,7 @@ export function CodeBlock({ code, lang }: { code: string; lang?: string }) {
           )}
         </button>
       </div>
-      <pre className="bg-zinc-950 text-zinc-100 px-4 py-4 overflow-x-auto font-mono text-[13px] leading-relaxed">
+      <pre className="code-chrome px-4 py-4 overflow-x-auto font-mono text-[13px] leading-relaxed">
         <code>{code}</code>
       </pre>
     </div>

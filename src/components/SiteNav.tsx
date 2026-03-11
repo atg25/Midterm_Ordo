@@ -40,7 +40,7 @@ export function SiteNav({ user }: SiteNavProps) {
             href="/"
             className="flex items-center gap-2 font-bold text-base tracking-tighter shrink-0"
           >
-            <div className="w-6 h-6 bg-[var(--accent-color)] rounded-sm flex items-center justify-center text-[var(--accent-foreground)] text-[10px]">
+            <div className="w-6 h-6 accent-fill rounded-sm flex items-center justify-center text-[10px]">
               O
             </div>
             <span>Studio Ordo</span>
@@ -65,7 +65,7 @@ export function SiteNav({ user }: SiteNavProps) {
         {/* Center: AI Status (The "Unified" part) */}
           <div className="hidden xl:flex items-center gap-4 px-6 py-1.5 rounded-full bg-[var(--surface-muted)] border border-[var(--border-color)]">
           <div className="flex items-center gap-3">
-            <div className="w-5 h-5 rounded-full bg-[var(--accent-color)] flex items-center justify-center text-[var(--accent-foreground)] text-[8px] font-bold">
+            <div className="w-5 h-5 rounded-full accent-fill flex items-center justify-center text-[8px] font-bold">
               A
             </div>
             <div className="flex flex-col leading-tight">

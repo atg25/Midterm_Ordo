@@ -14,7 +14,7 @@ interface MessageListProps {
 
 const BrandHeader = () => (
   <div className="flex flex-col items-center justify-center pt-4 sm:pt-8 pb-2 sm:pb-3 px-3 sm:px-4 text-center space-y-2 sm:space-y-3 animate-in fade-in slide-in-from-top-4 duration-1000 ease-out fill-mode-both">
-    <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[var(--accent-color)]/10 border border-[var(--accent-color)]/20 text-[var(--accent-color)] text-[10px] font-bold uppercase tracking-widest brand-pulse">
+    <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[var(--accent-color)]/10 border border-[var(--accent-color)]/20 text-[var(--accent-color)] text-label brand-pulse">
       <span className="w-1.5 h-1.5 rounded-full bg-[var(--accent-color)]" />
       System Operational
     </div>
@@ -99,7 +99,7 @@ MessageList.displayName = "MessageList";
 const UserBubble = React.memo<{ content: PresentedMessage }>(({ content }) => {
   return (
     <div className="flex flex-col items-end gap-1.5 px-1 sm:px-2 md:px-0 w-full hover:-translate-y-0.5 transition-transform duration-300">
-      <div className="max-w-[90%] md:max-w-[75%] bg-[var(--accent-color)] text-[var(--accent-foreground)] rounded-2xl rounded-tr-sm px-4 sm:px-5 py-2.5 sm:py-3 text-[13px] sm:text-sm leading-relaxed shadow-sm border border-black/5">
+      <div className="max-w-[90%] md:max-w-[75%] accent-fill rounded-2xl rounded-tr-sm px-4 sm:px-5 py-2.5 sm:py-3 text-[13px] sm:text-sm leading-relaxed shadow-sm border border-black/5">
         <ErrorBoundary name="UserBubble">
           <RichContentRenderer content={content.content} />
         </ErrorBoundary>

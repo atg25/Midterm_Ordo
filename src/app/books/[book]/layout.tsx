@@ -48,11 +48,11 @@ export default async function BookLayout({
           <div className="flex gap-4 items-center">
             <Link
               href="/books"
-              className="text-[10px] font-bold uppercase tracking-[0.2em] text-[var(--accent-color)]"
+              className="text-label tracking-[0.2em] text-[var(--accent-color)]"
             >
               ← Books
             </Link>
-            <span className="text-[10px] font-bold opacity-40 uppercase tracking-widest truncate max-w-[150px]">
+            <span className="text-label opacity-40 truncate max-w-[150px]">
               {book.number}. {book.shortTitle}
             </span>
           </div>

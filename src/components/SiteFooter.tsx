@@ -9,7 +9,7 @@ export function SiteFooter() {
       <div className="mx-auto max-w-[var(--container-width)] flex flex-col md:flex-row justify-between items-start gap-10">
         <div className="space-y-4">
           <div className="flex items-center gap-2 font-bold text-base tracking-tighter">
-            <div className="w-6 h-6 bg-[var(--accent-color)] rounded-sm flex items-center justify-center text-[var(--accent-foreground)] text-[10px]">
+            <div className="w-6 h-6 accent-fill rounded-sm flex items-center justify-center text-[10px]">
               O
             </div>
             <span>Studio Ordo</span>
@@ -22,7 +22,7 @@ export function SiteFooter() {
 
         <div className="grid grid-cols-2 sm:grid-cols-3 gap-12">
           <div className="space-y-4">
-            <h4 className="text-[10px] font-bold uppercase tracking-widest opacity-50">Platform</h4>
+            <h4 className="text-label opacity-50">Platform</h4>
             <ul className="space-y-2 text-xs font-semibold opacity-70 hover:opacity-100 transition-opacity">
               <li><Link href="/books">Library</Link></li>
               <li><Link href="/training">Training</Link></li>
@@ -30,7 +30,7 @@ export function SiteFooter() {
             </ul>
           </div>
           <div className="space-y-4">
-            <h4 className="text-[10px] font-bold uppercase tracking-widest opacity-50">Resources</h4>
+            <h4 className="text-label opacity-50">Resources</h4>
             <ul className="space-y-2 text-xs font-semibold opacity-70 hover:opacity-100 transition-opacity">
               <li><Link href="/docs">Documentation</Link></li>
               <li><Link href="/patterns">Patterns</Link></li>
@@ -38,7 +38,7 @@ export function SiteFooter() {
             </ul>
           </div>
           <div className="space-y-4">
-            <h4 className="text-[10px] font-bold uppercase tracking-widest opacity-50">Legal</h4>
+            <h4 className="text-label opacity-50">Legal</h4>
             <ul className="space-y-2 text-xs font-semibold opacity-70 hover:opacity-100 transition-opacity">
               <li><Link href="/privacy">Privacy</Link></li>
               <li><Link href="/terms">Terms</Link></li>

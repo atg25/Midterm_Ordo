@@ -59,7 +59,7 @@ export const ChatHeader: React.FC<ChatHeaderProps> = ({
         <div className="flex items-center gap-1">
           <button
             onClick={onFullScreenToggle}
-            className="p-2 rounded-xl hover:bg-[var(--surface-hover)] opacity-50 hover:opacity-100 transition-all active:scale-90"
+            className="p-2 rounded-xl hover-surface opacity-50 hover:opacity-100 transition-all active:scale-90"
             aria-label={isFullScreen ? "Exit Full Screen" : "Enter Full Screen"}
           >
             {isFullScreen ? (
@@ -75,7 +75,7 @@ export const ChatHeader: React.FC<ChatHeaderProps> = ({
           
           <button
             onClick={onMinimize}
-            className="p-2 rounded-xl hover:bg-[var(--surface-hover)] opacity-50 hover:opacity-100 transition-all active:scale-90"
+            className="p-2 rounded-xl hover-surface opacity-50 hover:opacity-100 transition-all active:scale-90"
             aria-label="Minimize Chat"
           >
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
@@ -90,12 +90,12 @@ export const ChatHeader: React.FC<ChatHeaderProps> = ({
   return (
       <header className="flex items-center justify-between px-6 h-14 border-b border-[var(--border-color)] bg-[var(--background)]/75 backdrop-blur-xl sticky top-0 z-30 transition-colors duration-500">
       <div className="flex items-center gap-3">
-          <div className="w-8 h-8 rounded-full bg-[var(--accent-color)] flex items-center justify-center text-[var(--accent-foreground)] font-bold shadow-sm shadow-[var(--accent-color)]/20">
+          <div className="w-8 h-8 rounded-full accent-fill flex items-center justify-center font-bold shadow-sm shadow-[var(--accent-color)]/20">
           A
         </div>
         <div className="flex flex-col">
           <h1 className="text-sm font-bold leading-none">{title}</h1>
-          <span className="text-[10px] opacity-50 font-medium uppercase tracking-wider">
+          <span className="text-label font-medium opacity-50">
             {subtitle}
           </span>
         </div>
@@ -131,7 +131,7 @@ export const ChatHeader: React.FC<ChatHeaderProps> = ({
             <button
               key={d}
               onClick={() => onDensityChange(d)}
-              className={`w-7 h-7 flex items-center justify-center rounded-full text-[10px] font-bold transition-all ${density === d ? "bg-[var(--accent-color)] text-[var(--accent-foreground)] shadow-sm" : "hover:bg-[var(--surface-hover)] opacity-50"}`}
+              className={`w-7 h-7 flex items-center justify-center rounded-full text-[10px] font-bold transition-all ${density === d ? "accent-fill shadow-sm" : "hover-surface opacity-50"}`}
               title={`Density: ${d}`}
               aria-label={`Set density to ${d}`}
             >
@@ -143,7 +143,7 @@ export const ChatHeader: React.FC<ChatHeaderProps> = ({
         {/* Grid Toggle */}
         <button
           onClick={onGridToggle}
-          className={`p-2 rounded-full transition-all ${gridEnabled ? "bg-[var(--accent-color)] text-[var(--accent-foreground)]" : "hover:bg-[var(--surface-hover)]"}`}
+          className={`p-2 rounded-full transition-all ${gridEnabled ? "accent-fill" : "hover-surface"}`}
           title="Toggle Design Grid"
           aria-label="Toggle Design Grid"
         >

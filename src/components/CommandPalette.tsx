@@ -139,14 +139,14 @@ export default function CommandPalette() {
                   }}
                   className={`flex items-center justify-between w-full px-4 py-3 rounded-xl text-left transition-all duration-75 ${
                     index === activeIndex
-                      ? "bg-[var(--accent-color)] text-[var(--accent-foreground)]"
-                      : "hover:bg-[var(--surface-hover)]"
+                      ? "accent-fill"
+                      : "hover-surface"
                   }`}
                 >
                   <div className="flex flex-col">
                     <span className="text-sm font-semibold">{cmd.title}</span>
                     <span
-                      className={`text-[10px] uppercase tracking-widest font-bold opacity-60 ${index === activeIndex ? "text-current" : ""}`}
+                      className={`text-label opacity-60 ${index === activeIndex ? "text-current" : ""}`}
                     >
                       {cmd.category}
                     </span>
@@ -178,7 +178,7 @@ export default function CommandPalette() {
           </div>
 
           <div className="flex items-center justify-between border-t border-[var(--border-color)] px-4 py-3 bg-[var(--surface-muted)]">
-            <div className="flex items-center gap-4 text-[10px] font-semibold opacity-40 uppercase tracking-widest">
+            <div className="flex items-center gap-4 text-label font-semibold opacity-40">
               <div className="flex items-center gap-1.5">
                 <kbd className="px-1.5 py-0.5 rounded border border-current">
                   ↑↓

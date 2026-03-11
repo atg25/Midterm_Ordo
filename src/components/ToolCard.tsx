@@ -45,7 +45,7 @@ export function ToolCard({
     return (
       <Dialog.Root open={isExpanded} onOpenChange={setIsExpanded}>
         <Dialog.Portal>
-          <Dialog.Overlay className="fixed inset-0 z-[99999] bg-zinc-950/80 backdrop-blur-md animate-in fade-in duration-200" />
+          <Dialog.Overlay className="fixed inset-0 z-[99999] bg-[var(--background)]/80 backdrop-blur-md animate-in fade-in duration-200" />
           <Dialog.Content className="fixed left-1/2 top-1/2 z-[100000] w-[calc(100vw-2rem)] max-w-7xl h-[90dvh] md:h-[90vh] -translate-x-1/2 -translate-y-1/2 bg-surface rounded-2xl shadow-2xl flex flex-col border border-border animate-in zoom-in-95 duration-200">
             {/* Header */}
             <div className="flex items-center justify-between p-4 border-b border-border">
@@ -150,7 +150,7 @@ export function ToolCard({
                   <button
                     onClick={onDownload}
                     title={downloadTooltip}
-                    className="w-7 h-7 flex items-center justify-center rounded-md hover:bg-[var(--surface-hover)] text-[var(--foreground)] opacity-50 hover:opacity-100 transition-all active:scale-90"
+                    className="w-7 h-7 flex items-center justify-center rounded-md hover-surface text-[var(--foreground)] opacity-50 hover:opacity-100 transition-all active:scale-90"
                   >
                     <svg
                       width="14"
@@ -172,7 +172,7 @@ export function ToolCard({
                   <button
                     onClick={toggleExpand}
                     title="Expand full screen"
-                    className="w-7 h-7 flex items-center justify-center rounded-md hover:bg-[var(--surface-hover)] text-[var(--foreground)] opacity-50 hover:opacity-100 transition-all active:scale-90"
+className="w-7 h-7 flex items-center justify-center rounded-md hover-surface text-[var(--foreground)] opacity-50 hover:opacity-100 transition-all active:scale-90"
                   >
                     <svg
                       width="14"

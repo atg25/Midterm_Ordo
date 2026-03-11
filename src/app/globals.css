@@ -72,6 +72,40 @@
   @apply focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent-color)] focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--background)];
 }
 
+/* ── Reusable Component Utilities ─────────────────────────── */
+
+/* Label text — small uppercase tracking used for section headers/tags */
+@utility text-label {
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+}
+
+/* Accent background + foreground pair */
+@utility accent-fill {
+  background-color: var(--accent-color);
+  color: var(--accent-foreground);
+}
+
+/* Interactive hover surface */
+@utility hover-surface {
+  &:hover {
+    background-color: var(--surface-hover);
+  }
+}
+
+/* Code block chrome — replaces hardcoded zinc colors */
+@utility code-chrome {
+  background-color: oklch(0.14 0.01 250);
+  color: oklch(0.7 0.01 250);
+}
+.dark .code-chrome,
+.code-chrome:is(.dark *) {
+  background-color: oklch(0.1 0.01 250);
+  color: oklch(0.65 0.01 250);
+}
+
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);

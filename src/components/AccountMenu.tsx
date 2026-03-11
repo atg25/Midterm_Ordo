@@ -96,7 +96,7 @@ export function AccountMenu({ user }: AccountMenuProps) {
   const menuTrigger = (
     <button
       onClick={() => setOpen(!open)}
-      className="flex items-center gap-2 group p-1 rounded-full hover:bg-[var(--surface-hover)] transition-all"
+      className="flex items-center gap-2 group p-1 rounded-full hover-surface transition-all"
     >
       <div className="flex flex-col items-end mr-1 hidden md:flex">
         <span className="text-[11px] font-bold leading-none">{user.name}</span>
@@ -126,14 +126,14 @@ export function AccountMenu({ user }: AccountMenuProps) {
             <div className="flex items-center gap-1.5 bg-[var(--background)] p-1 rounded-xl border border-[var(--border-color)] shadow-inner">
               <button
                 onClick={() => setGridEnabled(!gridEnabled)}
-                className={`p-1.5 rounded-lg transition-all ${gridEnabled ? "bg-[var(--accent-color)] text-[var(--accent-foreground)]" : "opacity-40 hover:opacity-100"}`}
+                className={`p-1.5 rounded-lg transition-all ${gridEnabled ? "accent-fill" : "opacity-40 hover:opacity-100"}`}
                 title="Toggle Grid"
               >
                 <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><rect x="3" y="3" width="18" height="18" rx="2" /><line x1="3" y1="9" x2="21" y2="9" /><line x1="9" y1="3" x2="9" y2="21" /></svg>
               </button>
               <button
                 onClick={() => setIsDark(!isDark)}
-                className={`p-1.5 rounded-lg transition-all ${isDark ? "bg-[var(--accent-color)] text-[var(--accent-foreground)]" : "opacity-40 hover:opacity-100"}`}
+                className={`p-1.5 rounded-lg transition-all ${isDark ? "accent-fill" : "opacity-40 hover:opacity-100"}`}
                 title="Toggle Dark Mode"
               >
                 {isDark ? <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z" /></svg> : <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><circle cx="12" cy="12" r="5" /><line x1="12" y1="1" x2="12" y2="3" /><line x1="1" y1="12" x2="3" y2="12" /></svg>}
@@ -145,14 +145,14 @@ export function AccountMenu({ user }: AccountMenuProps) {
             <Link
               href="/dashboard"
               onClick={() => setOpen(false)}
-              className={`flex items-center gap-2 px-3 py-2 rounded-xl text-[11px] font-bold transition-all haptic-press hover:bg-[var(--surface-hover)] ${pathname === "/dashboard" ? "bg-[var(--accent-color)]/10 text-[var(--accent-color)]" : ""}`}
+              className={`flex items-center gap-2 px-3 py-2 rounded-xl text-[11px] font-bold transition-all haptic-press hover-surface ${pathname === "/dashboard" ? "bg-[var(--accent-color)]/10 text-[var(--accent-color)]" : ""}`}
             >
               Dashboard
             </Link>
             <Link
               href="/profile"
               onClick={() => setOpen(false)}
-              className="flex items-center gap-2 px-3 py-2 rounded-xl text-[11px] font-bold transition-all haptic-press hover:bg-[var(--surface-hover)]"
+              className="flex items-center gap-2 px-3 py-2 rounded-xl text-[11px] font-bold transition-all haptic-press hover-surface"
             >
               Profile Settings
             </Link>
@@ -164,7 +164,7 @@ export function AccountMenu({ user }: AccountMenuProps) {
           <div className="flex flex-col">
             <button
               onClick={() => setShowAccessibility(!showAccessibility)}
-              className={`flex items-center justify-between px-3 py-2 rounded-xl text-[11px] font-bold transition-all hover:bg-[var(--surface-hover)] ${showAccessibility ? "bg-[var(--surface-muted)]" : ""}`}
+              className={`flex items-center justify-between px-3 py-2 rounded-xl text-[11px] font-bold transition-all hover-surface ${showAccessibility ? "bg-[var(--surface-muted)]" : ""}`}
             >
               System Legibility
               <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" className={`transition-transform duration-300 ${showAccessibility ? "rotate-180" : ""}`}><path d="m6 9 6 6 6-6"/></svg>
@@ -194,7 +194,7 @@ export function AccountMenu({ user }: AccountMenuProps) {
           <div className="flex flex-col">
             <button
               onClick={() => setShowSimulation(!showSimulation)}
-              className={`flex items-center justify-between px-3 py-2 rounded-xl text-[11px] font-bold transition-all hover:bg-[var(--surface-hover)] ${showSimulation ? "bg-[var(--surface-muted)]" : ""}`}
+              className={`flex items-center justify-between px-3 py-2 rounded-xl text-[11px] font-bold transition-all hover-surface ${showSimulation ? "bg-[var(--surface-muted)]" : ""}`}
             >
               Simulation Mode
               <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" className={`transition-transform duration-300 ${showSimulation ? "rotate-180" : ""}`}><path d="m6 9 6 6 6-6"/></svg>
@@ -205,7 +205,7 @@ export function AccountMenu({ user }: AccountMenuProps) {
                   <button
                     key={role}
                     onClick={() => switchRole(role)}
-                    className={`w-full flex items-start gap-3 px-3 py-2 rounded-xl text-left transition-all haptic-press hover:bg-[var(--surface-hover)] ${user.roles.includes(role) ? "bg-[var(--surface-muted)] ring-1 ring-[var(--border-color)]" : ""}`}
+                    className={`w-full flex items-start gap-3 px-3 py-2 rounded-xl text-left transition-all haptic-press hover-surface ${user.roles.includes(role) ? "bg-[var(--surface-muted)] ring-1 ring-[var(--border-color)]" : ""}`}
                   >
                     <span className={`w-2 h-2 rounded-full ${config.dot} mt-1.5 shrink-0`} />
                     <div className="min-w-0">
@@ -222,7 +222,7 @@ export function AccountMenu({ user }: AccountMenuProps) {
 
           <button
             onClick={() => switchRole("ANONYMOUS")}
-            className="w-full text-center py-2 text-[10px] font-black uppercase tracking-widest opacity-60 hover:opacity-100 transition-opacity"
+            className="w-full text-center py-2 text-label font-black opacity-60 hover:opacity-100 transition-opacity"
           >
             {isAuth ? "Sign Out" : "Identity Simulation"}
           </button>

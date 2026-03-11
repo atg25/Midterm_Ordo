@@ -103,7 +103,7 @@ export default async function ChapterPage({
           ),
           pre: ({ node: _node, ...props }) => (
             <pre
-              className="bg-zinc-950 border-theme border-color-theme text-zinc-100 p-6 rounded-theme overflow-x-auto mb-8 text-sm shadow-theme font-mono"
+              className="code-chrome p-6 rounded-theme overflow-x-auto mb-8 text-sm shadow-theme font-mono border-theme border-color-theme"
               {...props}
             />
           ),
@@ -111,7 +111,7 @@ export default async function ChapterPage({
           code: ({ node: _node, inline, ...props }: any) =>
             inline ? (
               <code
-                className="bg-zinc-100 dark:bg-zinc-800 px-1.5 py-0.5 rounded-theme text-sm border-theme border-color-theme font-mono"
+                className="bg-[var(--surface-muted)] px-1.5 py-0.5 rounded-theme text-sm border-theme border-color-theme font-mono"
                 {...props}
               />
             ) : (

@@ -143,7 +143,7 @@ export const ChatInput: React.FC<ChatInputProps> = ({
         <button
           type="button"
           onClick={() => fileInputRef.current?.click()}
-          className="shrink-0 p-2 rounded-full hover:bg-[var(--surface-hover)] text-[var(--foreground)]/70 hover:text-[var(--accent-color)] transition-all active:scale-95"
+          className="shrink-0 p-2 rounded-full hover-surface text-[var(--foreground)]/70 hover:text-[var(--accent-color)] transition-all active:scale-95"
           aria-label="Attach file"
         >
           <svg
@@ -166,7 +166,7 @@ export const ChatInput: React.FC<ChatInputProps> = ({
         <button
           type="submit"
           disabled={!canSend && pendingFiles.length === 0}
-          className="shrink-0 rounded-full bg-[var(--accent-color)] text-[var(--accent-foreground)] px-4 sm:px-5 py-1.5 text-[11px] font-bold uppercase tracking-[0.15em] disabled:bg-[var(--surface-muted)] disabled:text-[var(--foreground)]/40 disabled:shadow-none flex items-center gap-2 shadow-sm hover:shadow-md transition-all duration-200 hover:scale-[1.02] active:scale-95 outline-none"
+          className="shrink-0 rounded-full accent-fill px-4 sm:px-5 py-1.5 text-[11px] font-bold uppercase tracking-[0.15em] disabled:bg-[var(--surface-muted)] disabled:text-[var(--foreground)]/40 disabled:shadow-none flex items-center gap-2 shadow-sm hover:shadow-md transition-all duration-200 hover:scale-[1.02] active:scale-95 outline-none"
         >
           {isSending ? (
             <span className="flex gap-1">

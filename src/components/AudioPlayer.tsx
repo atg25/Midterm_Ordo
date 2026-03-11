@@ -427,7 +427,7 @@ export function AudioPlayer({ title, text }: AudioPlayerProps) {
           <button
             type="button"
             onClick={scrollToPlayer}
-            className="flex items-center gap-2 rounded-full bg-[var(--accent-color)] text-[var(--accent-foreground)] px-4 py-2 text-xs font-semibold shadow-lg hover:shadow-xl transition-all hover:scale-[1.02] active:scale-95"
+            className="flex items-center gap-2 rounded-full accent-fill px-4 py-2 text-xs font-semibold shadow-lg hover:shadow-xl transition-all hover:scale-[1.02] active:scale-95"
           >
             <span>🎧</span>
             <span>Audio ready — {title}</span>

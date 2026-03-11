@@ -28,7 +28,7 @@ const DashboardCard = ({
         </div>
         <div>
           <h3 className="text-sm font-black tracking-tight uppercase leading-none">{title}</h3>
-          <p className="text-[10px] opacity-40 font-bold uppercase tracking-widest mt-1">{subtitle}</p>
+          <p className="text-label opacity-40 mt-1">{subtitle}</p>
         </div>
       </div>
       <div className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse shadow-[0_0_8px_rgba(16,185,129,0.5)]" />
@@ -54,7 +54,7 @@ const PillButton = ({ active, onClick, label }: { active: boolean; onClick: () =
     className={`flex-1 py-1.5 text-[10px] font-black rounded-lg transition-all haptic-press ${
       active
         ? "bg-[var(--background)] text-[var(--accent-color)] shadow-sm scale-[1.02] border border-[var(--border-color)]"
-        : "opacity-30 hover:opacity-100 hover:bg-[var(--surface-hover)]"
+        : "opacity-30 hover:opacity-100 hover-surface"
     }`}
   >
     {label}
@@ -89,10 +89,10 @@ export default function DashboardPage() {
         <header className="flex flex-col md:flex-row md:items-end justify-between gap-6">
           <div className="space-y-2">
             <div className="flex items-center gap-3">
-              <div className="bg-[var(--accent-color)] text-[var(--accent-foreground)] px-2 py-0.5 rounded text-[10px] font-black tracking-widest uppercase shadow-sm">
+              <div className="accent-fill px-2 py-0.5 rounded text-label font-black shadow-sm">
                 System Authorized
               </div>
-              <span className="text-[10px] font-bold opacity-30 uppercase tracking-widest">/ Ordo Command Center</span>
+              <span className="text-label opacity-30">/ Ordo Command Center</span>
             </div>
             <h1 className="text-4xl md:text-5xl font-black tracking-tighter leading-none italic uppercase">
               Business <span className="text-[var(--accent-color)]">Operations</span>
@@ -121,8 +121,8 @@ export default function DashboardPage() {
             <div className="flex flex-col gap-4 mt-2">
               <div className="bg-[var(--surface-muted)] rounded-2xl p-4 border border-[var(--border-color)]">
                 <div className="flex items-center justify-between mb-2">
-                  <span className="text-[10px] font-bold opacity-40 uppercase tracking-widest">System Readiness</span>
-                  <span className="text-[10px] font-bold text-emerald-500 uppercase tracking-widest">Operational</span>
+                  <span className="text-label opacity-40">System Readiness</span>
+                  <span className="text-label text-emerald-500">Operational</span>
                 </div>
                 <div className="flex gap-1 h-1.5">
                   <div className="flex-1 bg-emerald-500 rounded-full shadow-[0_0_8px_rgba(16,185,129,0.3)]" />
@@ -143,7 +143,7 @@ export default function DashboardPage() {
                 </div>
               </div>
 
-              <button className="mt-auto w-full py-2.5 rounded-xl bg-[var(--surface-muted)] border border-[var(--border-color)] text-[10px] font-black uppercase tracking-widest hover:bg-[var(--accent-color)] hover:text-white transition-all">
+              <button className="mt-auto w-full py-2.5 rounded-xl bg-[var(--surface-muted)] border border-[var(--border-color)] text-label font-black hover:bg-[var(--accent-color)] hover:text-white transition-all">
                 Run Diagnostics Sweep
               </button>
             </div>
@@ -158,7 +158,7 @@ export default function DashboardPage() {
           >
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mt-2">
               <div className="flex flex-col gap-5">
-                <div className="text-[10px] font-black uppercase tracking-widest opacity-50 border-b border-[var(--border-color)] pb-2">Physics Lab</div>
+                <div className="text-label font-black opacity-50 border-b border-[var(--border-color)] pb-2">Physics Lab</div>
                 <SettingRow label="Type Scale">
                   {(["xs", "sm", "md", "lg", "xl"] as const).map((s) => (
                     <PillButton key={s} label={s.toUpperCase()} active={accessibility.fontSize === s} onClick={() => setAccessibility({ ...accessibility, fontSize: s })} />
@@ -177,10 +177,10 @@ export default function DashboardPage() {
               </div>
 
               <div className="flex flex-col gap-4">
-                <div className="text-[10px] font-black uppercase tracking-widest opacity-50 border-b border-[var(--border-color)] pb-2">Layout Tokens</div>
+                <div className="text-label font-black opacity-50 border-b border-[var(--border-color)] pb-2">Layout Tokens</div>
                 <div className="flex-1 rounded-2xl border border-[var(--border-color)] bg-[var(--surface-muted)] p-4 flex flex-col justify-center gap-4">
                   <div className="flex flex-col gap-2">
-                    <div className="flex justify-between text-[10px] font-bold uppercase tracking-widest opacity-40">
+                    <div className="flex justify-between text-label opacity-40">
                       <span>Border Tension</span>
                       <span>8px</span>
                     </div>
@@ -189,7 +189,7 @@ export default function DashboardPage() {
                     </div>
                   </div>
                   <div className="flex flex-col gap-2">
-                    <div className="flex justify-between text-[10px] font-bold uppercase tracking-widest opacity-40">
+                    <div className="flex justify-between text-label opacity-40">
                       <span>Chromatic Hue</span>
                       <span>220°</span>
                     </div>
@@ -198,7 +198,7 @@ export default function DashboardPage() {
                     </div>
                   </div>
                   <div className="mt-4 p-4 rounded-xl border-2 border-[var(--accent-color)] border-dashed text-center opacity-40">
-                    <p className="text-[10px] font-black uppercase tracking-[0.2em]">High-Fidelity Preview Area</p>
+                    <p className="text-label font-black tracking-[0.2em]">High-Fidelity Preview Area</p>
                   </div>
                 </div>
               </div>
@@ -227,7 +227,7 @@ export default function DashboardPage() {
                 </div>
               </div>
               <div className="mt-auto p-4 rounded-2xl bg-[var(--accent-color)]/5 border border-[var(--accent-color)]/10">
-                <p className="text-[10px] font-black uppercase tracking-widest text-[var(--accent-color)] mb-2">Next Milestone</p>
+                <p className="text-label font-black text-[var(--accent-color)] mb-2">Next Milestone</p>
                 <p className="text-sm font-black tracking-tight leading-tight">Project "Hyperion" Launch</p>
                 <p className="text-[10px] opacity-40 font-bold mt-1">In 14 days — Governance Ready</p>
               </div>
@@ -245,7 +245,7 @@ export default function DashboardPage() {
                   <button
                     key={role}
                     onClick={() => switchRole(role)}
-                    className={`w-full flex items-center gap-3 px-4 py-3 rounded-2xl text-left transition-all haptic-press hover:bg-[var(--surface-hover)] border border-transparent ${localRole === role ? "bg-[var(--surface-muted)] border-[var(--border-color)] ring-1 ring-[var(--border-color)]" : ""}`}
+                    className={`w-full flex items-center gap-3 px-4 py-3 rounded-2xl text-left transition-all haptic-press hover-surface border border-transparent ${localRole === role ? "bg-[var(--surface-muted)] border-[var(--border-color)] ring-1 ring-[var(--border-color)]" : ""}`}
                   >
                     <span className={`w-2 h-2 rounded-full ${config.dot} shrink-0`} />
                     <div className="min-w-0">
@@ -261,24 +261,24 @@ export default function DashboardPage() {
             </p>
           </DashboardCard>
 
-          <div className="rounded-[40px] bg-[var(--accent-color)] text-[var(--accent-foreground)] p-12 flex flex-col justify-center items-center text-center gap-6 shadow-2xl relative overflow-hidden group">
+          <div className="rounded-[40px] accent-fill p-12 flex flex-col justify-center items-center text-center gap-6 shadow-2xl relative overflow-hidden group">
             <div className="absolute inset-0 bg-white/5 opacity-0 group-hover:opacity-100 transition-opacity" />
             <div className="w-16 h-16 rounded-3xl bg-white/10 flex items-center justify-center text-3xl font-black">?</div>
             <div>
               <h3 className="text-2xl font-black tracking-tighter uppercase italic leading-none">Custom<br/>Pillars</h3>
               <p className="text-xs font-bold opacity-60 mt-4 uppercase tracking-widest italic">Orchestration<br/>Module v1.0</p>
             </div>
-            <button className="px-6 py-2 rounded-full border-2 border-current text-[10px] font-black uppercase tracking-[0.3em] hover:bg-white hover:text-[var(--accent-color)] transition-all">Expand Board</button>
+            <button className="px-6 py-2 rounded-full border-2 border-current text-label font-black tracking-[0.3em] hover:bg-white hover:text-[var(--accent-color)] transition-all">Expand Board</button>
           </div>
 
         </div>
 
         {/* Footer info */}
         <footer className="mt-12 pt-12 border-t border-[var(--border-color)] flex flex-col md:flex-row justify-between items-center gap-6 opacity-60">
-          <p className="text-[10px] font-bold uppercase tracking-widest">© 2026 Ordo Intelligence • Security Level 4 • All Systems Nominal</p>
+          <p className="text-label">© 2026 Ordo Intelligence • Security Level 4 • All Systems Nominal</p>
           <div className="flex gap-8">
-             <span className="text-[10px] font-black uppercase tracking-widest cursor-default hover:text-[var(--accent-color)] transition-all">Privacy Contract</span>
-             <span className="text-[10px] font-black uppercase tracking-widest cursor-default hover:text-[var(--accent-color)] transition-all">Terms of Governance</span>
+             <span className="text-label font-black cursor-default hover:text-[var(--accent-color)] transition-all">Privacy Contract</span>
+             <span className="text-label font-black cursor-default hover:text-[var(--accent-color)] transition-all">Terms of Governance</span>
           </div>
         </footer>
 
