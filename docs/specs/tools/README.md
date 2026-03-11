@@ -9,7 +9,7 @@
 
 | # | Spec | Priority | Key Features | New Deps |
 |---|------|----------|-------------|----------|
-| 01 | [Vector Search Engine](01-vector-search-engine.md) | **Critical** | Hybrid vector+keyword search, 384-dim embeddings, passage-level indexing, synonym expansion | `@huggingface/transformers` |
+| 01 | [Vector Search & Embedding Infrastructure](01-vector-search-engine.md) | **Critical** | BM25+vector hybrid via RRF, markdown-aware chunking, SQLite BLOB storage, source-agnostic pipeline, MCP embedding server, on-demand indexing | `@huggingface/transformers` |
 | 02 | [Knowledge Graph](02-knowledge-graph.md) | **High** | Curated practitioner registry, relationships, co-occurrence graph, BFS path finding | — |
 | 03 | [Smart Content Delivery](03-smart-content-delivery.md) | **High** | Chapter pagination, heading-aware chunking, extractive summaries, checklist progress tracking | — |
 | 04 | [Advanced Calculator](04-advanced-calculator.md) | **Medium** | Expression evaluator, unit conversion, statistics, WCAG contrast ratio | `mathjs` |
@@ -58,14 +58,14 @@ demonstrative.
 
 | Spec | Requirements | Test Scenarios |
 |------|-------------|---------------|
-| 01 — Vector Search | 19 | 12 |
+| 01 — Vector Search & Embedding Infrastructure | 53 | 60 |
 | 02 — Knowledge Graph | 14 | 12 |
 | 03 — Smart Content Delivery | 18 | 16 |
 | 04 — Advanced Calculator | 10 | 15 |
 | 05 — Intelligent UI Tools | 15 | 10 |
 | 06 — Media Generation | 15 | 12 |
 | 07 — Cross-Cutting Platform | 19 | 20 |
-| **Total** | **110** | **97** |
+| **Total** | **144** | **145** |
 
 ---
 
