@@ -1,5 +1,6 @@
 import { getModelFallbacks } from "@/lib/config/env";
 import { ChatPolicyInteractor } from "@/core/use-cases/ChatPolicyInteractor";
+import { LoggingDecorator } from "@/core/common/LoggingDecorator";
 import type { RoleName } from "@/core/entities/user";
 
 const BASE_PROMPT = `
@@ -43,7 +44,10 @@ Rules:
 `.trim();
 
 export async function buildSystemPrompt(role: RoleName): Promise<string> {
-  const interactor = new ChatPolicyInteractor(BASE_PROMPT);
+  const interactor = new LoggingDecorator(
+    new ChatPolicyInteractor(BASE_PROMPT),
+    "ChatPolicy",
+  );
   return interactor.execute({ role });
 }
 

@@ -1,6 +1,13 @@
 import type Database from "better-sqlite3";
 
 export function ensureSchema(db: Database.Database): void {
+  // Prune expired sessions on cold boot
+  try {
+    db.prepare(`DELETE FROM sessions WHERE expires_at < datetime('now')`).run();
+  } catch {
+    // Table may not exist yet on first boot — safe to ignore
+  }
+
   db.exec(`
     CREATE TABLE IF NOT EXISTS roles (
       id TEXT PRIMARY KEY,

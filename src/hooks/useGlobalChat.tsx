@@ -105,6 +105,8 @@ interface ChatContextType {
   canSend: boolean;
   conversationId: string | null;
   conversations: ConversationSummary[];
+  isLoadingConversations: boolean;
+  isLoadingMessages: boolean;
   setInput: (val: string) => void;
   sendMessage: (eventOrMessage?: { preventDefault: () => void } | string) => Promise<void>;
   loadConversation: (id: string) => Promise<void>;
@@ -135,6 +137,8 @@ export function ChatProvider({ children }: { children: ReactNode }) {
   const [isSending, setIsSending] = useState(false);
   const [conversationId, setConversationId] = useState<string | null>(null);
   const [conversations, setConversations] = useState<ConversationSummary[]>([]);
+  const [isLoadingConversations, setIsLoadingConversations] = useState(false);
+  const [isLoadingMessages, setIsLoadingMessages] = useState(false);
 
   const canSend = useMemo(
     () => input.trim().length > 0 && !isSending,
@@ -142,14 +146,21 @@ export function ChatProvider({ children }: { children: ReactNode }) {
   );
 
   const refreshConversations = useCallback(async () => {
+    setIsLoadingConversations(true);
     try {
       const res = await fetch("/api/conversations");
+      if (res.status === 401) {
+        window.location.href = "/login";
+        return;
+      }
       if (res.ok) {
         const data = await res.json() as { conversations: ConversationSummary[] };
         setConversations(data.conversations);
       }
     } catch {
       // Silent fail — conversations list is non-critical
+    } finally {
+      setIsLoadingConversations(false);
     }
   }, []);
 
@@ -172,8 +183,13 @@ export function ChatProvider({ children }: { children: ReactNode }) {
   }, []);
 
   const loadConversation = useCallback(async (id: string) => {
+    setIsLoadingMessages(true);
     try {
       const res = await fetch(`/api/conversations/${encodeURIComponent(id)}`);
+      if (res.status === 401) {
+        window.location.href = "/login";
+        return;
+      }
       if (!res.ok) return;
       const data = await res.json() as {
         conversation: { id: string };
@@ -198,12 +214,18 @@ export function ChatProvider({ children }: { children: ReactNode }) {
       dispatch({ type: "REPLACE_ALL", messages: loaded });
     } catch {
       // Silent fail
+    } finally {
+      setIsLoadingMessages(false);
     }
   }, []);
 
   const deleteConversation = useCallback(async (id: string) => {
     try {
-      await fetch(`/api/conversations/${encodeURIComponent(id)}`, { method: "DELETE" });
+      const res = await fetch(`/api/conversations/${encodeURIComponent(id)}`, { method: "DELETE" });
+      if (res.status === 401) {
+        window.location.href = "/login";
+        return;
+      }
       setConversations((prev) => prev.filter((c) => c.id !== id));
       if (conversationId === id) {
         newConversation();
@@ -281,6 +303,7 @@ export function ChatProvider({ children }: { children: ReactNode }) {
   return (
     <ChatContext.Provider value={{
       messages, input, isSending, canSend, conversationId, conversations,
+      isLoadingConversations, isLoadingMessages,
       setInput, sendMessage, loadConversation, newConversation, deleteConversation, refreshConversations
     }}>
       {children}

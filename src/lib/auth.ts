@@ -6,6 +6,7 @@ import { BcryptHasher } from "../adapters/BcryptHasher";
 import { RegisterUserInteractor } from "../core/use-cases/RegisterUserInteractor";
 import { AuthenticateUserInteractor } from "../core/use-cases/AuthenticateUserInteractor";
 import { ValidateSessionInteractor } from "../core/use-cases/ValidateSessionInteractor";
+import { LoggingDecorator } from "../core/common/LoggingDecorator";
 import type { RoleName, User as SessionUser } from "../core/entities/user";
 import type { AuthResult } from "../core/use-cases/RegisterUserInteractor";
 
@@ -20,9 +21,18 @@ function getAuthInteractors() {
   const hasher = new BcryptHasher();
 
   return {
-    register: new RegisterUserInteractor(userRepo, hasher, sessionRepo),
-    authenticate: new AuthenticateUserInteractor(userRepo, hasher, sessionRepo),
-    validateSession: new ValidateSessionInteractor(sessionRepo, userRepo),
+    register: new LoggingDecorator(
+      new RegisterUserInteractor(userRepo, hasher, sessionRepo),
+      "RegisterUser",
+    ),
+    authenticate: new LoggingDecorator(
+      new AuthenticateUserInteractor(userRepo, hasher, sessionRepo),
+      "AuthenticateUser",
+    ),
+    validateSession: new LoggingDecorator(
+      new ValidateSessionInteractor(sessionRepo, userRepo),
+      "ValidateSession",
+    ),
     sessionRepo,
   };
 }
@@ -54,8 +64,15 @@ export async function logout(sessionToken: string): Promise<void> {
 export async function validateSession(
   token: string,
 ): Promise<SessionUser> {
-  const { validateSession: interactor } = getAuthInteractors();
-  return interactor.execute({ token });
+  const { validateSession: interactor, sessionRepo } = getAuthInteractors();
+  const user = await interactor.execute({ token });
+
+  // Opportunistic expired-session prune (~1% of requests)
+  if (Math.random() < 0.01) {
+    sessionRepo.deleteExpired().catch(() => {});
+  }
+
+  return user;
 }
 
 // ── Session cookie constants ──

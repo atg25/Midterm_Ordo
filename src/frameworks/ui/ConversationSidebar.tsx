@@ -7,12 +7,13 @@ export const ConversationSidebar: React.FC = () => {
   const {
     conversations,
     conversationId,
+    isLoadingConversations,
     loadConversation,
     newConversation,
     deleteConversation,
   } = useGlobalChat();
 
-  if (conversations.length === 0 && !conversationId) return null;
+  if (!isLoadingConversations && conversations.length === 0 && !conversationId) return null;
 
   return (
     <div className="flex flex-col gap-1 px-2 py-2">
@@ -27,7 +28,10 @@ export const ConversationSidebar: React.FC = () => {
         New Chat
       </button>
 
-      {conversations.map((conv) => (
+      {isLoadingConversations ? (
+        <div className="px-3 py-3 text-[10px] opacity-40 animate-pulse">Loading conversations…</div>
+      ) : (
+        conversations.map((conv) => (
         <div
           key={conv.id}
           className={`group flex items-center gap-2 px-3 py-2 rounded-xl text-xs cursor-pointer transition-all ${
@@ -59,7 +63,7 @@ export const ConversationSidebar: React.FC = () => {
             </svg>
           </button>
         </div>
-      ))}
+      )))}
     </div>
   );
 };

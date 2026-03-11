@@ -25,7 +25,7 @@ export const ChatContainer: React.FC<Props> = ({
   isFloating = false,
   onClose,
 }) => {
-  const { messages, input, isSending, canSend, setInput, sendMessage, conversationId, conversations } =
+  const { messages, input, isSending, canSend, setInput, sendMessage, conversationId, conversations, isLoadingMessages } =
     useGlobalChat();
   const {
     accessibility,
@@ -191,6 +191,9 @@ export const ChatContainer: React.FC<Props> = ({
           onScroll={handleScroll}
           className={`flex-1 overflow-y-auto px-3 sm:px-6 py-3 sm:py-4 overscroll-contain z-10 min-h-0 ${!isFloating ? "pt-2" : ""}`}
         >
+          {isLoadingMessages ? (
+            <div className="flex items-center justify-center h-32 text-xs opacity-40 animate-pulse">Loading conversation…</div>
+          ) : (
           <div className={isFullScreen ? "max-w-4xl mx-auto w-full" : "w-full"}>
             <MessageList
               messages={presentedMessages}
@@ -201,6 +204,7 @@ export const ChatContainer: React.FC<Props> = ({
               searchQuery={sessionSearchQuery}
             />
           </div>
+          )}
         </div>
         {!isAtBottom && (
           <div className="absolute bottom-4 left-0 right-0 flex justify-center pointer-events-none z-10">
