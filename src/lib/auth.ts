@@ -58,13 +58,55 @@ export async function validateSession(
   return interactor.execute({ token });
 }
 
-// ── Preserved mock auth functions (used by existing code until Sprint 2) ──
+// ── Session cookie constants ──
 
+const SESSION_COOKIE_NAME = "lms_session_token";
 const MOCK_SESSION_COOKIE_NAME = "lms_mock_session_role";
 
+const ANONYMOUS_USER: SessionUser = {
+  id: "usr_anonymous",
+  email: "anonymous@example.com",
+  name: "Anonymous User",
+  roles: ["ANONYMOUS"],
+};
+
 /**
- * Mocks setting an authentication session by writing a cookie containing the active role.
- * In a real application, this would be handled by NextAuth and signed JWTs.
+ * Resolves the current user from the session.
+ * 1. Try real session token (lms_session_token cookie → ValidateSessionInteractor)
+ * 2. Fall back to legacy mock system (lms_mock_session_role cookie)
+ * 3. Default to ANONYMOUS
+ */
+export async function getSessionUser(): Promise<SessionUser> {
+  const cookieStore = await cookies();
+
+  // 1. Try real session token first
+  const sessionToken = cookieStore.get(SESSION_COOKIE_NAME)?.value;
+  if (sessionToken) {
+    try {
+      return await validateSession(sessionToken);
+    } catch {
+      // Invalid/expired session — fall through to mock or ANONYMOUS
+    }
+  }
+
+  // 2. Fall back to legacy mock system
+  const rawRole = cookieStore.get(MOCK_SESSION_COOKIE_NAME)?.value as
+    | RoleName
+    | undefined;
+
+  if (rawRole) {
+    const db = getDb();
+    const mapper = new UserDataMapper(db);
+    const user = mapper.findByActiveRole(rawRole);
+    if (user) return user;
+  }
+
+  // 3. Default to ANONYMOUS
+  return ANONYMOUS_USER;
+}
+
+/**
+ * Sets a mock session cookie for the role simulation system.
  */
 export async function setMockSession(role: RoleName) {
   const cookieStore = await cookies();
@@ -74,36 +116,6 @@ export async function setMockSession(role: RoleName) {
     sameSite: "lax",
     secure: process.env.NODE_ENV === "production",
   });
-}
-
-/**
- * Identifies the current mock user by reading the active cookie role,
- * looking up the mock user bound to that role in SQLite, and computing their roles array.
- */
-export async function getSessionUser(): Promise<SessionUser> {
-  const cookieStore = await cookies();
-  const rawRole = cookieStore.get(MOCK_SESSION_COOKIE_NAME)?.value as
-    | RoleName
-    | undefined;
-
-  // Default to ANONYMOUS if no explicit cookie is set
-  const activeRoleName = rawRole || "ANONYMOUS";
-
-  const db = getDb();
-  const mapper = new UserDataMapper(db);
-
-  const user = mapper.findByActiveRole(activeRoleName);
-
-  if (!user) {
-    return {
-      id: "usr_anonymous",
-      email: "anonymous@example.com",
-      name: "Anonymous User",
-      roles: ["ANONYMOUS"],
-    };
-  }
-
-  return user;
 }
 
 /**
