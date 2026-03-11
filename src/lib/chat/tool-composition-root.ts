@@ -2,6 +2,7 @@ import { ToolRegistry } from "@/core/tool-registry/ToolRegistry";
 import { composeMiddleware, type ToolExecuteFn } from "@/core/tool-registry/ToolMiddleware";
 import { LoggingMiddleware } from "@/core/tool-registry/LoggingMiddleware";
 import { RbacGuardMiddleware } from "@/core/tool-registry/RbacGuardMiddleware";
+import { RoleAwareSearchFormatter } from "@/core/tool-registry/ToolResultFormatter";
 import { getBookRepository } from "@/adapters/RepositoryFactory";
 import type { BookRepository } from "@/core/use-cases/BookRepository";
 
@@ -21,7 +22,7 @@ let registry: ToolRegistry | null = null;
 let composedExecute: ToolExecuteFn | null = null;
 
 export function createToolRegistry(bookRepo: BookRepository): ToolRegistry {
-  const reg = new ToolRegistry();
+  const reg = new ToolRegistry(new RoleAwareSearchFormatter());
 
   // Stateless tools (no deps)
   reg.register(calculatorTool);

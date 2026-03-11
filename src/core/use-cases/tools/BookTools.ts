@@ -6,27 +6,16 @@ import { GetChapterInteractor } from "../GetChapterInteractor";
 import { ChecklistInteractor } from "../ChecklistInteractor";
 import { PractitionerInteractor } from "../PractitionerInteractor";
 import { BookSummaryInteractor } from "../BookSummaryInteractor";
-import type { RoleName } from "../../entities/user";
 
-export class SearchBooksCommand implements ToolCommand<{ query: string; max_results?: number; role?: RoleName }, string> {
+export class SearchBooksCommand implements ToolCommand<{ query: string; max_results?: number }, unknown> {
   private readonly search: LibrarySearchInteractor;
   constructor(repo: BookRepository) { this.search = new LibrarySearchInteractor(repo); }
 
-  async execute({ query, max_results = 5, role }: { query: string; max_results?: number; role?: RoleName }, context?: ToolExecutionContext) {
-    const effectiveRole = context?.role ?? role;
+  async execute({ query, max_results = 5 }: { query: string; max_results?: number }, _context?: ToolExecutionContext) {
     const results = await this.search.execute({ query, maxResults: Math.min(max_results, 15) });
     if (results.length === 0) return `No results found for "${query}".`;
 
-    if (effectiveRole === "ANONYMOUS" || !effectiveRole) {
-      return JSON.stringify(results.map(r => ({
-        book: `${r.bookNumber}. ${r.bookTitle}`,
-        bookNumber: r.bookNumber,
-        chapter: r.chapterTitle,
-        relevance: r.relevance,
-      })), null, 2);
-    }
-
-    return JSON.stringify(results.map(r => ({
+    return results.map(r => ({
       book: `${r.bookNumber}. ${r.bookTitle}`,
       bookNumber: r.bookNumber,
       chapter: r.chapterTitle,
@@ -34,7 +23,7 @@ export class SearchBooksCommand implements ToolCommand<{ query: string; max_resu
       bookSlug: r.bookSlug,
       matchContext: r.matchContext,
       relevance: r.relevance,
-    })), null, 2);
+    }));
   }
 }
 

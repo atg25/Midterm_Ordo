@@ -1,5 +1,6 @@
 import { BookRepository } from "../core/use-cases/BookRepository";
 import { FileSystemBookRepository } from "./FileSystemBookRepository";
+import { CachedBookRepository } from "./CachedBookRepository";
 
 /**
  * Repository Factory
@@ -14,7 +15,7 @@ export function getBookRepository(): BookRepository {
   if (!repository) {
     // In a multi-environment setup, we would check ENV here 
     // to return a MockRepository or a CloudRepository.
-    repository = new FileSystemBookRepository();
+    repository = new CachedBookRepository(new FileSystemBookRepository());
   }
   return repository;
 }

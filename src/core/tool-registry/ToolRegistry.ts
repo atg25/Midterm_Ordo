@@ -1,10 +1,13 @@
 import type { RoleName } from "@/core/entities/user";
 import type { ToolDescriptor } from "./ToolDescriptor";
 import type { ToolExecutionContext } from "./ToolExecutionContext";
+import type { ToolResultFormatter } from "./ToolResultFormatter";
 import { ToolAccessDeniedError, UnknownToolError } from "./errors";
 
 export class ToolRegistry {
   private tools = new Map<string, ToolDescriptor>();
+
+  constructor(private readonly formatter?: ToolResultFormatter) {}
 
   register(descriptor: ToolDescriptor): void {
     if (this.tools.has(descriptor.name)) {
@@ -39,7 +42,10 @@ export class ToolRegistry {
     if (!this.canExecute(name, context.role)) {
       throw new ToolAccessDeniedError(name, context.role);
     }
-    return descriptor.command.execute(input, context);
+    const result = await descriptor.command.execute(input, context);
+    return this.formatter
+      ? this.formatter.format(name, result, context)
+      : result;
   }
 
   getToolNames(): string[] {
