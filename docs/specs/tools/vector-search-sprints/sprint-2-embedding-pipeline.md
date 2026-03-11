@@ -56,7 +56,7 @@ class LocalEmbedder implements Embedder {
 
 | Test ID | Scenario |
 | --- | --- |
-| TEST-VS-33 | `embed()` returns 384-dimensional Float32Array |
+| — | `embed()` returns 384-dimensional Float32Array |
 | — | `embedBatch()` returns array of 384-dim vectors |
 | — | `isReady()` returns true after first `embed()` call |
 

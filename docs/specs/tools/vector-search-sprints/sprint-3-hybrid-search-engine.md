@@ -148,7 +148,7 @@ BM25 retrieval, and Reciprocal Rank Fusion.
 | **Create** | `src/core/search/HybridSearchEngine.ts` |
 | **Create** | `tests/search/hybrid-search-engine.test.ts` |
 | **Spec** | §6.5, §6.6 |
-| **Reqs** | VSEARCH-01 through VSEARCH-07, VSEARCH-10, VSEARCH-11, VSEARCH-36, VSEARCH-49 |
+| **Reqs** | VSEARCH-01 through VSEARCH-07, VSEARCH-10, VSEARCH-11, VSEARCH-24, VSEARCH-36, VSEARCH-49 |
 
 ### Constructor (GB-3 — explicit dependencies)
 

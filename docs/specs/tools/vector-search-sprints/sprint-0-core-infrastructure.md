@@ -286,15 +286,18 @@ npm run build                                     # passes
 
 ## Task 0.4 — In-memory test doubles
 
-**What:** Implement `InMemoryVectorStore` and `InMemoryBM25IndexStore` for use
-in all subsequent unit tests.
+**What:** Implement `InMemoryVectorStore`, `InMemoryBM25IndexStore`, and
+`MockEmbedder` for use in all subsequent unit tests. The `MockEmbedder` returns
+deterministic fake vectors so that tests in Sprints 2–4 don't require the ONNX
+model download.
 
 | Item | Detail |
 | --- | --- |
 | **Create** | `src/adapters/InMemoryVectorStore.ts` |
 | **Create** | `src/adapters/InMemoryBM25IndexStore.ts` |
+| **Create** | `src/adapters/MockEmbedder.ts` |
 | **Create** | `tests/search/in-memory-stores.test.ts` |
-| **Spec** | §5.3, §6.2 |
+| **Spec** | §4.2, §5.3, §6.2 |
 
 ### `InMemoryVectorStore`
 
@@ -324,11 +327,35 @@ class InMemoryBM25IndexStore implements BM25IndexStore {
 }
 ```
 
+### `MockEmbedder` (§4.2 — deterministic test double)
+
+```typescript
+class MockEmbedder implements Embedder {
+  private ready = false;
+
+  async embed(text: string): Promise<Float32Array> {
+    this.ready = true;
+    // Return deterministic vector derived from text hash (384 dims)
+    const vec = new Float32Array(384);
+    for (let i = 0; i < 384; i++) vec[i] = ((text.charCodeAt(i % text.length) + i) % 100) / 100;
+    return l2Normalize(vec);
+  }
+
+  async embedBatch(texts: string[]): Promise<Float32Array[]> {
+    return Promise.all(texts.map(t => this.embed(t)));
+  }
+
+  dimensions(): number { return 384; }
+
+  isReady(): boolean { return this.ready; }
+}
+```
+
 ### Tests (`tests/search/in-memory-stores.test.ts`)
 
 | Test ID | Scenario |
 | --- | --- |
-| TEST-VS-18 | Float32Array → EmbeddingRecord → retrieve → Float32Array round-trip |
+| — | Float32Array → EmbeddingRecord → retrieve → Float32Array round-trip (InMemory) |
 | TEST-VS-44 | BM25IndexStore.saveIndex() persists, getIndex() retrieves |
 | TEST-VS-51 | BookChunkMetadata round-trip preserves all fields |
 
@@ -346,7 +373,7 @@ npm run build && npm test                               # all existing tests sti
 - [ ] 6 port interfaces in `src/core/search/ports/` — zero infra imports
 - [ ] Shared types in `src/core/search/types.ts`
 - [ ] 4 pure math modules — stateless, zero dependencies
-- [ ] 2 in-memory test doubles
+- [ ] 3 test doubles: `InMemoryVectorStore`, `InMemoryBM25IndexStore`, `MockEmbedder`
 - [ ] ~15 new tests passing
 - [ ] `npm run build && npm test` — all 213+ tests green
 - [ ] No changes to existing runtime behavior

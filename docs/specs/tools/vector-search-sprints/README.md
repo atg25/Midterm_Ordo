@@ -44,13 +44,20 @@ Current  → Keyword-only search (unchanged)
 
 | Sprint | Tasks | New Files | Modified Files | New Tests |
 | --- | --- | --- | --- | --- |
-| **0 — Core Infrastructure** | 4 | 12 | 0 | ~15 |
-| **1 — Chunking & Storage** | 4 | 5 | 1 | ~12 |
-| **2 — Embedding Pipeline** | 5 | 5 | 1 | ~10 |
-| **3 — Hybrid Search Engine** | 6 | 7 | 1 | ~12 |
-| **4 — Tool Integration** | 4 | 1 | 4 | ~6 |
+| **0 — Core Infrastructure** | 4 | 14 | 0 | ~15 |
+| **1 — Chunking & Storage** | 4 | 3 | 1 | ~12 |
+| **2 — Embedding Pipeline** | 5 | 6 | 2 | ~10 |
+| **3 — Hybrid Search Engine** | 6 | 9 | 1 | ~12 |
+| **4 — Tool Integration** | 4 | 0 | 3 | ~6 |
 | **5 — MCP Server** | 3 | 1 | 1 | ~5 |
-| **Total** | **26** | **31** | **8** | **~60** |
+| **Total** | **26** | **33** | **6 unique (8 touches)** | **~60** |
+
+> **Note:** "New Files" counts production files only (no test files). Three
+> production files (`data/stopwords.ts`, `data/synonyms.ts`, `ResultFormatter.ts`)
+> are not in the spec's §12 file plan but are logically required by §7.5, §7.6,
+> and §8. "Modified Files" total counts unique files; some files are modified in
+> multiple sprints (package.json in Sprints 2 & 5, tool-composition-root.ts in
+> Sprints 2 & 4).
 
 ## Requirement → Sprint Mapping
 
@@ -58,11 +65,11 @@ Current  → Keyword-only search (unchanged)
 | --- | --- | --- |
 | VSEARCH-01 through VSEARCH-11 (Search Quality) | 3, 4 | 3.1–3.4, 4.1 |
 | VSEARCH-12 through VSEARCH-16 (Chunking) | 1 | 1.1, 1.2 |
-| VSEARCH-17 through VSEARCH-21 (Storage & Indexing) | 1, 2 | 1.3, 1.4, 2.3, 2.4 |
-| VSEARCH-22 through VSEARCH-25 (On-Demand & Multi-Source) | 2 | 2.2, 2.3 |
+| VSEARCH-17 through VSEARCH-21 (Storage & Indexing) | 1, 2 | 1.3, 1.4, 2.4 |
+| VSEARCH-22 through VSEARCH-25 (On-Demand & Multi-Source) | 2, 3, 4 | 2.2, 2.5, 3.3, 4.4 |
 | VSEARCH-26 through VSEARCH-29 (Fallback & Resilience) | 3 | 3.4 |
 | VSEARCH-30 through VSEARCH-34 (MCP Server) | 5 | 5.1, 5.2 |
-| VSEARCH-35 through VSEARCH-40 (Architectural) | 0, 3, 4 | 0.1, 3.1, 4.3 |
+| VSEARCH-35 through VSEARCH-40 (Architectural) | 0, 1, 3, 4 | 0.1, 0.3, 1.4, 3.3, 3.6, 4.1, 4.3 |
 | VSEARCH-41 through VSEARCH-53 (Audit-Hardened v2.1) | 0–3 | across all sprints |
 
 ## New Dependency
