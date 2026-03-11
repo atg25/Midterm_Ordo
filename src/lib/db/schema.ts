@@ -23,6 +23,34 @@ export function ensureSchema(db: Database.Database): void {
     );
   `);
 
+  // Extend users table (idempotent — try/catch for existing columns)
+  try {
+    db.exec(`ALTER TABLE users ADD COLUMN password_hash TEXT`);
+  } catch {
+    // Column already exists
+  }
+  try {
+    db.exec(
+      `ALTER TABLE users ADD COLUMN created_at TEXT NOT NULL DEFAULT (datetime('now'))`,
+    );
+  } catch {
+    // Column already exists
+  }
+
+  // Sessions table
+  db.exec(`
+    CREATE TABLE IF NOT EXISTS sessions (
+      id TEXT PRIMARY KEY,
+      user_id TEXT NOT NULL,
+      created_at TEXT NOT NULL DEFAULT (datetime('now')),
+      expires_at TEXT NOT NULL,
+      FOREIGN KEY (user_id) REFERENCES users(id)
+    );
+
+    CREATE INDEX IF NOT EXISTS idx_sessions_user ON sessions(user_id);
+    CREATE INDEX IF NOT EXISTS idx_sessions_expires ON sessions(expires_at);
+  `);
+
   // Seed roles
   const seedRoles = db.prepare(`
     INSERT OR IGNORE INTO roles (id, name, description)
