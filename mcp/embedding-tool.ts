@@ -1,0 +1,164 @@
+import { createHash } from "crypto";
+import type { Embedder } from "@/core/search/ports/Embedder";
+import type { VectorStore, VectorQuery } from "@/core/search/ports/VectorStore";
+import type { BM25IndexStore } from "@/core/search/ports/BM25IndexStore";
+import type { SearchHandler } from "@/core/search/ports/SearchHandler";
+import type { EmbeddingPipelineFactory } from "@/core/search/EmbeddingPipelineFactory";
+import type { BookChunkMetadata } from "@/core/search/ports/Chunker";
+import type { BookRepository } from "@/core/use-cases/BookRepository";
+
+export interface EmbeddingToolDeps {
+  embedder: Embedder;
+  vectorStore: VectorStore;
+  bm25IndexStore: BM25IndexStore;
+  searchHandler: SearchHandler;
+  pipelineFactory: EmbeddingPipelineFactory;
+  bookRepo: BookRepository;
+}
+
+// --- embed_text (VSEARCH-30) ---
+export async function embedText(
+  deps: EmbeddingToolDeps,
+  args: { text: string },
+) {
+  if (!args.text || typeof args.text !== "string") {
+    throw new Error("embed_text requires a non-empty 'text' string.");
+  }
+  const embedding = await deps.embedder.embed(args.text);
+  return {
+    dimensions: deps.embedder.dimensions(),
+    embeddingPreview: Array.from(embedding.slice(0, 5)),
+  };
+}
+
+// --- embed_document (VSEARCH-31) ---
+export async function embedDocument(
+  deps: EmbeddingToolDeps,
+  args: { source_type: string; source_id: string; content: string },
+) {
+  if (!args.source_type || !args.source_id || !args.content) {
+    throw new Error(
+      "embed_document requires source_type, source_id, and content.",
+    );
+  }
+  const pipeline = deps.pipelineFactory.createForSource(
+    args.source_type as "book_chunk",
+  );
+  const [bookSlug, chapterSlug] = args.source_id.split("/");
+  const metadata: BookChunkMetadata = {
+    sourceType: "book_chunk",
+    bookSlug: bookSlug ?? args.source_id,
+    chapterSlug: chapterSlug ?? "",
+    bookTitle: bookSlug ?? "",
+    chapterTitle: chapterSlug ?? "",
+    chapterFirstSentence:
+      args.content.split(/[.!?]\s/)[0]?.slice(0, 200) ?? "",
+  };
+  const contentHash = createHash("sha256")
+    .update(args.content)
+    .digest("hex");
+  const result = await pipeline.indexDocument({
+    sourceType: args.source_type,
+    sourceId: args.source_id,
+    content: args.content,
+    contentHash,
+    metadata,
+  });
+  return result;
+}
+
+// --- search_similar (VSEARCH-32) ---
+export async function searchSimilar(
+  deps: EmbeddingToolDeps,
+  args: { query: string; source_type?: string; limit?: number },
+) {
+  if (!args.query || typeof args.query !== "string") {
+    throw new Error("search_similar requires a non-empty 'query' string.");
+  }
+  const filters: VectorQuery = {};
+  if (args.source_type) filters.sourceType = args.source_type;
+  if (args.limit) filters.limit = args.limit;
+  const results = await deps.searchHandler.search(args.query, filters);
+  return results;
+}
+
+// --- rebuild_index (VSEARCH-33) ---
+export async function rebuildIndex(
+  deps: EmbeddingToolDeps,
+  args: { source_type: string; force?: boolean },
+) {
+  if (!args.source_type) {
+    throw new Error("rebuild_index requires a source_type.");
+  }
+  if (args.source_type !== "book_chunk") {
+    throw new Error(
+      `Unsupported source_type: ${args.source_type}. Only "book_chunk" is supported.`,
+    );
+  }
+
+  const pipeline = deps.pipelineFactory.createForSource("book_chunk");
+  const [books, chapters] = await Promise.all([
+    deps.bookRepo.getAllBooks(),
+    deps.bookRepo.getAllChapters(),
+  ]);
+  const bookTitleMap = new Map(books.map((b) => [b.slug, b.title]));
+
+  if (args.force) {
+    for (const ch of chapters) {
+      deps.vectorStore.delete(`${ch.bookSlug}/${ch.chapterSlug}`);
+    }
+  }
+
+  const documents = chapters.map((ch) => ({
+    sourceId: `${ch.bookSlug}/${ch.chapterSlug}`,
+    content: ch.content,
+    contentHash: createHash("sha256").update(ch.content).digest("hex"),
+    metadata: {
+      sourceType: "book_chunk" as const,
+      bookSlug: ch.bookSlug,
+      chapterSlug: ch.chapterSlug,
+      bookTitle: bookTitleMap.get(ch.bookSlug) ?? ch.bookSlug,
+      chapterTitle: ch.title,
+      chapterFirstSentence:
+        ch.content.split(/[.!?]\s/)[0]?.slice(0, 200) ?? "",
+    } satisfies BookChunkMetadata,
+  }));
+
+  const result = await pipeline.rebuildAll("book_chunk", documents);
+  return result;
+}
+
+// --- get_index_stats (VSEARCH-34) ---
+export function getIndexStats(
+  deps: EmbeddingToolDeps,
+  args: { source_type?: string },
+) {
+  const sourceType = args.source_type ?? "book_chunk";
+  const embeddingCount = deps.vectorStore.count(sourceType);
+  const bm25Index = deps.bm25IndexStore.getIndex(sourceType);
+  return {
+    sourceType,
+    embeddingCount,
+    bm25DocCount: bm25Index?.docCount ?? 0,
+    bm25AvgDocLength: bm25Index?.avgDocLength ?? 0,
+    bm25Stale: deps.bm25IndexStore.isStale(sourceType),
+    embedderReady: deps.embedder.isReady(),
+    dimensions: deps.embedder.dimensions(),
+  };
+}
+
+// --- delete_embeddings (spec §11.2 tool, no VSEARCH req ID) ---
+export function deleteEmbeddings(
+  deps: EmbeddingToolDeps,
+  args: { source_id: string },
+) {
+  if (!args.source_id || typeof args.source_id !== "string") {
+    throw new Error(
+      "delete_embeddings requires a non-empty 'source_id' string.",
+    );
+  }
+  const before = deps.vectorStore.count();
+  deps.vectorStore.delete(args.source_id);
+  const after = deps.vectorStore.count();
+  return { deleted: before - after, source_id: args.source_id };
+}

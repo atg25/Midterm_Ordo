@@ -25,6 +25,7 @@
     "check:stateless": "node scripts/assert-stateless-runtime.mjs",
     "parity:env": "node scripts/validate-env-parity.mjs",
     "mcp:calculator": "tsx mcp/calculator-server.ts",
+    "mcp:embeddings": "tsx mcp/embedding-server.ts",
     "typecheck": "tsc --noEmit",
     "lint:strict": "eslint --max-warnings 0",
     "quality": "npm run typecheck && npm run lint:strict && npm run test",
