@@ -641,7 +641,7 @@ LLM tool interface.
 | 1.5 | Implement `librarian_add_chapter` | LIBRARIAN-050, 070 |
 | 1.6 | Implement `librarian_remove_book` and `librarian_remove_chapter` | LIBRARIAN-050, 060, 070 |
 | 1.7 | Add path traversal prevention and slug validation | LIBRARIAN-070, 080 |
-| 1.8 | Unit tests for all 6 tools (~22 tests) | |
+| 1.8 | Unit tests for all 6 tools (~26 tests) | |
 | 1.9 | Full suite green, build clean | |
 
 **Deliverable:** ~346 tests passing (320 + 26 new).
