@@ -34,7 +34,7 @@ docs/_specs/
 | [RBAC](rbac/) | **Complete** | 6 (0–5) | Multi-user auth, RBAC, chat persistence, role-aware LLM |
 | [Tool Architecture](tool-architecture/) | **Complete** | 5 (0–4) | Registry-based tool system with SOLID/GoF alignment |
 | [Vector Search](vector-search/) | **Complete** | 6 (0–5) | BM25+vector hybrid search, embedding pipeline, MCP server |
-| [Corpus Management](corpus-management/) | **Draft** | 2 (0–1) | `_corpus/` auto-discovery, MCP corpus tools, zip import |
+| [Librarian](librarian/) | **Draft** | 2 (0–1) | `_corpus/` auto-discovery, MCP librarian tools, zip import |
 
 ### Roadmap
 
