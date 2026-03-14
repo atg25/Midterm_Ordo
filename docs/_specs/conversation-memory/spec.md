@@ -1,18 +1,27 @@
 # Conversation Memory — System Spec
 
-> **Status:** Draft v1.0
-> **Date:** 2026-03-12
+> **Status:** Draft v2.0
+> **Date:** 2026-03-14
 > **Scope:** Transparent, server-side conversation continuity for all
 >   users. One active conversation per user, auto-resumed on page load,
 >   periodically summarized, and searchable via the existing hybrid
 >   search engine. Anonymous users get a stable cookie-based session so
->   their conversation persists across refreshes.
+>   their conversation persists across refreshes. Anonymous-to-authenticated
+>   conversion tracking. Database-backed system prompt management with
+>   versioning and per-role control via MCP tools. Admin conversation
+>   analytics for engagement analysis and conversion optimization.
 > **Dependencies:** RBAC (complete), Vector Search (complete), Tool
->   Architecture (complete), Conversation persistence (complete)
+>   Architecture (complete), Conversation persistence (complete),
+>   MCP Embedding Server (complete)
 > **Affects:** `src/hooks/useGlobalChat.tsx`, `src/app/api/conversations/`,
 >   `src/app/api/chat/stream/route.ts`, `src/core/use-cases/ConversationInteractor.ts`,
->   `src/core/search/EmbeddingPipelineFactory.ts`, new `ConversationChunker`,
->   new `search_my_conversations` tool, new `/api/conversations/active` route
+>   `src/core/use-cases/ChatPolicyInteractor.ts`, `src/lib/chat/policy.ts`,
+>   `src/core/search/EmbeddingPipelineFactory.ts`, `mcp/embedding-server.ts`,
+>   new `ConversationChunker`, new `search_my_conversations` tool,
+>   new `/api/conversations/active` route, new `system_prompts` table,
+>   new `conversation_events` table, new `SystemPromptRepository` port,
+>   new MCP tools: `prompt_list`, `prompt_get`, `prompt_set`,
+>   `prompt_rollback`, `conversation_analytics`, `conversation_inspect`
 >
 > **Metaphor:** The library has bookshelves (corpus) and a reading desk
 >   (conversation). The desk always has your open notebook — you don't
@@ -94,6 +103,28 @@
    single-topic advisory domain where users have one ongoing dialogue
    about product development. `[CONVO-050]`
 
+6. **System prompts are hardcoded and immutable at runtime** — the
+   `BASE_PROMPT` lives in `src/lib/chat/policy.ts` as a template literal
+   and `ROLE_DIRECTIVES` is a `Record<RoleName, string>` in
+   `src/core/use-cases/ChatPolicyInteractor.ts`. Changing the anonymous
+   user's experience — even a single sentence — requires a code change,
+   commit, rebuild, and deploy. There is no versioning, no A/B testing,
+   and no audit trail of prompt changes. `[CONVO-060]`
+
+7. **Zero conversation analytics** — the system emits structured logs to
+   stdout (`src/lib/observability/`) but stores no persistent metrics.
+   `getMetricsSnapshot()` returns `{ mode: "externalized" }`. There are
+   no queries for: how many anonymous sessions occur, how long they last,
+   which tools drive engagement, what the anonymous-to-authenticated
+   conversion rate is, or where users drop off. Admins are blind to how
+   the system performs as a conversion funnel. `[CONVO-070]`
+
+8. **Anonymous → authenticated conversion is invisible** — when a user
+   registers after chatting anonymously, the anonymous conversation is
+   abandoned. There is no mechanism to migrate `anon_{uuid}` conversations
+   to the new user ID. The user loses their history, and the admin loses
+   the ability to trace the conversion path. `[CONVO-080]`
+
 ### 1.2 Core Insight
 
 This isn't ChatGPT. Users aren't having 50 different conversations about
@@ -104,6 +135,18 @@ is more like a **journal** than a chat thread. It should:
 - Get smarter over time (summaries preserve context)
 - Be searchable like the library itself
 - Require zero conversation management from the user
+
+But conversations are also the system's **primary feedback signal**.
+Every anonymous session that ends without registration is a data point.
+Every tool call that precedes a sign-up is a signal. The system should
+capture these signals, make them visible to administrators, and let
+admins tune the experience — especially the system prompts — without
+code changes. The closed loop is:
+
+```
+Anonymous visits → Conversations captured → Analytics surface patterns
+  → Admin tunes prompts via MCP → Better conversion → Repeat
+```
 
 ---
 
@@ -538,6 +581,26 @@ filtering by both fields.
    the library. When a user discussed a topic from the corpus, the search
    result can link to the relevant chapter. `[CONVO-060]`
 
+7. **Runtime prompt management** — system prompts (base prompt and per-role
+   directives) are stored in the database, versioned, and editable via MCP
+   tools. Admins can tune the anonymous experience, adjust role directives,
+   and roll back changes — all without code deploys. `[CONVO-060]`
+
+8. **Conversion tracking** — when an anonymous user registers, their
+   conversation history migrates to their new authenticated identity.
+   The conversion event is recorded, enabling funnel analysis from first
+   anonymous message through registration. `[CONVO-080]`
+
+9. **Conversation analytics** — administrators can query aggregate
+   engagement metrics, inspect individual conversations, compare cohorts
+   (anonymous vs. authenticated vs. converted), and identify drop-off
+   patterns — all via MCP tools in the embedding server. `[CONVO-070]`
+
+10. **Event instrumentation** — key conversation lifecycle events
+    (started, tool_used, summarized, archived, converted,
+    prompt_version_changed) are recorded in a `conversation_events`
+    table, providing the foundation for all analytics. `[CONVO-070]`
+
 ---
 
 ## 4. Architecture Overview
@@ -602,6 +665,12 @@ filtering by both fields.
 | Conversation search | New tool + `VectorQuery.sourceType = "conversation"` filter | Reuses existing `HybridSearchEngine`; filter by source_id prefix for user scoping |
 | Result type | New `ConversationSearchResult` (not extending book-specific `HybridSearchResult`) | `HybridSearchResult` fields are all book-specific; conversation results need different fields |
 | Anonymous search | Not supported (anonymous conversations not embedded) | Anonymous conversations are transient; embedding cost not justified |
+| Prompt storage | Database-backed `system_prompts` table with versioning | Enables runtime editing without deploys; audit trail of changes |
+| Prompt management | MCP tools on embedding server (not in-app chat tools) | Admins use Claude Desktop / MCP client for system config; keeps chat tools user-facing |
+| Event instrumentation | `conversation_events` table with typed events | Lightweight append-only log; powers all analytics without mining messages |
+| Conversion tracking | `converted_from` column on conversations + migration on register | Traces the full anonymous→authenticated funnel; preserves conversation continuity |
+| Analytics delivery | MCP tools (not dashboard UI) | Consistent with librarian/embedding admin pattern; no frontend needed |
+| Conversation metadata | Denormalized `message_count`, `first_message_at`, `last_tool_used` | Avoids expensive JOINs for analytics queries; updated on each message append |
 
 ---
 
@@ -682,6 +751,47 @@ constant.
 - Garbage collection: conversations where `user_id LIKE 'anon_%' AND
   updated_at < datetime('now', '-30 days')` can be periodically pruned
 - Anonymous conversations are **not embedded** (no search indexing)
+
+### 5.6 Anonymous → Authenticated Migration `[CONVO-080]`
+
+When a user registers after chatting anonymously, migrate their
+conversation history to preserve continuity and enable conversion
+tracking.
+
+**Trigger:** Registration endpoint (`/api/auth/register`) — after
+creating the new user, check for an `lms_anon_session` cookie.
+
+**Migration logic:**
+
+```typescript
+async function migrateAnonymousConversations(
+  anonUserId: string,    // "anon_{uuid}" from cookie
+  newUserId: string,     // the newly created user ID
+): Promise<void> {
+  // 1. Transfer ownership of all conversations
+  db.prepare(
+    "UPDATE conversations SET user_id = ?, converted_from = ? WHERE user_id = ?"
+  ).run(newUserId, anonUserId, anonUserId);
+
+  // 2. Record conversion event
+  db.prepare(
+    "INSERT INTO conversation_events (id, conversation_id, event_type, metadata, created_at) " +
+    "SELECT hex(randomblob(16)), id, 'converted', json_object('from', ?, 'to', ?), datetime('now') " +
+    "FROM conversations WHERE user_id = ? AND converted_from = ?"
+  ).run(anonUserId, newUserId, newUserId, anonUserId);
+
+  // 3. Clear the anonymous cookie (caller responsibility)
+}
+```
+
+**Schema support:** Add `converted_from TEXT DEFAULT NULL` to the
+`conversations` table. This column records the original `anon_{uuid}`
+when a conversation was migrated, enabling funnel analysis.
+
+**User experience:** After registration, the user's next page load
+calls `GET /api/conversations/active` with their new authenticated
+session. Their conversation appears exactly as they left it — zero
+disruption.
 
 ---
 
@@ -1122,9 +1232,452 @@ messages within the conversation — same ownership-based access controls.
 
 ---
 
-## 12. Testing Strategy
+## 12. Conversation Events `[CONVO-070]`
 
-### 12.1 Unit Tests
+### 12.1 Purpose
+
+Every conversation lifecycle event is recorded in an append-only events
+table. This provides the foundation for all analytics queries without
+requiring expensive message-table mining.
+
+### 12.2 Schema
+
+```sql
+CREATE TABLE IF NOT EXISTS conversation_events (
+  id TEXT PRIMARY KEY,
+  conversation_id TEXT NOT NULL,
+  event_type TEXT NOT NULL,
+  metadata TEXT NOT NULL DEFAULT '{}',
+  created_at TEXT NOT NULL DEFAULT (datetime('now')),
+  FOREIGN KEY (conversation_id) REFERENCES conversations(id) ON DELETE CASCADE
+);
+CREATE INDEX IF NOT EXISTS idx_conv_events_conv ON conversation_events(conversation_id);
+CREATE INDEX IF NOT EXISTS idx_conv_events_type ON conversation_events(event_type);
+CREATE INDEX IF NOT EXISTS idx_conv_events_created ON conversation_events(created_at);
+```
+
+### 12.3 Event Types
+
+| Event Type | When Emitted | Metadata |
+|------------|-------------|----------|
+| `started` | First message in a new conversation | `{ session_source: "anonymous_cookie" \| "authenticated" }` |
+| `message_sent` | User sends a message | `{ role: "user", token_estimate: number }` |
+| `tool_used` | LLM calls a tool | `{ tool_name: string, role: RoleName }` |
+| `summarized` | Summarization completes | `{ messages_covered: number, summary_tokens: number }` |
+| `archived` | Conversation archived | `{ message_count: number, duration_hours: number }` |
+| `converted` | Anonymous → authenticated migration | `{ from: "anon_{uuid}", to: "usr_{id}" }` |
+| `prompt_version_changed` | Admin changes active prompt | `{ role: string, prompt_type: string, old_version: number, new_version: number }` |
+
+### 12.4 Emitter
+
+A lightweight `ConversationEventEmitter` utility, not a full domain
+event bus. Used inline at the point of action:
+
+```typescript
+// src/core/use-cases/ConversationEventEmitter.ts
+export interface ConversationEventRepository {
+  record(event: {
+    conversationId: string;
+    eventType: string;
+    metadata: Record<string, unknown>;
+  }): Promise<void>;
+}
+
+export class ConversationEventEmitter {
+  constructor(private readonly repo: ConversationEventRepository) {}
+
+  async emit(
+    conversationId: string,
+    eventType: string,
+    metadata: Record<string, unknown> = {},
+  ): Promise<void> {
+    await this.repo.record({ conversationId, eventType, metadata });
+  }
+}
+```
+
+**Adapter:** `ConversationEventDataMapper` implements the repository
+with a simple INSERT into `conversation_events`.
+
+### 12.5 Extended Conversation Metadata
+
+To support fast analytics queries without expensive JOINs, add
+denormalized columns to the `conversations` table:
+
+```sql
+ALTER TABLE conversations ADD COLUMN converted_from TEXT DEFAULT NULL;
+ALTER TABLE conversations ADD COLUMN message_count INTEGER NOT NULL DEFAULT 0;
+ALTER TABLE conversations ADD COLUMN first_message_at TEXT DEFAULT NULL;
+ALTER TABLE conversations ADD COLUMN last_tool_used TEXT DEFAULT NULL;
+ALTER TABLE conversations ADD COLUMN session_source TEXT NOT NULL DEFAULT 'unknown';
+ALTER TABLE conversations ADD COLUMN prompt_version INTEGER DEFAULT NULL;
+```
+
+| Column | Purpose | Updated By |
+|--------|---------|------------|
+| `converted_from` | Original `anon_{uuid}` after migration | Registration flow |
+| `message_count` | Denormalized message count | `appendMessage()` |
+| `first_message_at` | Timestamp of first message | `appendMessage()` (if null) |
+| `last_tool_used` | Name of most recent tool call | Stream route on `onToolCall` |
+| `session_source` | `"anonymous_cookie"` or `"authenticated"` | `create()` |
+| `prompt_version` | Active prompt version when conversation started | `create()` |
+
+### 12.6 Token Estimation
+
+Add a `token_estimate` column to the `messages` table:
+
+```sql
+ALTER TABLE messages ADD COLUMN token_estimate INTEGER NOT NULL DEFAULT 0;
+```
+
+Estimated as `Math.ceil(content.length / 4)` — a simple chars÷4
+heuristic. No `tiktoken` dependency needed. Accurate enough for
+analytics and context-window budgeting.
+
+---
+
+## 13. System Prompt Management `[CONVO-060]`
+
+### 13.1 Problem
+
+System prompts are hardcoded:
+- `BASE_PROMPT` in `src/lib/chat/policy.ts` (48 lines)
+- `ROLE_DIRECTIVES` in `src/core/use-cases/ChatPolicyInteractor.ts`
+  (per-role strings)
+
+Changing the anonymous experience requires a code change → commit →
+rebuild → deploy. There is no versioning, no rollback capability, and
+no audit trail.
+
+### 13.2 Schema
+
+```sql
+CREATE TABLE IF NOT EXISTS system_prompts (
+  id TEXT PRIMARY KEY,
+  role TEXT NOT NULL,
+  prompt_type TEXT NOT NULL,
+  content TEXT NOT NULL,
+  version INTEGER NOT NULL,
+  is_active INTEGER NOT NULL DEFAULT 0,
+  created_at TEXT NOT NULL DEFAULT (datetime('now')),
+  created_by TEXT DEFAULT NULL,
+  notes TEXT NOT NULL DEFAULT ''
+);
+CREATE UNIQUE INDEX IF NOT EXISTS idx_prompt_active
+  ON system_prompts(role, prompt_type) WHERE is_active = 1;
+```
+
+| Column | Purpose |
+|--------|---------|
+| `role` | `"ALL"` for the base prompt, or a `RoleName` for a role directive |
+| `prompt_type` | `"base"` or `"role_directive"` |
+| `content` | The full prompt text |
+| `version` | Auto-incrementing per `(role, prompt_type)` pair |
+| `is_active` | `1` for the currently active version; `0` for historical |
+| `created_by` | User ID of the admin who created this version |
+| `notes` | Free-text explanation of why this change was made |
+
+**Seed:** On first run, insert the current hardcoded prompts as
+version 1 with `is_active = 1`. The hardcoded constants become
+fallbacks only — used if the database has no active prompt (defensive).
+
+### 13.3 Port — `SystemPromptRepository`
+
+```typescript
+// src/core/use-cases/SystemPromptRepository.ts
+export interface SystemPrompt {
+  id: string;
+  role: string;
+  promptType: "base" | "role_directive";
+  content: string;
+  version: number;
+  isActive: boolean;
+  createdAt: string;
+  createdBy: string | null;
+  notes: string;
+}
+
+export interface SystemPromptRepository {
+  getActive(role: string, promptType: string): Promise<SystemPrompt | null>;
+  listVersions(role: string, promptType: string): Promise<SystemPrompt[]>;
+  getByVersion(role: string, promptType: string, version: number): Promise<SystemPrompt | null>;
+  createVersion(params: {
+    role: string;
+    promptType: string;
+    content: string;
+    createdBy: string;
+    notes: string;
+  }): Promise<SystemPrompt>;
+  activate(role: string, promptType: string, version: number): Promise<void>;
+}
+```
+
+### 13.4 Adapter — `SystemPromptDataMapper`
+
+Implements `SystemPromptRepository` via `better-sqlite3`.
+
+`createVersion()`:
+1. Compute next version: `SELECT MAX(version) FROM system_prompts WHERE role = ? AND prompt_type = ?` + 1
+2. INSERT new row with `is_active = 0`
+3. Return the new record
+
+`activate()`:
+1. In a transaction:
+   - `UPDATE system_prompts SET is_active = 0 WHERE role = ? AND prompt_type = ? AND is_active = 1`
+   - `UPDATE system_prompts SET is_active = 1 WHERE role = ? AND prompt_type = ? AND version = ?`
+
+### 13.5 ChatPolicyInteractor Refactor
+
+Current:
+```typescript
+export class ChatPolicyInteractor {
+  constructor(private readonly basePrompt: string) {}
+  async execute({ role }) {
+    return this.basePrompt + ROLE_DIRECTIVES[role];
+  }
+}
+```
+
+New:
+```typescript
+export class ChatPolicyInteractor {
+  constructor(
+    private readonly promptRepo: SystemPromptRepository,
+    private readonly fallbackBasePrompt: string,
+    private readonly fallbackDirectives: Record<RoleName, string>,
+  ) {}
+
+  async execute({ role }: { role: RoleName }): Promise<string> {
+    const base = await this.promptRepo.getActive("ALL", "base");
+    const directive = await this.promptRepo.getActive(role, "role_directive");
+
+    const baseText = base?.content ?? this.fallbackBasePrompt;
+    const directiveText = directive?.content ?? this.fallbackDirectives[role] ?? "";
+
+    return baseText + directiveText;
+  }
+}
+```
+
+The hardcoded prompts become fallback defaults — the system works even
+if the database is empty. Once the seed migration runs, all prompts are
+served from the database.
+
+### 13.6 Composition Root Update
+
+`buildSystemPrompt()` in `src/lib/chat/policy.ts`:
+
+```typescript
+export async function buildSystemPrompt(role: RoleName): Promise<string> {
+  const db = getDb();
+  const promptRepo = new SystemPromptDataMapper(db);
+  const interactor = new LoggingDecorator(
+    new ChatPolicyInteractor(promptRepo, BASE_PROMPT, ROLE_DIRECTIVES),
+    "ChatPolicy",
+  );
+  return interactor.execute({ role });
+}
+```
+
+### 13.7 MCP Tools — Prompt Management
+
+Added to the MCP embedding server (`mcp/embedding-server.ts`), alongside
+the existing librarian tools.
+
+**`prompt_list`**
+
+```
+Input:  { role?: string, prompt_type?: string }
+Output: Array of { role, prompt_type, version, is_active, created_at, created_by, notes, content_preview }
+```
+
+Lists all prompt versions, optionally filtered. Shows which version is
+active for each `(role, prompt_type)` pair. `content_preview` is the
+first 200 characters.
+
+**`prompt_get`**
+
+```
+Input:  { role: string, prompt_type: string, version?: number }
+Output: { role, prompt_type, version, content, is_active, created_at, created_by, notes }
+```
+
+Returns the active version by default, or a specific version if
+`version` is provided. Full content included.
+
+**`prompt_set`**
+
+```
+Input:  { role: string, prompt_type: string, content: string, notes: string }
+Output: { version: number, activated: true }
+```
+
+Creates a new version and immediately activates it. The previous active
+version is deactivated but retained. Records a
+`prompt_version_changed` event on all active conversations for the
+affected role.
+
+**`prompt_rollback`**
+
+```
+Input:  { role: string, prompt_type: string, version: number }
+Output: { activated_version: number, deactivated_version: number }
+```
+
+Reactivates a previous version. Same event recording as `prompt_set`.
+
+**`prompt_diff`**
+
+```
+Input:  { role: string, prompt_type: string, version_a: number, version_b: number }
+Output: { diff: string }
+```
+
+Returns a line-by-line diff between two versions. Uses a simple
+longest-common-subsequence diff algorithm — no external dependency.
+
+### 13.8 Security
+
+- All prompt MCP tools require admin access (enforced by the MCP
+  server's tool handler, consistent with librarian tools)
+- `created_by` records which admin made each change
+- Prompt content is treated as trusted (admin-authored), not user input
+- The `notes` field provides an audit trail for each change
+
+---
+
+## 14. Conversation Analytics `[CONVO-070]`
+
+### 14.1 Purpose
+
+Administrators need visibility into how conversations perform as a
+product — especially the anonymous-to-authenticated conversion funnel.
+Analytics are delivered via MCP tools in the embedding server, consistent
+with the existing admin tooling pattern (librarian, embeddings).
+
+### 14.2 MCP Tools — Analytics
+
+**`conversation_analytics`**
+
+```
+Input: {
+  metric: "overview" | "funnel" | "engagement" | "tool_usage" | "drop_off",
+  time_range?: "24h" | "7d" | "30d" | "all"
+}
+```
+
+Returns aggregate metrics:
+
+| Metric | Returns |
+|--------|---------|
+| `overview` | Total conversations, anonymous vs authenticated count, avg message count, avg session duration, conversion rate (anonymous→registered) |
+| `funnel` | Stage counts: anonymous sessions → first message → 5+ messages → registration → continued authenticated usage. Drop-off rate per stage. |
+| `engagement` | Message count distribution (histogram buckets), return rate (sessions with conversations updated on >1 distinct day), top conversation titles |
+| `tool_usage` | Tool call counts by name, tool calls by role, tools that precede registration events (correlation), tools that precede session abandonment |
+| `drop_off` | Conversations with no messages in last 7 days, last message content preview (first 100 chars), tool usage pattern before drop-off, grouped by anonymous vs authenticated |
+
+**SQL examples:**
+
+Overview:
+```sql
+SELECT
+  COUNT(*) as total,
+  SUM(CASE WHEN user_id LIKE 'anon_%' THEN 1 ELSE 0 END) as anonymous,
+  SUM(CASE WHEN user_id NOT LIKE 'anon_%' THEN 1 ELSE 0 END) as authenticated,
+  AVG(message_count) as avg_messages,
+  SUM(CASE WHEN converted_from IS NOT NULL THEN 1 ELSE 0 END) as converted
+FROM conversations
+WHERE created_at > datetime('now', ?)
+```
+
+Funnel:
+```sql
+-- Stage 1: Anonymous sessions started
+SELECT COUNT(DISTINCT conversation_id) FROM conversation_events
+  WHERE event_type = 'started' AND json_extract(metadata, '$.session_source') = 'anonymous_cookie'
+  AND created_at > datetime('now', ?);
+
+-- Stage 2: Had at least one message
+SELECT COUNT(*) FROM conversations
+  WHERE user_id LIKE 'anon_%' AND message_count >= 1 AND created_at > ?;
+
+-- Stage 3: Engaged (5+ messages)
+SELECT COUNT(*) FROM conversations
+  WHERE user_id LIKE 'anon_%' AND message_count >= 5 AND created_at > ?;
+
+-- Stage 4: Converted
+SELECT COUNT(*) FROM conversations
+  WHERE converted_from IS NOT NULL AND created_at > ?;
+
+-- Stage 5: Continued after conversion (authenticated messages after conversion event)
+SELECT COUNT(DISTINCT c.id) FROM conversations c
+  JOIN conversation_events ce ON ce.conversation_id = c.id
+  WHERE ce.event_type = 'converted'
+  AND c.message_count > (
+    SELECT COUNT(*) FROM messages m
+    WHERE m.conversation_id = c.id
+    AND m.created_at < ce.created_at
+  )
+  AND c.created_at > ?;
+```
+
+**`conversation_inspect`**
+
+```
+Input: { conversation_id?: string, user_id?: string, limit?: number }
+```
+
+Returns conversation details for quality review:
+- Conversation metadata (title, status, message_count, session_source,
+  converted_from, created_at, updated_at)
+- Messages (role, content preview — first 200 chars, tool calls, timestamp)
+- Events timeline
+
+If `user_id` is provided instead of `conversation_id`, returns the
+most recent conversations for that user (up to `limit`, default 5).
+
+**`conversation_cohort`**
+
+```
+Input: {
+  cohort_a: "anonymous" | "authenticated" | "converted",
+  cohort_b: "anonymous" | "authenticated" | "converted",
+  metric: "message_count" | "tool_usage" | "session_duration" | "return_rate"
+}
+```
+
+Compares behavior across user groups:
+
+| Cohort | Filter |
+|--------|--------|
+| `anonymous` | `user_id LIKE 'anon_%' AND converted_from IS NULL` |
+| `authenticated` | `user_id NOT LIKE 'anon_%' AND converted_from IS NULL` |
+| `converted` | `converted_from IS NOT NULL` |
+
+Returns side-by-side statistics for the two cohorts on the requested
+metric. Key question this answers: "Do users who convert use different
+tools or engage differently than those who don't?"
+
+### 14.3 Implementation Location
+
+All analytics tools are implemented in `mcp/analytics-tool.ts` and
+registered in `mcp/embedding-server.ts` alongside the librarian and
+embedding tools. They use the same `getDb()` singleton for database
+access.
+
+### 14.4 Security
+
+- All analytics MCP tools are admin-only (consistent with librarian)
+- `conversation_inspect` never returns full message content — previews
+  only (first 200 chars) to limit exposure
+- No PII is surfaced for anonymous users (only `anon_{uuid}` identifiers)
+- Cohort queries use aggregate counts, never individual records
+
+---
+
+## 15. Testing Strategy
+
+### 15.1 Unit Tests
 
 | Area | Tests | Description |
 |------|-------|-------------|
@@ -1136,44 +1689,65 @@ messages within the conversation — same ownership-based access controls.
 | `ConversationChunker` | 4 | Turn pairing; context prefix; summary as document chunk; empty conversation |
 | `SearchMyConversationsCommand` | 2 | User-scoped results; no cross-user leakage |
 | `MessagePart` summary type | 1 | Round-trip serialize/deserialize of summary part |
+| `ConversationEventEmitter` | 3 | Records event; stores metadata as JSON; handles missing conversation gracefully |
+| `migrateAnonymousConversations` | 3 | Updates user_id; sets converted_from; records conversion event |
+| `SystemPromptRepository` | 5 | getActive returns active; createVersion increments; activate swaps; listVersions ordered; getByVersion specific |
+| `ChatPolicyInteractor` (DB) | 3 | Uses DB prompt when available; falls back to hardcoded; combines base + directive |
+| Prompt MCP tools | 5 | prompt_list filters; prompt_get active; prompt_set creates+activates; prompt_rollback; prompt_diff |
+| Analytics MCP tools | 5 | overview aggregates; funnel stages; engagement metrics; tool_usage counts; cohort comparison |
 
-### 12.2 Integration Tests
+### 15.2 Integration Tests
 
 | Area | Tests | Description |
 |------|-------|-------------|
 | Anonymous persistence | 1 | POST stream as anon → cookie set → GET active → conversation loaded |
 | Resume across refresh | 1 | Create conversation → GET active → correct messages returned |
 | Archive + new cycle | 1 | Archive → POST stream → new active created, old archived |
+| Anon → auth migration | 1 | Register while having anon conversation → conversation migrated, events recorded |
+| Prompt round-trip | 1 | Set prompt via MCP → chat uses new prompt → rollback → chat uses old prompt |
+| Analytics queries | 1 | Create conversations + events → analytics tool returns correct aggregates |
 
-**Estimated total: ~24 new tests across 3 sprints**
+**Estimated total: ~48 new tests across 5 sprints**
 
 ---
 
-## 13. Sprint Plan
+## 16. Sprint Plan
 
-### Sprint 0 — Anonymous Sessions + Active Conversation Resume
+### Sprint 0 — Anonymous Sessions + Active Conversation Resume + Instrumentation
 
 **Goal:** All users (including anonymous) get server-side conversation
 persistence that survives page refreshes. Single-conversation model.
+Conversation events table and metadata columns provide the instrumentation
+foundation for all later sprints. Anonymous → authenticated migration
+ensures no data is lost on registration.
 
 | Task | Description | Req |
 |------|-------------|-----|
 | 0.1 | Schema migration: add `status TEXT DEFAULT 'active'` + index | CONVO-050 |
-| 0.2 | Add `findActiveByUser()` and `archiveByUser()` to `ConversationRepository` port | CONVO-010, CONVO-050 |
-| 0.3 | Implement in `ConversationDataMapper` | CONVO-010, CONVO-050 |
-| 0.4 | Implement `resolveUserId()` helper with `lms_anon_session` cookie | CONVO-020 |
-| 0.5 | Remove `shouldPersist` gate in stream route; use `resolveUserId()` | CONVO-020 |
-| 0.6 | Create `GET /api/conversations/active` route | CONVO-010 |
-| 0.7 | Create `POST /api/conversations/active/archive` route | CONVO-050 |
-| 0.8 | Update `ConversationInteractor`: `archiveActive()`, adjust `create()` | CONVO-050 |
-| 0.9 | Update `ChatProvider` mount — single `GET /api/conversations/active` | CONVO-010 |
-| 0.10 | Remove multi-conversation UI (sidebar, list, delete, load) | CONVO-050 |
-| 0.11 | Add "New conversation" button that archives + resets | CONVO-050 |
-| 0.12 | Unit + integration tests (~12 new) | |
-| 0.13 | Full suite green, build clean | |
+| 0.2 | Schema migration: `conversation_events` table + indexes | CONVO-070 |
+| 0.3 | Schema migration: metadata columns on `conversations` (`converted_from`, `message_count`, `first_message_at`, `last_tool_used`, `session_source`, `prompt_version`) | CONVO-070 |
+| 0.4 | Schema migration: `token_estimate` column on `messages` | CONVO-070 |
+| 0.5 | Add `findActiveByUser()` and `archiveByUser()` to `ConversationRepository` port | CONVO-010, CONVO-050 |
+| 0.6 | Implement in `ConversationDataMapper` | CONVO-010, CONVO-050 |
+| 0.7 | Implement `ConversationEventEmitter` use-case + `ConversationEventDataMapper` adapter | CONVO-070 |
+| 0.8 | Implement `resolveUserId()` helper with `lms_anon_session` cookie | CONVO-020 |
+| 0.9 | Implement `migrateAnonymousConversations()` in `ConversationInteractor` | CONVO-080 |
+| 0.10 | Wire migration into registration flow (NextAuth callback or register route) | CONVO-080 |
+| 0.11 | Remove `shouldPersist` gate in stream route; use `resolveUserId()` | CONVO-020 |
+| 0.12 | Wire event emission: `started` on create, `message_sent` on append, `tool_used` on tool call | CONVO-070 |
+| 0.13 | Update `appendMessage()` to increment `message_count`, set `first_message_at`, compute `token_estimate` | CONVO-070 |
+| 0.14 | Create `GET /api/conversations/active` route | CONVO-010 |
+| 0.15 | Create `POST /api/conversations/active/archive` route (emits `archived` event) | CONVO-050 |
+| 0.16 | Update `ConversationInteractor`: `archiveActive()`, adjust `create()` | CONVO-050 |
+| 0.17 | Update `ChatProvider` mount — single `GET /api/conversations/active` | CONVO-010 |
+| 0.18 | Remove multi-conversation UI (sidebar, list, delete, load) | CONVO-050 |
+| 0.19 | Add "New conversation" button that archives + resets | CONVO-050 |
+| 0.20 | Unit + integration tests (~18 new) | |
+| 0.21 | Full suite green, build clean | |
 
-**Deliverable: 376 existing + ~12 new = ~388 tests, conversations survive
-refresh for all users.**
+**Deliverable: 376 existing + ~18 new = ~394 tests, conversations survive
+refresh for all users, event instrumentation live, anon→auth migration
+working.**
 
 ### Sprint 1 — Rolling Summaries
 
@@ -1188,12 +1762,12 @@ window stays bounded. Users never hit the message limit wall.
 | 1.4 | Implement `AnthropicSummarizer` adapter | CONVO-030 |
 | 1.5 | Implement `SummarizationInteractor` | CONVO-030 |
 | 1.6 | Build context window function (summary + recent messages) | CONVO-030 |
-| 1.7 | Wire trigger into stream route (post-response async) | CONVO-030 |
+| 1.7 | Wire trigger into stream route (post-response async, emits `summarized` event) | CONVO-030 |
 | 1.8 | Raise `MAX_MESSAGES_PER_CONVERSATION` to 200 | CONVO-030 |
 | 1.9 | Unit + integration tests (~6 new) | |
 | 1.10 | Full suite green, build clean | |
 
-**Deliverable: ~388 existing + ~6 new = ~394 tests, long conversations
+**Deliverable: ~394 existing + ~6 new = ~400 tests, long conversations
 auto-summarize.**
 
 ### Sprint 2 — Conversation Embedding + Search
@@ -1213,16 +1787,62 @@ users can recall past discussions via `search_my_conversations`.
 | 2.8 | Unit + integration tests (~7 new) | |
 | 2.9 | Full suite green, build clean | |
 
-**Deliverable: ~394 existing + ~7 new = ~401 tests, conversation search
+**Deliverable: ~400 existing + ~7 new = ~407 tests, conversation search
 working.**
+
+### Sprint 3 — System Prompt Management
+
+**Goal:** Administrators can view, edit, version, and roll back system
+prompts for any role via MCP tools. No code deployment required to tune
+the anonymous user experience.
+
+| Task | Description | Req |
+|------|-------------|-----|
+| 3.1 | Schema migration: `system_prompts` table + unique partial index | CONVO-060 |
+| 3.2 | Seed migration: insert current hardcoded `BASE_PROMPT` as version 1 (`role = 'ALL'`, `prompt_type = 'base'`) | CONVO-060 |
+| 3.3 | Seed migration: insert each `ROLE_DIRECTIVES[role]` as version 1 (`prompt_type = 'role_directive'`) | CONVO-060 |
+| 3.4 | Define `SystemPromptRepository` port | CONVO-060 |
+| 3.5 | Implement `SystemPromptDataMapper` adapter | CONVO-060 |
+| 3.6 | Refactor `ChatPolicyInteractor`: constructor takes `SystemPromptRepository` + fallback constants | CONVO-060 |
+| 3.7 | Update `buildSystemPrompt()` in `policy.ts` to wire `SystemPromptDataMapper` | CONVO-060 |
+| 3.8 | Implement `prompt_list` MCP tool in `mcp/embedding-server.ts` | CONVO-060 |
+| 3.9 | Implement `prompt_get` MCP tool | CONVO-060 |
+| 3.10 | Implement `prompt_set` MCP tool (create version + activate + emit event) | CONVO-060 |
+| 3.11 | Implement `prompt_rollback` MCP tool | CONVO-060 |
+| 3.12 | Implement `prompt_diff` MCP tool (LCS-based line diff, no external deps) | CONVO-060 |
+| 3.13 | Unit + integration tests (~10 new) | |
+| 3.14 | Full suite green, build clean | |
+
+**Deliverable: ~407 existing + ~10 new = ~417 tests, system prompts fully
+manageable via MCP.**
+
+### Sprint 4 — Conversation Analytics
+
+**Goal:** Administrators have full visibility into conversation patterns,
+conversion funnels, and engagement metrics via MCP tools. Data-driven
+optimization of the anonymous→authenticated conversion path.
+
+| Task | Description | Req |
+|------|-------------|-----|
+| 4.1 | Implement `conversation_analytics` MCP tool (overview, funnel, engagement, tool_usage, drop_off) | CONVO-070 |
+| 4.2 | Implement `conversation_inspect` MCP tool (single conversation deep-dive) | CONVO-070 |
+| 4.3 | Implement `conversation_cohort` MCP tool (compare anonymous/authenticated/converted) | CONVO-070 |
+| 4.4 | Create `mcp/analytics-tool.ts` module for analytics query logic | CONVO-070 |
+| 4.5 | Register analytics tools in `mcp/embedding-server.ts` | CONVO-070 |
+| 4.6 | Verify event emission coverage: ensure all event types are emitted from Sprint 0 wiring | CONVO-070 |
+| 4.7 | Unit + integration tests (~7 new) | |
+| 4.8 | Full suite green, build clean | |
+
+**Deliverable: ~417 existing + ~7 new = ~424 tests, full analytics
+dashboard via MCP tools.**
 
 ---
 
-## 14. Future Considerations
+## 17. Future Considerations
 
-These items are explicitly out of scope for Sprints 0–2.
+These items are explicitly out of scope for Sprints 0–4.
 
-### 14.1 Multi-Conversation (Phase 2)
+### 17.1 Multi-Conversation (Phase 2)
 
 The `status` column and archive flow already support browsing past
 conversations. If demand emerges:
@@ -1230,31 +1850,33 @@ conversations. If demand emerges:
 - Each conversation retains its auto-generated title
 - The single-conversation invariant relaxes to allow switching
 
-### 14.2 Anonymous → Authenticated Migration
-
-On registration, migrate `anon_{uuid}` conversations to the new user ID:
-```sql
-UPDATE conversations SET user_id = ? WHERE user_id = ?
-UPDATE embeddings SET source_id = REPLACE(source_id, ?, ?) WHERE source_id LIKE ?
-```
-
-### 14.3 Conversation Analytics
-
-Anonymous session cookies enable basic analytics:
-- Session frequency, return rate, engagement depth
-- Topic clustering via conversation embeddings
-- Conversion analysis (anonymous → registered)
-
-### 14.4 Cross-Source Search
+### 17.2 Cross-Source Search
 
 A "search everything" tool could query both `book_chunk` and
 `conversation` source types in a single `HybridSearchEngine.search()`
 call. Requires generalizing `HybridSearchResult` into a discriminated
 union. The `VectorQuery.sourceType` filter already supports this pattern.
 
-### 14.5 Proactive Recall
+### 17.3 Proactive Recall
 
 Instead of waiting for the user to search, run a background similarity
 check on each user message against conversation embeddings. If a strong
 match is found, inject "Relevant prior discussion: ..." into the system
 prompt. This makes the advisor "remember" without explicit user action.
+
+### 17.4 Prompt A/B Testing
+
+Extend the prompt management system with experiment support:
+- Define variant prompts for the same role and split traffic by
+  percentage or cohort
+- Record which prompt version was active for each conversation
+  (`prompt_version` column already in place)
+- Analytics cohort tool extended to compare prompt version groups
+- Requires a traffic-splitting layer in `buildSystemPrompt()`
+
+### 17.5 Real-Time Analytics Dashboard
+
+Move analytics from MCP-tool-only access to a web dashboard:
+- Server-Sent Events endpoint for live conversation metrics
+- Admin page with charts (conversion funnel, engagement over time)
+- Requires a charting library and SSE infrastructure
