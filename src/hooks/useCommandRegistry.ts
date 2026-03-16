@@ -32,7 +32,7 @@ export function useCommandRegistry() {
     const navigate = (path: string) => router.push(path);
 
     return [
-      new NavigationCommand("library", "Go to Library", "Navigation", navigate, "/books"),
+      new NavigationCommand("corpus", "Go to Corpus", "Navigation", navigate, "/corpus"),
       new NavigationCommand("training", "Go to Training", "Navigation", navigate, "/training"),
       new NavigationCommand("studio", "Go to Studio", "Navigation", navigate, "/studio"),
       new ThemeCommand("theme-fluid", "Set Theme: Fluid", "Themes", setTheme, "fluid"),
@@ -40,7 +40,7 @@ export function useCommandRegistry() {
       new ThemeCommand("theme-bauhaus", "Set Theme: Bauhaus", "Themes", setTheme, "bauhaus"),
       new ThemeCommand("theme-postmodern", "Set Theme: Postmodern", "Themes", setTheme, "postmodern"),
       new ThemeCommand("theme-skeuomorphic", "Set Theme: Skeuomorphic", "Themes", setTheme, "skeuomorphic"),
-      new PlaceholderCommand("search", "Search Library", "Tools"),
+      new PlaceholderCommand("search", "Search Corpus", "Tools"),
       new PlaceholderCommand("checklists", "Get Checklists", "Tools"),
       new PlaceholderCommand("practitioners", "List Practitioners", "Tools"),
     ] satisfies Command[];

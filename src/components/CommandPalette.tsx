@@ -35,7 +35,7 @@ export default function CommandPalette() {
     return [
       // Navigation
       new NavigationCommand("nav-home", "Home", "Navigation", navigate, "/"),
-      new NavigationCommand("nav-books", "Library / Books", "Navigation", navigate, "/books"),
+      new NavigationCommand("nav-corpus", "Corpus", "Navigation", navigate, "/corpus"),
       new NavigationCommand("nav-dashboard", "Business Dashboard", "Navigation", navigate, "/dashboard"),
 
       // Themes
@@ -45,17 +45,17 @@ export default function CommandPalette() {
       new ThemeCommand("theme-skeuomorphic", "Set Theme: Skeuomorphic", "Themes", setTheme, "skeuomorphic"),
       new ThemeCommand("theme-fluid", "Set Theme: Modern Fluid", "Themes", setTheme, "fluid"),
 
-      // Books (Shortcuts to main categories)
-      new NavigationCommand("book-ux", "Book: UX Design", "Books", navigate, "/books/ux-design"),
-      new NavigationCommand("book-ui", "Book: UI Design", "Books", navigate, "/books/ui-design"),
-      new NavigationCommand("book-se", "Book: Software Engineering", "Books", navigate, "/books/software-engineering"),
-      new NavigationCommand("book-pm", "Book: Product Management", "Books", navigate, "/books/product-management"),
-      new NavigationCommand("book-marketing", "Book: Marketing & Branding", "Books", navigate, "/books/marketing-branding"),
-      new NavigationCommand("book-data", "Book: Data Analytics", "Books", navigate, "/books/data-analytics"),
-      new NavigationCommand("book-content", "Book: Content Strategy", "Books", navigate, "/books/content-strategy"),
-      new NavigationCommand("book-access", "Book: Accessibility", "Books", navigate, "/books/accessibility"),
-      new NavigationCommand("book-entre", "Book: Entrepreneurship", "Books", navigate, "/books/entrepreneurship"),
-      new NavigationCommand("book-design", "Book: Design History", "Books", navigate, "/books/design-history"),
+      // Corpus shortcuts
+      new NavigationCommand("document-ux", "Document: UX Design", "Corpus", navigate, "/corpus/ux-design"),
+      new NavigationCommand("document-ui", "Document: UI Design", "Corpus", navigate, "/corpus/ui-design"),
+      new NavigationCommand("document-se", "Document: Software Engineering", "Corpus", navigate, "/corpus/software-engineering"),
+      new NavigationCommand("document-pm", "Document: Product Management", "Corpus", navigate, "/corpus/product-management"),
+      new NavigationCommand("document-marketing", "Document: Marketing & Branding", "Corpus", navigate, "/corpus/marketing-branding"),
+      new NavigationCommand("document-data", "Document: Data Analytics", "Corpus", navigate, "/corpus/data-analytics"),
+      new NavigationCommand("document-content", "Document: Content Strategy", "Corpus", navigate, "/corpus/content-strategy"),
+      new NavigationCommand("document-access", "Document: Accessibility", "Corpus", navigate, "/corpus/accessibility"),
+      new NavigationCommand("document-entre", "Document: Entrepreneurship", "Corpus", navigate, "/corpus/entrepreneurship"),
+      new NavigationCommand("document-design", "Document: Design History", "Corpus", navigate, "/corpus/design-history"),
     ];
   }, [router, setTheme]);
 
@@ -119,7 +119,7 @@ export default function CommandPalette() {
               </svg>
               <input
                 autoFocus
-                placeholder="Search chapters, themes, or tools..."
+                placeholder="Search documents, themes, or tools..."
                 className="h-11 flex-1 bg-transparent border-none text-[15px] outline-none placeholder:opacity-40"
                 value={query}
                 onChange={(e) => {

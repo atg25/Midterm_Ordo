@@ -93,14 +93,14 @@ describe("browser overlay hardening", () => {
     fireEvent.keyDown(document, { key: "k", metaKey: true });
 
     expect(
-      await screen.findByPlaceholderText("Search chapters, themes, or tools..."),
+      await screen.findByPlaceholderText("Search documents, themes, or tools..."),
     ).toBeInTheDocument();
 
     fireEvent.keyDown(document.activeElement ?? document, { key: "Escape" });
 
     await waitFor(() => {
       expect(
-        screen.queryByPlaceholderText("Search chapters, themes, or tools..."),
+        screen.queryByPlaceholderText("Search documents, themes, or tools..."),
       ).not.toBeInTheDocument();
     });
   });

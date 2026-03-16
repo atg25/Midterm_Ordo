@@ -47,17 +47,17 @@ export function BookSidebar({ book, chapters, currentChapterSlug }: BookSidebarP
         </svg>
       </button>
 
-      <div className={`flex-1 overflow-y-auto overflow-x-hidden flex flex-col p-[var(--container-padding)] gap-8 ${isCollapsed ? "items-center px-0" : ""}`}>
+      <div className={`flex-1 overflow-y-auto overflow-x-hidden flex flex-col p-(--container-padding) gap-8 ${isCollapsed ? "items-center px-0" : ""}`}>
         {/* Header Section */}
         <div className={`flex flex-col gap-4 ${isCollapsed ? "hidden" : "animate-in fade-in duration-500"}`}>
           <Link
-            href="/books"
+            href="/corpus"
             className="text-label tracking-[0.2em] opacity-40 hover:opacity-100 transition-opacity flex items-center gap-2"
           >
             <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
               <path d="m15 18-6-6 6-6" />
             </svg>
-            Library
+            Corpus
           </Link>
           <div className="flex flex-col gap-1">
             <span className="text-label text-accent opacity-80">
@@ -74,7 +74,7 @@ export function BookSidebar({ book, chapters, currentChapterSlug }: BookSidebarP
           {chapters.map((chapter) => (
             <Link
               key={chapter.slug}
-              href={`/books/${book.slug}/${chapter.slug}`}
+              href={`/corpus/${book.slug}/${chapter.slug}`}
               className={`group flex items-center gap-3 py-2.5 px-3 rounded-lg transition-all duration-200 ${
                 currentChapterSlug === chapter.slug
                   ? "accent-fill shadow-md"

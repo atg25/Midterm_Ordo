@@ -73,7 +73,7 @@ export const ChatContainer: React.FC<Props> = ({
   }, [sendMessage]);
 
   const handleLinkClick = useCallback((slug: string) => {
-    router.push(`/book/${slug}`);
+    router.push(`/corpus/section/${slug}`);
   }, [router]);
 
   useEffect(() => {

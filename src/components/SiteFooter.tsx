@@ -24,7 +24,7 @@ export function SiteFooter() {
           <div className="space-y-4">
             <p className="text-label opacity-70">Platform</p>
             <ul className="space-y-2 text-xs font-semibold opacity-70 hover:opacity-100 transition-opacity">
-              <li><Link href="/books">Library</Link></li>
+              <li><Link href="/corpus">Corpus</Link></li>
               <li><Link href="/training">Training</Link></li>
               <li><Link href="/studio">Studio</Link></li>
             </ul>

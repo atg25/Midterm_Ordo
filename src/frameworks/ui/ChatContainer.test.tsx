@@ -73,11 +73,11 @@ vi.mock("@/hooks/useCommandRegistry", () => ({
 }));
 
 describe("ChatContainer", () => {
-  it("routes inline message links through the legacy chapter resolver", () => {
+  it("routes inline message links through the corpus section resolver", () => {
     render(<ChatContainer isFloating={false} />);
 
     fireEvent.click(screen.getByRole("button", { name: "audit to sprint" }));
 
-    expect(pushMock).toHaveBeenCalledWith("/book/audit-to-sprint");
+    expect(pushMock).toHaveBeenCalledWith("/corpus/section/audit-to-sprint");
   });
 });
