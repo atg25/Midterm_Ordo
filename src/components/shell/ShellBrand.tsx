@@ -1,0 +1,78 @@
+import Link from "next/link";
+
+import { SHELL_BRAND } from "@/lib/shell/shell-navigation";
+
+interface EyeOfOrdoMarkProps {
+  className?: string;
+  decorative?: boolean;
+  strokeWidth?: number;
+  pupilRadius?: number;
+}
+
+export function EyeOfOrdoMark({
+  className,
+  decorative = false,
+  strokeWidth = 2.2,
+  pupilRadius = 3.35,
+}: EyeOfOrdoMarkProps) {
+  return (
+    <svg
+      viewBox="0 0 24 24"
+      className={className}
+      aria-hidden={decorative}
+      focusable="false"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+    >
+      <path
+        d="M2.5 12C4.85 7.88 8.02 5.82 12 5.82C15.98 5.82 19.15 7.88 21.5 12C19.15 16.12 15.98 18.18 12 18.18C8.02 18.18 4.85 16.12 2.5 12Z"
+        stroke="currentColor"
+        strokeWidth={strokeWidth}
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+      <circle cx="12" cy="12" r={pupilRadius} fill="currentColor" />
+    </svg>
+  );
+}
+
+interface ShellBrandProps {
+  href?: string;
+  showWordmark?: boolean;
+  className?: string;
+}
+
+export function ShellBrand({
+  href = SHELL_BRAND.homeHref,
+  showWordmark = true,
+  className,
+}: ShellBrandProps) {
+  const classes = [
+    "shell-brand-row shrink-0 whitespace-nowrap",
+    className,
+  ]
+    .filter(Boolean)
+    .join(" ");
+
+  return (
+    <Link
+      href={href}
+      aria-label={SHELL_BRAND.ariaLabel}
+      className={classes}
+      data-shell-brand="true"
+    >
+      <div
+        className="shell-brand-mark accent-fill overflow-hidden rounded-[0.42rem] shadow-[0_12px_22px_-16px_color-mix(in_srgb,var(--shadow-base)_34%,transparent)]"
+        aria-hidden="true"
+        data-shell-brand-mark="true"
+      >
+        <img src="/ordo-avatar.png" alt="" width={26} height={26} className="h-full w-full object-cover" />
+      </div>
+      {showWordmark ? (
+        <span className="theme-display font-semibold tracking-[-0.06em] text-foreground" data-shell-brand-wordmark="true">{SHELL_BRAND.name}</span>
+      ) : (
+        <span className="sr-only">{SHELL_BRAND.name}</span>
+      )}
+    </Link>
+  );
+}

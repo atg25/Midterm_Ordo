@@ -15,6 +15,6 @@ export default function OldChapterPage({
       notFound();
     }
 
-    redirect(`/corpus/${match.bookSlug}/${match.chapterSlug}`);
+    redirect(`/library/${match.bookSlug}/${match.chapterSlug}`);
   })();
 }

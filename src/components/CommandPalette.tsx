@@ -7,8 +7,7 @@ import { useTheme } from "./ThemeProvider";
 import { useRouter } from "next/navigation";
 
 import type { Command } from "@/core/commands/Command";
-import { NavigationCommand } from "@/core/commands/NavigationCommands";
-import { ThemeCommand } from "@/core/commands/ThemeCommands";
+import { createShellCommands } from "@/lib/shell/shell-commands";
 
 export default function CommandPalette() {
   const [open, setOpen] = useState(false);
@@ -31,32 +30,10 @@ export default function CommandPalette() {
 
   // Defined dynamic command items using the Command Pattern
   const commands = useMemo<Command[]>(() => {
-    const navigate = (path: string) => router.push(path);
-    return [
-      // Navigation
-      new NavigationCommand("nav-home", "Home", "Navigation", navigate, "/"),
-      new NavigationCommand("nav-corpus", "Corpus", "Navigation", navigate, "/corpus"),
-      new NavigationCommand("nav-dashboard", "Business Dashboard", "Navigation", navigate, "/dashboard"),
-
-      // Themes
-      new ThemeCommand("theme-bauhaus", "Set Theme: Bauhaus", "Themes", setTheme, "bauhaus"),
-      new ThemeCommand("theme-swiss", "Set Theme: Swiss Grid", "Themes", setTheme, "swiss"),
-      new ThemeCommand("theme-postmodern", "Set Theme: Postmodern", "Themes", setTheme, "postmodern"),
-      new ThemeCommand("theme-skeuomorphic", "Set Theme: Skeuomorphic", "Themes", setTheme, "skeuomorphic"),
-      new ThemeCommand("theme-fluid", "Set Theme: Modern Fluid", "Themes", setTheme, "fluid"),
-
-      // Corpus shortcuts
-      new NavigationCommand("document-ux", "Document: UX Design", "Corpus", navigate, "/corpus/ux-design"),
-      new NavigationCommand("document-ui", "Document: UI Design", "Corpus", navigate, "/corpus/ui-design"),
-      new NavigationCommand("document-se", "Document: Software Engineering", "Corpus", navigate, "/corpus/software-engineering"),
-      new NavigationCommand("document-pm", "Document: Product Management", "Corpus", navigate, "/corpus/product-management"),
-      new NavigationCommand("document-marketing", "Document: Marketing & Branding", "Corpus", navigate, "/corpus/marketing-branding"),
-      new NavigationCommand("document-data", "Document: Data Analytics", "Corpus", navigate, "/corpus/data-analytics"),
-      new NavigationCommand("document-content", "Document: Content Strategy", "Corpus", navigate, "/corpus/content-strategy"),
-      new NavigationCommand("document-access", "Document: Accessibility", "Corpus", navigate, "/corpus/accessibility"),
-      new NavigationCommand("document-entre", "Document: Entrepreneurship", "Corpus", navigate, "/corpus/entrepreneurship"),
-      new NavigationCommand("document-design", "Document: Design History", "Corpus", navigate, "/corpus/design-history"),
-    ];
+    return createShellCommands({
+      navigate: (path) => router.push(path),
+      setTheme,
+    });
   }, [router, setTheme]);
 
   // Filtering logic
@@ -97,10 +74,10 @@ export default function CommandPalette() {
           className="fixed inset-0 z-101 flex items-start justify-center p-3 pt-[max(0.75rem,var(--safe-area-inset-top))] pb-[max(0.75rem,var(--safe-area-inset-bottom))] sm:p-6 sm:pt-[max(1.5rem,var(--safe-area-inset-top))] sm:pb-[max(1.5rem,var(--safe-area-inset-bottom))] outline-none"
           onKeyDown={handleKeyDown}
         >
-          <div className="glass-surface flex w-full max-w-160 flex-col overflow-hidden rounded-[28px] border-theme shadow-[0_32px_90px_rgba(15,23,42,0.2)] animate-in zoom-in-95 fade-in slide-in-from-top-4 duration-200">
+          <div className="glass-surface flex w-full max-w-160 flex-col overflow-hidden rounded-[28px] border-theme shadow-[0_32px_90px_color-mix(in_srgb,var(--shadow-base)_20%,transparent)] animate-in zoom-in-95 fade-in slide-in-from-top-4 duration-200">
             <Dialog.Title className="sr-only">Command Palette</Dialog.Title>
             <Dialog.Description className="sr-only">
-              Search commands, navigation shortcuts, and theme actions.
+              Search navigation shortcuts and theme actions.
             </Dialog.Description>
             <div className="flex min-h-14 items-center gap-3 border-b border-border bg-surface/75 px-4 py-3 sm:px-5">
               <svg
@@ -119,7 +96,7 @@ export default function CommandPalette() {
               </svg>
               <input
                 autoFocus
-                placeholder="Search documents, themes, or tools..."
+                placeholder="Search navigation or theme commands..."
                 className="h-11 flex-1 bg-transparent border-none text-[15px] outline-none placeholder:opacity-40"
                 value={query}
                 onChange={(e) => {

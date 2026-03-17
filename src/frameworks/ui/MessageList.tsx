@@ -8,6 +8,7 @@ interface MessageListProps {
   messages: PresentedMessage[];
   isSending: boolean;
   dynamicSuggestions: string[];
+  isHeroState?: boolean;
   onSuggestionClick: (text: string) => void;
   onLinkClick: (slug: string) => void;
   searchQuery: string;
@@ -15,14 +16,14 @@ interface MessageListProps {
 }
 
 const BrandHeader = ({ isEmbedded = false }: { isEmbedded?: boolean }) => (
-  <div className={`flex flex-col items-center justify-center px-3 text-center animate-in fade-in slide-in-from-top-4 duration-700 ease-out fill-mode-both sm:px-4 ${isEmbedded ? "pt-2 pb-1.5 space-y-1.5 sm:pt-4 sm:pb-2 sm:space-y-2" : "pt-3 pb-2 space-y-2 sm:pt-6 sm:pb-2 sm:space-y-2.5"}`}>
-    <div className="inline-flex items-center gap-2 rounded-full border border-accent/15 bg-accent/8 px-3 py-1 text-label text-accent">
-      <span className="w-1.5 h-1.5 rounded-full bg-accent" />
-      System Operational
+    <div className={`flex flex-col items-center justify-center px-3 text-center animate-in fade-in slide-in-from-top-4 duration-700 ease-out fill-mode-both sm:px-4 ${isEmbedded ? "pb-(--hero-intro-stack-gap) space-y-(--phi-1)" : "pt-(--phi-2) pb-(--hero-intro-stack-gap) space-y-(--phi-1)"}`}>
+    <div className="theme-label tier-micro inline-flex items-center gap-(--hero-badge-gap) rounded-full bg-accent/5 px-(--phi-1) py-(--phi-3) font-medium text-accent/70">
+      <span className="h-1.5 w-1.5 rounded-full bg-accent/60" />
+      Studio Ordo Intelligence
     </div>
-    
-    <h1 className="max-w-xl text-lg font-bold tracking-tight leading-tight text-foreground sm:text-xl md:text-2xl balance">
-      Product development guidance, retrieval, and tools in one conversation.
+
+    <h1 className="theme-display max-w-[24ch] text-[clamp(1.4rem,3.2vw,2.4rem)] font-semibold leading-[1.08] tracking-[-0.04em] text-foreground/90 balance">
+      Architecture, retrieval, and execution planning in one thread.
     </h1>
   </div>
 );
@@ -78,6 +79,7 @@ export const MessageList: React.FC<MessageListProps> = React.memo(({
   messages,
   isSending,
   dynamicSuggestions,
+  isHeroState = false,
   onSuggestionClick,
   onLinkClick,
   searchQuery,
@@ -118,18 +120,22 @@ export const MessageList: React.FC<MessageListProps> = React.memo(({
     <div
       className={`mx-auto flex w-full max-w-3xl flex-col`}
       data-message-list-mode={isEmbedded ? "embedded" : "floating"}
+      data-message-list-state={isHeroState ? "hero" : "conversation"}
       data-chat-fold-buffer={isEmbedded ? "true" : undefined}
       style={{
         gap: "var(--message-gap)",
+        paddingTop: isHeroState ? "clamp(1.5rem, 8vh, 4.5rem)" : undefined,
         paddingBottom: isEmbedded
-          ? `calc(var(--chat-fold-gutter) + var(--chat-composer-gap) + ${hasVisibleSuggestionChips ? "var(--chat-suggestion-stack-clearance)" : "0px"})`
+          ? isHeroState
+            ? "var(--hero-composer-offset)"
+            : `calc(var(--chat-fold-gutter) + var(--chat-composer-gap) + ${hasVisibleSuggestionChips ? "var(--chat-suggestion-stack-clearance)" : "0px"})`
           : "2rem",
       }}
     >
       {messages.length === 1 && !searchQuery && <BrandHeader isEmbedded={isEmbedded} />}
 
       {filteredMessages.map((message) => (
-        <div key={message.id} className="flex flex-col gap-2 animate-in fade-in slide-in-from-bottom-3 duration-700 ease-out fill-mode-both">
+        <div key={message.id} className="flex flex-col gap-(--phi-1) animate-in fade-in slide-in-from-bottom-3 duration-700 ease-out fill-mode-both">
           {message.role === "user" ? (
             <UserBubble content={message} />
           ) : (
@@ -146,10 +152,11 @@ export const MessageList: React.FC<MessageListProps> = React.memo(({
             message.id === lastAssistantMessageId &&
             message.id === lastVisibleMessageId &&
             dynamicSuggestions.length > 0 && (
-              <div className="ms-12 mt-3 mb-0 pb-3 animate-in fade-in slide-in-from-bottom-2 duration-500 sm:mt-4 sm:pb-4">
+              <div className={`${isHeroState ? "mt-(--phi-2) flex justify-center pb-(--phi-1)" : "mt-(--phi-1) max-w-[min(44rem,calc(100%-var(--phi-2p)))] pb-(--phi-1)"} animate-in fade-in slide-in-from-bottom-2 duration-500`} style={isHeroState ? undefined : { marginInlineStart: 'var(--chat-message-inline-offset)' }}>
                 <SuggestionChips
                   suggestions={dynamicSuggestions}
                   onSend={onSuggestionClick}
+                  centered={isHeroState}
                 />
               </div>
             )}
@@ -167,8 +174,12 @@ MessageList.displayName = "MessageList";
 
 const UserBubble = React.memo<{ content: PresentedMessage }>(({ content }) => {
   return (
-    <div className="flex w-full flex-col items-end gap-1.5 px-1 sm:px-2 md:px-0">
-      <div className="max-w-[92%] rounded-2xl rounded-tr-sm border border-accent/20 bg-accent px-4 py-2.5 text-[13px] leading-relaxed text-accent-foreground shadow-sm sm:max-w-[78%] sm:px-5 sm:py-3 sm:text-sm">
+    <div className="flex w-full flex-col items-end gap-(--chat-meta-gap) px-1 sm:px-2 md:px-0">
+      <div className="theme-label tier-micro pe-(--chat-bubble-padding-inline) font-medium text-foreground/28">
+        <span>You</span>
+        {content.timestamp ? <span className="ms-(--phi-2) tabular-nums text-foreground/22">{content.timestamp}</span> : null}
+      </div>
+      <div className="relative theme-body tier-body max-w-[92%] rounded-[calc(var(--chat-suggestion-frame-radius)-var(--phi-2))] rounded-br-[calc(var(--phi-1p)+var(--phi-2))] rounded-tr-[calc(var(--phi-1p)+var(--phi-3))] bg-[linear-gradient(180deg,color-mix(in_oklab,var(--accent)_7%,var(--surface))_0%,color-mix(in_oklab,var(--accent)_4%,var(--surface))_100%)] px-(--chat-bubble-padding-inline) py-(--chat-bubble-padding-block) text-foreground shadow-[0_12px_24px_-24px_color-mix(in_srgb,var(--shadow-base)_9%,transparent)] sm:max-w-[74%]">
         <ErrorBoundary name="UserBubble">
           <RichContentRenderer content={content.content} />
           {content.attachments.length > 0 && (
@@ -179,17 +190,17 @@ const UserBubble = React.memo<{ content: PresentedMessage }>(({ content }) => {
                   href={`/api/user-files/${attachment.assetId}`}
                   target="_blank"
                   rel="noreferrer"
-                  className="flex items-center justify-between gap-3 rounded-xl border border-accent-foreground/20 bg-accent-foreground/8 px-3 py-2 text-left transition-colors hover:bg-accent-foreground/14"
+                  className="flex items-center justify-between gap-3 rounded-2xl border border-accent/12 bg-background/70 px-3 py-2.5 text-left transition-colors hover:bg-background"
                 >
                   <span className="min-w-0 flex-1">
-                    <span className="block truncate text-xs font-semibold uppercase tracking-[0.12em] opacity-70">
+                    <span className="block truncate text-[10px] font-semibold uppercase tracking-[0.14em] text-foreground/45">
                       Attachment
                     </span>
-                    <span className="block truncate text-sm font-medium normal-case tracking-normal opacity-100">
+                    <span className="block truncate text-sm font-medium normal-case tracking-normal text-foreground">
                       {attachment.fileName}
                     </span>
                   </span>
-                  <span className="shrink-0 text-[11px] opacity-75">
+                  <span className="shrink-0 text-[11px] text-foreground/55">
                     {Math.max(1, Math.round(attachment.fileSize / 1024))} KB
                   </span>
                 </a>
@@ -235,16 +246,27 @@ const AssistantBubble = React.memo<{
   }, [message.rawContent, isInitialGreeting]);
 
   return (
-    <div className="group flex w-full items-start justify-start gap-2.5 px-1 transition-all duration-300 sm:gap-4 sm:px-2 md:px-0">
-      <div className={`w-8 h-8 mt-1 rounded-full flex items-center justify-center shrink-0 border shadow-sm ${isInitialGreeting ? "bg-accent/15 border-accent/30" : "bg-surface-muted border-border"}`}>
-        <span className={`text-[10px] font-bold ${isInitialGreeting ? "text-accent" : "text-foreground/60"}`}>A</span>
+    <div className="group flex w-full items-start justify-start gap-(--phi-1) px-1 transition-all duration-300 sm:gap-(--phi-1p) sm:px-2 md:px-0">
+      <div className="mt-1 flex h-6 w-6 shrink-0 items-center justify-center overflow-hidden rounded-full shadow-[0_8px_20px_-20px_color-mix(in_srgb,var(--shadow-base)_8%,transparent)]">
+        <img src="/ordo-avatar.png" alt="" width={24} height={24} className="h-full w-full object-cover" />
       </div>
 
-      <div className={`flex w-full max-w-[95%] flex-col gap-1.5 sm:max-w-[90%] ${isInitialGreeting ? "pt-1" : ""}`}>
-        <div className="relative rounded-2xl rounded-tl-sm border border-border bg-surface px-4 py-3 text-[13px] leading-relaxed text-foreground shadow-sm sm:px-5 sm:text-sm">
+      <div className={`flex w-full max-w-[95%] flex-col gap-(--chat-meta-gap) sm:max-w-[86%] ${isInitialGreeting ? "pt-1" : ""}`}>
+        <div className="flex items-center gap-(--phi-2) ps-(--phi-2)">
+          <span className="theme-label tier-micro font-medium text-foreground/30">
+            Studio Ordo
+          </span>
+          {message.timestamp ? (
+            <span className="theme-label tier-micro font-medium tabular-nums text-foreground/18">
+              {message.timestamp}
+            </span>
+          ) : null}
+        </div>
+        <div className="theme-body tier-body relative overflow-hidden rounded-[calc(var(--chat-suggestion-frame-radius)-var(--phi-2))] rounded-bl-[calc(var(--phi-1p)+var(--phi-2))] rounded-tl-[calc(var(--phi-1p)+var(--phi-3))] bg-[linear-gradient(180deg,color-mix(in_oklab,var(--surface)_99%,var(--background))_0%,color-mix(in_oklab,var(--surface)_96%,var(--background))_100%)] px-(--chat-bubble-padding-inline) py-[calc(var(--chat-bubble-padding-block)+var(--phi-2))] text-foreground/80 shadow-[0_14px_28px_-26px_color-mix(in_srgb,var(--shadow-base)_8%,transparent)]">
+          <div className="pointer-events-none absolute inset-y-[calc(var(--chat-bubble-padding-block)+var(--phi-3))] left-(--chat-bubble-padding-inline) w-px rounded-full bg-linear-to-b from-transparent via-foreground/6 to-transparent" aria-hidden="true" />
           <ErrorBoundary name="AssistantBubble">
             {isInitialGreeting ? (
-              <div className="relative">
+              <div className="relative ps-(--phi-1)">
                 <div className="invisible pointer-events-none" aria-hidden="true">
                   <RichContentRenderer content={message.content} />
                 </div>
@@ -262,10 +284,12 @@ const AssistantBubble = React.memo<{
                 </div>
               </div>
             ) : (
-              <RichContentRenderer
-                content={message.content}
-                onLinkClick={onLinkClick}
-              />
+              <div className="ps-(--phi-1)">
+                <RichContentRenderer
+                  content={message.content}
+                  onLinkClick={onLinkClick}
+                />
+              </div>
             )}
           </ErrorBoundary>
 
@@ -281,8 +305,8 @@ const AssistantBubble = React.memo<{
 AssistantBubble.displayName = "AssistantBubble";
 
 const TypingIndicator = () => (
-  <div className="flex justify-start gap-2.5 items-center ms-12 mt-2">
-    <div className="flex gap-1.5 items-center px-2 py-1">
+  <div className="mt-(--phi-1) flex items-center justify-start gap-2.5 ms-[calc(var(--chat-avatar-size)+var(--phi-1p))]">
+    <div className="flex items-center gap-1.5 px-(--phi-1) py-(--phi-2)">
       <span className="w-1.5 h-1.5 rounded-full bg-accent opacity-60 animate-bounce [animation-delay:0ms]" />
       <span className="w-1.5 h-1.5 rounded-full bg-accent opacity-60 animate-bounce [animation-delay:120ms]" />
       <span className="w-1.5 h-1.5 rounded-full bg-accent opacity-60 animate-bounce [animation-delay:240ms]" />
@@ -293,19 +317,28 @@ const TypingIndicator = () => (
 const SuggestionChips: React.FC<{
   suggestions: string[];
   onSend: (text: string) => void;
-}> = ({ suggestions, onSend }) => (
-  <div className="flex flex-col gap-3">
-    <div className="flex flex-wrap gap-2.5">
+  centered?: boolean;
+}> = ({ suggestions, onSend, centered = false }) => (
+  <div className={`flex flex-col gap-(--phi-2) ${centered ? "items-center" : "items-start"}`}>
+    <p className={`theme-label tier-micro font-medium text-foreground/22 ${centered ? "text-center" : "ps-(--phi-1)"}`}>
+      Next
+    </p>
+    <div className={`w-full rounded-(--chat-suggestion-frame-radius) ${centered ? "max-w-[calc(var(--hero-greeting-max-width)+4rem)] bg-[linear-gradient(180deg,color-mix(in_oklab,var(--surface)_58%,transparent)_0%,color-mix(in_oklab,var(--surface)_30%,transparent)_100%)] shadow-[0_16px_30px_-34px_color-mix(in_srgb,var(--shadow-base)_8%,transparent)]" : "max-w-[min(42rem,100%)] bg-[linear-gradient(180deg,color-mix(in_oklab,var(--surface)_32%,transparent)_0%,color-mix(in_oklab,var(--surface)_10%,transparent)_100%)] shadow-[0_12px_24px_-30px_color-mix(in_srgb,var(--shadow-base)_6%,transparent)]"}`} style={{ paddingInline: 'var(--chat-suggestion-frame-padding-inline)', paddingBlock: 'var(--chat-suggestion-frame-padding-block)' }}>
+      <div className={`flex flex-wrap gap-(--hero-chip-cluster-gap) ${centered ? "justify-center" : "justify-start"}`} style={{ paddingInline: 'var(--chat-suggestion-frame-inner-padding)' }}>
       {suggestions.map((s, i) => (
         <button
           key={s}
           onClick={() => onSend(s)}
           style={{ animationDelay: `${i * 100}ms` }}
-          className="rounded-theme border-theme bg-surface hover:bg-accent hover:text-accent-foreground hover:border-accent px-3 sm:px-4 py-2 sm:py-2.5 text-[11px] sm:text-xs font-medium text-foreground transition-all hover:scale-[1.02] active:scale-95 shadow-sm hover:shadow-md animate-in fade-in slide-in-from-bottom-2 duration-500 fill-mode-both focus-ring"
+          className={`group theme-body tier-body relative inline-flex min-h-10 items-center justify-center gap-(--phi-2) overflow-hidden rounded-full bg-[linear-gradient(180deg,color-mix(in_oklab,var(--surface)_97%,var(--background))_0%,color-mix(in_oklab,var(--surface-muted)_66%,transparent)_100%)] px-(--phi-0) py-(--phi-1) font-medium tracking-[-0.012em] text-foreground/60 shadow-[0_8px_18px_-18px_color-mix(in_srgb,var(--shadow-base)_8%,transparent)] transition-all duration-200 hover:-translate-y-px hover:bg-[linear-gradient(180deg,color-mix(in_oklab,var(--accent)_4%,var(--surface))_0%,color-mix(in_oklab,var(--accent)_8%,var(--surface))_100%)] hover:text-foreground hover:shadow-[0_14px_24px_-20px_color-mix(in_srgb,var(--shadow-base)_10%,transparent)] active:translate-y-0 active:scale-[0.995] animate-in fade-in slide-in-from-bottom-2 fill-mode-both focus-ring ${centered ? "sm:px-(--phi-1p) sm:py-[0.72rem]" : "sm:px-(--phi-0) sm:py-(--phi-1)"}`}
         >
-          {s}
+          <span aria-hidden="true" className="inline-flex h-5 w-5 items-center justify-center rounded-full bg-background/40 text-[0.66rem] text-foreground/22 transition-all group-hover:translate-x-px group-hover:text-accent/60">
+            ↗
+          </span>
+          <span className="relative">{s}</span>
         </button>
       ))}
+      </div>
     </div>
   </div>
 );

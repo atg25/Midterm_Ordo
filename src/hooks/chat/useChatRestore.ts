@@ -16,8 +16,6 @@ export function useChatRestore({
 }: UseChatRestoreOptions): void {
   useEffect(() => {
     const loadActiveConversation = async () => {
-      setIsLoadingMessages(true);
-
       try {
         const result = await restoreActiveConversation();
 

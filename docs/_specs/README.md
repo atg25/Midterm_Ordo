@@ -41,6 +41,8 @@ docs/_specs/
 | [Homepage Chat Shell](homepage-chat-shell/) | **Draft** | 4 (0–3) | Homepage-first chat stage architecture with below-the-fold footer, exclusive message scrolling, and pinned composer behavior |
 | [Chat Experience](chat-experience/) | **In Progress** | 3 (0–2) | Message semantics, inline navigation, composer ergonomics, scroll intent, and calmer conversation presentation |
 | [Chat Runtime Hardening](chat-runtime-hardening/) | **Complete** | 4 (0–3) | Documentation alignment, local command dependencies, stale attachment reaping, and failed-send regression coverage for the chat runtime |
+| [Shell Navigation And Design System](shell-navigation-and-design-system/) | **Complete** | 5 (0–4) | Canonical shell route truth, shared brand/navigation primitives, command-surface unification, shell token discipline, and final QA evidence |
+| [Swiss Layout Precision](swiss-layout-precision/) | **Draft** | 4 (0–3) | Swiss-inspired shell and homepage refinement for precise spacing, typography hierarchy, hero-stage composition, and account-rail discipline |
 
 ### Roadmap
 

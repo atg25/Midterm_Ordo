@@ -24,13 +24,6 @@ export class ThemeManagementInteractor {
       yearRange: "1950s-1960s",
       primaryAttributes: ["Asymmetric Layouts", "Grid", "Sans-serif Typo"],
     },
-    postmodern: {
-      id: "postmodern",
-      name: "Post-Modern",
-      description: "Vibrant colors, mixed styles, and expressive.",
-      yearRange: "1970s-1980s",
-      primaryAttributes: ["Rule Breaking", "Pop Culture", "Eclecticism"],
-    },
     skeuomorphic: {
       id: "skeuomorphic",
       name: "Skeuomorphism",

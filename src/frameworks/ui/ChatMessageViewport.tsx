@@ -9,6 +9,7 @@ import { MessageList } from "./MessageList";
 interface ChatMessageViewportProps {
   dynamicSuggestions: string[];
   isEmbedded: boolean;
+  isHeroState: boolean;
   isFullScreen: boolean;
   isLoadingMessages: boolean;
   isSending: boolean;
@@ -17,12 +18,12 @@ interface ChatMessageViewportProps {
   onSuggestionClick: (text: string) => void;
   scrollDependency: string;
   searchQuery: string;
-  showEmbeddedStageBranding: boolean;
 }
 
 export const ChatMessageViewport: React.FC<ChatMessageViewportProps> = ({
   dynamicSuggestions,
   isEmbedded,
+  isHeroState,
   isFullScreen,
   isLoadingMessages,
   isSending,
@@ -31,7 +32,6 @@ export const ChatMessageViewport: React.FC<ChatMessageViewportProps> = ({
   onSuggestionClick,
   scrollDependency,
   searchQuery,
-  showEmbeddedStageBranding,
 }) => {
   const { scrollRef, isAtBottom, scrollToBottom, handleScroll } =
     useChatScroll(scrollDependency);
@@ -43,16 +43,18 @@ export const ChatMessageViewport: React.FC<ChatMessageViewportProps> = ({
       className="relative flex min-h-0 w-full flex-col overflow-hidden"
       data-chat-message-region={isEmbedded ? "true" : undefined}
     >
-      {showEmbeddedStageBranding && (
-        <div className="absolute inset-0 flex items-center justify-center overflow-hidden opacity-[0.02] pointer-events-none select-none">
-          <div className="text-[10rem] font-bold leading-none tracking-tighter select-none sm:text-[14rem] lg:text-[18rem]">O</div>
+      {isHeroState && (
+        <div className="absolute inset-0 flex items-center justify-center overflow-hidden opacity-[0.035] pointer-events-none select-none">
+          <img src="/ordo-avatar.png" alt="" width={288} height={288} className="h-40 w-40 sm:h-56 sm:w-56 lg:h-72 lg:w-72" />
         </div>
       )}
+
+      <div className="pointer-events-none absolute inset-x-0 top-0 h-32 bg-[radial-gradient(circle_at_top,color-mix(in_srgb,var(--highlight-base)_45%,transparent),transparent_72%)] opacity-70" aria-hidden="true" />
 
       <div
         ref={scrollRef}
         onScroll={handleScroll}
-        className={`z-10 flex-1 min-h-0 overflow-y-auto overscroll-contain px-3 py-3 sm:px-6 sm:py-4 ${isEmbedded ? "pt-2 pb-2 sm:pb-3" : ""}`}
+        className={`z-10 flex-1 min-h-0 overflow-y-auto overscroll-contain px-3 py-2 sm:px-6 sm:py-3 ${isEmbedded ? "pt-1 pb-1 sm:pb-2" : ""}`}
         data-chat-message-viewport={isEmbedded ? "true" : undefined}
       >
         {isLoadingMessages ? (
@@ -61,13 +63,14 @@ export const ChatMessageViewport: React.FC<ChatMessageViewportProps> = ({
           </div>
         ) : (
           <div
-            className={`${isFullScreen ? "mx-auto w-full max-w-4xl" : "w-full"} ${isEmbedded ? "flex min-h-full flex-col justify-end" : ""}`}
+            className={`${isFullScreen ? "mx-auto w-full max-w-4xl" : "w-full"} ${isEmbedded ? `flex min-h-full flex-col ${isHeroState ? "justify-end" : "justify-end"}` : ""}`}
             data-chat-message-stack={isEmbedded ? "true" : undefined}
           >
             <MessageList
               messages={messages}
               isSending={isSending}
               dynamicSuggestions={dynamicSuggestions}
+              isHeroState={isHeroState}
               onSuggestionClick={onSuggestionClick}
               onLinkClick={onLinkClick}
               searchQuery={searchQuery}
@@ -88,7 +91,7 @@ export const ChatMessageViewport: React.FC<ChatMessageViewportProps> = ({
         >
           <button
             onClick={() => scrollToBottom()}
-            className="pointer-events-auto focus-ring min-h-11 rounded-full accent-fill px-4 py-2 text-[11px] font-bold shadow-xl transition-all hover:scale-105"
+            className="pointer-events-auto focus-ring min-h-11 rounded-full bg-[color-mix(in_oklab,var(--accent)_92%,var(--foreground))] px-4 py-2 text-[11px] font-bold text-accent-foreground shadow-[0_20px_34px_-22px_color-mix(in_srgb,var(--shadow-base)_42%,transparent)] transition-all hover:scale-[1.03] hover:shadow-[0_22px_38px_-22px_color-mix(in_srgb,var(--shadow-base)_46%,transparent)]"
             aria-label="Scroll to bottom"
           >
             ↓ Scroll to bottom

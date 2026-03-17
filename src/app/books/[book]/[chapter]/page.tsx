@@ -6,5 +6,5 @@ export default async function ChapterPage({
   params: Promise<{ book: string; chapter: string }>;
 }) {
   const resolvedParams = await params;
-  redirect(`/corpus/${resolvedParams.book}/${resolvedParams.chapter}`);
+  redirect(`/library/${resolvedParams.book}/${resolvedParams.chapter}`);
 }

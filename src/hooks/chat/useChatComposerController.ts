@@ -59,9 +59,10 @@ export function useChatComposerController({
     }
 
     const queuedFiles = [...composer.pendingFiles];
+    composer.clearComposer();
     const result = await onSendMessage(draft, queuedFiles);
-    if (result.ok) {
-      composer.clearComposer();
+    if (!result.ok) {
+      composer.restoreComposer(draft, queuedFiles);
     }
   }, [composer, isSending, onSendMessage]);
 

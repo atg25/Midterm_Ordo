@@ -7,5 +7,4 @@ export type Theme =
   | "fluid"
   | "bauhaus"
   | "swiss"
-  | "postmodern"
   | "skeuomorphic";

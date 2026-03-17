@@ -199,6 +199,6 @@ describe("browser motion hardening", () => {
 
     const nav = screen.getByRole("navigation", { name: "Primary" });
     expect(nav.className).toContain("glass-surface");
-    expect(nav.className).toContain("shadow-[0_10px_30px_rgba(15,23,42,0.08)]");
+    expect(nav.className).toContain("shadow-[0_8px_20px_color-mix(in_srgb,var(--shadow-base)_4%,transparent)]");
   });
 });

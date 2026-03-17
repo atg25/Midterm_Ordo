@@ -26,7 +26,7 @@ vi.mock("next/navigation", () => ({
 import OldChapterPage from "@/app/book/[chapter]/page";
 
 describe("legacy chapter redirect route", () => {
-  it("redirects a section slug to the canonical corpus route", async () => {
+  it("redirects a section slug to the canonical library route", async () => {
     getCorpusIndexMock.mockResolvedValue([
       {
         bookSlug: "software-engineering",
@@ -36,7 +36,7 @@ describe("legacy chapter redirect route", () => {
 
     await expect(
       OldChapterPage({ params: Promise.resolve({ chapter: "audit-to-sprint" }) }),
-    ).rejects.toThrow("redirect:/corpus/software-engineering/audit-to-sprint");
+    ).rejects.toThrow("redirect:/library/software-engineering/audit-to-sprint");
   });
 
   it("returns notFound for unknown section slugs", async () => {

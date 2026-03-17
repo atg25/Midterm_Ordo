@@ -73,7 +73,7 @@ export const ChatContainer: React.FC<Props> = ({
   }, [sendMessage]);
 
   const handleLinkClick = useCallback((slug: string) => {
-    router.push(`/corpus/section/${slug}`);
+    router.push(`/library/section/${slug}`);
   }, [router]);
 
   useEffect(() => {
@@ -91,7 +91,13 @@ export const ChatContainer: React.FC<Props> = ({
     [isClientReadyForTransitions],
   );
 
-  const showEmbeddedStageBranding = !isFloating && !sessionSearchQuery && presentedMessages.length <= 1;
+  // Hero mode is only for the seeded assistant opener, not any arbitrary single-message session.
+  const isEmbeddedHeroState =
+    !isFloating &&
+    !sessionSearchQuery &&
+    presentedMessages.length === 1 &&
+    presentedMessages[0]?.role === "assistant" &&
+    presentedMessages[0]?.suggestions.length > 0;
 
   if (isFloating && !isOpen) {
     return (
@@ -175,6 +181,7 @@ export const ChatContainer: React.FC<Props> = ({
         <ChatMessageViewport
           dynamicSuggestions={dynamicSuggestions}
           isEmbedded={!isFloating}
+          isHeroState={isEmbeddedHeroState}
           isFullScreen={isFullScreen}
           isLoadingMessages={isLoadingMessages}
           isSending={isSending}
@@ -183,17 +190,17 @@ export const ChatContainer: React.FC<Props> = ({
           onSuggestionClick={handleSuggestionClick}
           scrollDependency={scrollDependency}
           searchQuery={sessionSearchQuery}
-          showEmbeddedStageBranding={showEmbeddedStageBranding}
         />
       </div>
 
       <div
-        className={`flex-none border-t border-color-theme bg-background/95 px-3 pb-4 shadow-[0_-18px_40px_-34px_rgba(15,23,42,0.35)] backdrop-blur-sm sm:px-(--container-padding) sm:pb-5 ${isFloating && isFullScreen ? "safe-area-px safe-area-pb" : ""}`}
+        className={`relative flex-none bg-[linear-gradient(180deg,color-mix(in_oklab,var(--background)_56%,transparent)_0%,color-mix(in_oklab,var(--background)_92%,transparent)_40%,var(--background)_100%)] px-3 pb-2 shadow-[0_-10px_24px_-26px_color-mix(in_srgb,var(--shadow-base)_16%,transparent)] backdrop-blur-sm sm:px-(--container-padding) sm:pb-3 ${isFloating && isFullScreen ? "safe-area-px safe-area-pb" : ""}`}
         data-chat-composer-row={isFloating ? undefined : "true"}
         style={{
-          paddingTop: isFloating ? "0.75rem" : "var(--chat-composer-gap)",
+          paddingTop: isFloating ? "0.625rem" : "var(--phi-1)",
         }}
       >
+        <div aria-hidden="true" className="pointer-events-none absolute inset-x-16 top-0 h-px bg-linear-to-r from-transparent via-foreground/8 to-transparent" />
         <div className={isFullScreen ? "max-w-4xl mx-auto w-full" : "w-full"}>
           <ChatInput
             inputRef={textareaRef}

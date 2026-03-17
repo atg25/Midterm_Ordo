@@ -5,6 +5,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useTheme } from "./ThemeProvider";
 import type { AccessibilitySettings, FontSize, SpacingLevel } from "./ThemeProvider";
+import { resolveAccountMenuRoutes } from "@/lib/shell/shell-navigation";
 import { useMockAuth } from "@/hooks/useMockAuth";
 import type { User as SessionUser, RoleName } from "@/core/entities/user";
 
@@ -40,10 +41,10 @@ const ROLE_CONFIG: Record<
 
 const SettingBlock = ({ label, children }: { label: string; children: React.ReactNode }) => (
   <div className="flex flex-col gap-2">
-    <div className="text-[9px] font-bold uppercase tracking-widest opacity-60 ml-1">
+    <div className="shell-micro-text ml-1 opacity-60">
       {label}
     </div>
-    <div className="flex p-1 bg-surface-muted rounded-theme gap-1 border-theme">
+    <div className="shell-action-row rounded-theme border-theme bg-surface-muted p-1">
       {children}
     </div>
   </div>
@@ -52,7 +53,7 @@ const SettingBlock = ({ label, children }: { label: string; children: React.Reac
 const ControlButton = ({ active, onClick, label }: { active: boolean; onClick: () => void; label: string }) => (
   <button
     onClick={onClick}
-    className={`flex-1 py-1.5 text-[10px] font-bold rounded-lg transition-all focus-ring ${
+    className={`shell-micro-text flex-1 rounded-lg py-1.5 transition-all focus-ring ${
       active
         ? "bg-surface text-accent shadow-sm scale-[1.02]"
         : "opacity-40 hover:opacity-100"
@@ -121,20 +122,21 @@ export function AccountMenu({ user }: AccountMenuProps) {
     { value: "normal", label: "Normal" },
     { value: "relaxed", label: "Relaxed" },
   ];
+  const accountMenuRoutes = resolveAccountMenuRoutes(user);
 
   // Unauthenticated: show sign in / register links instead of menu
   if (!isAuth) {
     return (
-      <div className="flex items-center gap-3 ml-4">
+      <div className="flex flex-nowrap items-center justify-end gap-(--shell-account-rail-gap) whitespace-nowrap" data-shell-account-rail="anonymous">
         <Link
           href="/login"
-          className="text-[11px] font-bold opacity-60 hover:opacity-100 transition-opacity"
+          className="focus-ring shell-account-trigger shell-account-label whitespace-nowrap bg-transparent px-(--phi-2) py-(--phi-2) text-foreground/62 transition-all hover:bg-[color-mix(in_oklab,var(--surface)_82%,transparent)] hover:text-foreground"
         >
           Sign In
         </Link>
         <Link
           href="/register"
-          className="px-4 py-1.5 rounded-full text-[11px] font-bold bg-foreground text-background hover:opacity-90 transition-opacity"
+          className="focus-ring shell-account-trigger shell-account-label whitespace-nowrap accent-fill shadow-[0_10px_18px_-18px_color-mix(in_srgb,var(--shadow-base)_18%,transparent)] transition-all hover:-translate-y-px hover:opacity-95"
         >
           Register
         </Link>
@@ -145,34 +147,36 @@ export function AccountMenu({ user }: AccountMenuProps) {
   const menuTrigger = (
     <button
       onClick={() => setOpen(!open)}
-      className="flex items-center gap-2 group p-1 rounded-full hover-surface transition-all focus-ring"
+      className="group shell-account-trigger rounded-full bg-[color-mix(in_oklab,var(--surface)_82%,transparent)] transition-all hover:bg-[color-mix(in_oklab,var(--surface)_90%,var(--background))] focus-ring"
+      aria-expanded={open}
+      aria-haspopup="menu"
     >
-      <div className="mr-1 hidden flex-col items-end md:flex">
-        <span className="text-[11px] font-bold leading-none">{user.name}</span>
-        <span className="text-[9px] opacity-60 uppercase tracking-tighter">
+      <div className="hidden min-w-0 flex-col items-end md:flex">
+        <span className="shell-account-label truncate leading-none text-foreground/78">{user.name}</span>
+        <span className="shell-micro-text opacity-40">
           {user.roles[0]}
         </span>
       </div>
-      <div className="w-8 h-8 rounded-full border-theme bg-surface-muted flex items-center justify-center text-[10px] font-bold group-hover:bg-surface-hover transition-colors shadow-sm">
+      <div className="shell-account-avatar rounded-full bg-surface font-bold group-hover:bg-surface-hover transition-colors shadow-[0_8px_16px_-14px_color-mix(in_srgb,var(--shadow-base)_10%,transparent)]">
         {initials}
       </div>
     </button>
   );
 
   return (
-    <div ref={ref} className="relative ml-4">
+    <div ref={ref} className="relative" data-shell-account-rail="authenticated">
       {menuTrigger}
 
       {open && (
-        <div className="absolute right-0 top-[calc(100%+0.75rem)] z-100 w-[min(18rem,calc(100vw-1.5rem))] max-w-[calc(100vw-1rem)] rounded-3xl border-theme bg-background shadow-[0_20px_50px_rgba(0,0,0,0.2)] p-2.5 flex flex-col gap-1.5 animate-in fade-in slide-in-from-top-4 duration-500 spring-bounce shadow-bloom">
+        <div className="absolute right-0 top-[calc(100%+var(--phi-1))] z-100 w-[min(var(--shell-dropdown-width),calc(100vw-var(--phi-1p)))] max-w-[calc(100vw-var(--phi-0))] rounded-3xl border-theme bg-background shadow-[0_20px_50px_rgba(0,0,0,0.2)] p-(--phi-1) flex flex-col gap-(--phi-2) animate-in fade-in slide-in-from-top-4 duration-500 spring-bounce shadow-bloom">
           
           {/* Header: Identity & Quick Toggles */}
-          <div className="px-3 py-2.5 flex items-center justify-between border-b border-border mb-1 bg-surface-muted rounded-t-2xl">
+          <div className="px-(--shell-dropdown-section-padding-inline) py-(--shell-dropdown-section-padding-block) flex items-center justify-between border-b border-border mb-(--phi-3) bg-surface-muted rounded-t-2xl">
             <div className="min-w-0">
-              <p className="text-xs font-black truncate tracking-tight">{user.name}</p>
-              <p className="text-[10px] opacity-60 truncate font-medium">{user.email}</p>
+              <p className="shell-panel-heading truncate">{user.name}</p>
+              <p className="shell-meta-text truncate opacity-50 normal-case tracking-[0.04em]">{user.email}</p>
             </div>
-            <div className="flex items-center gap-1.5 bg-background p-1 rounded-theme border-theme shadow-inner">
+            <div className="shell-action-row rounded-theme border-theme bg-background p-1 shadow-inner">
               <button
                 onClick={() => setGridEnabled(!gridEnabled)}
                 className={`p-1.5 rounded-lg transition-all focus-ring ${gridEnabled ? "accent-fill" : "opacity-40 hover:opacity-100"}`}
@@ -192,36 +196,37 @@ export function AccountMenu({ user }: AccountMenuProps) {
             </div>
           </div>
 
-          <div className="flex flex-col gap-0.5 px-0.5">
-            <Link
-              href="/dashboard"
-              onClick={() => setOpen(false)}
-              className={`flex items-center gap-2 px-3 py-2 rounded-theme text-[11px] font-bold transition-all haptic-press hover-surface focus-ring ${pathname === "/dashboard" ? "bg-accent/10 text-accent" : ""}`}
-            >
-              Dashboard
-            </Link>
-            <Link
-              href="/profile"
-              onClick={() => setOpen(false)}
-              className="flex items-center gap-2 px-3 py-2 rounded-theme text-[11px] font-bold transition-all haptic-press hover-surface focus-ring"
-            >
-              Profile Settings
-            </Link>
+          <div className="flex flex-col gap-(--phi-4) px-(--shell-dropdown-section-padding-inline)">
+            {accountMenuRoutes.map((route) => {
+              const isActive = pathname === route.href;
+
+              return (
+                <Link
+                  key={route.id}
+                  href={route.href}
+                  onClick={() => setOpen(false)}
+                  aria-current={isActive ? "page" : undefined}
+                  className={`shell-account-label flex items-center gap-(--phi-3) rounded-theme px-(--shell-dropdown-section-padding-inline) py-(--phi-2) transition-all haptic-press hover-surface focus-ring ${isActive ? "bg-accent/10 text-accent" : ""}`}
+                >
+                  {route.label}
+                </Link>
+              );
+            })}
           </div>
 
-          <div className="h-px bg-border mx-2 my-1" />
+          <div className="h-px bg-border mx-(--phi-3) my-(--phi-3)" />
 
           {/* System Legibility Accordion */}
           <div className="flex flex-col">
             <button
               onClick={() => setShowAccessibility(!showAccessibility)}
-              className={`flex items-center justify-between px-3 py-2 rounded-theme text-[11px] font-bold transition-all hover-surface focus-ring ${showAccessibility ? "bg-surface-muted" : ""}`}
+              className={`shell-account-label flex items-center justify-between rounded-theme px-(--shell-dropdown-section-padding-inline) py-(--phi-2) transition-all hover-surface focus-ring ${showAccessibility ? "bg-surface-muted" : ""}`}
             >
               System Legibility
               <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" className={`transition-transform duration-300 ${showAccessibility ? "rotate-180" : ""}`}><path d="m6 9 6 6 6-6"/></svg>
             </button>
             {showAccessibility && (
-              <div className="px-3 py-4 flex flex-col gap-4 animate-in fade-in slide-in-from-top-2">
+              <div className="px-(--shell-dropdown-section-padding-inline) py-(--phi-0) flex flex-col gap-(--phi-0) animate-in fade-in slide-in-from-top-2">
                 <SettingBlock label="Type Scale">
                   {FONT_SIZES.map((fs) => (
                     <ControlButton key={fs.value} label={fs.label} active={accessibility.fontSize === fs.value} onClick={() => updateAcc("fontSize", fs.value)} />
@@ -246,23 +251,23 @@ export function AccountMenu({ user }: AccountMenuProps) {
           <div className="flex flex-col">
             <button
               onClick={() => setShowSimulation(!showSimulation)}
-              className={`flex items-center justify-between px-3 py-2 rounded-theme text-[11px] font-bold transition-all hover-surface focus-ring ${showSimulation ? "bg-surface-muted" : ""}`}
+              className={`shell-account-label flex items-center justify-between rounded-theme px-(--shell-dropdown-section-padding-inline) py-(--phi-2) transition-all hover-surface focus-ring ${showSimulation ? "bg-surface-muted" : ""}`}
             >
               Simulation Mode
               <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" className={`transition-transform duration-300 ${showSimulation ? "rotate-180" : ""}`}><path d="m6 9 6 6 6-6"/></svg>
             </button>
             {showSimulation && (
-              <div className="px-2 py-2 flex flex-col gap-1 animate-in fade-in slide-in-from-top-2">
+              <div className="px-(--shell-dropdown-section-padding-inline) py-(--phi-1) flex flex-col gap-(--phi-3) animate-in fade-in slide-in-from-top-2">
                 {(Object.entries(ROLE_CONFIG) as [RoleName, typeof ROLE_CONFIG[RoleName]][]).map(([role, config]) => (
                   <button
                     key={role}
                     onClick={() => switchRole(role)}
-                    className={`focus-ring flex min-h-11 w-full items-start gap-3 rounded-theme px-3 py-2 text-left transition-all haptic-press hover-surface ${user.roles.includes(role) ? "bg-surface-muted ring-1 ring-border" : ""}`}
+                    className={`focus-ring flex min-h-11 w-full items-start gap-(--phi-1) rounded-theme px-(--shell-dropdown-section-padding-inline) py-(--phi-2) text-left transition-all haptic-press hover-surface ${user.roles.includes(role) ? "bg-surface-muted ring-1 ring-border" : ""}`}
                   >
                     <span className={`w-2 h-2 rounded-full ${config.dot} mt-1.5 shrink-0`} />
                     <div className="min-w-0">
-                      <p className="text-[11px] font-bold leading-tight">{config.label}</p>
-                      <p className="text-[9px] opacity-60 truncate">{config.description}</p>
+                      <p className="shell-account-label leading-tight">{config.label}</p>
+                      <p className="shell-nav-label truncate opacity-60">{config.description}</p>
                     </div>
                   </button>
                 ))}
@@ -271,11 +276,11 @@ export function AccountMenu({ user }: AccountMenuProps) {
           </div>
           )}
 
-          <div className="h-px bg-border mx-2 my-1" />
+          <div className="h-px bg-border mx-(--phi-3) my-(--phi-3)" />
 
           <button
             onClick={logout}
-            className="w-full text-center py-2 text-label font-black opacity-60 hover:opacity-100 transition-opacity focus-ring"
+            className="shell-section-heading w-full py-(--phi-2) text-center opacity-60 transition-opacity hover:opacity-100 focus-ring"
           >
             Sign Out
           </button>

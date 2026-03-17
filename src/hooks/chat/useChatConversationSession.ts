@@ -24,7 +24,7 @@ export function useChatConversationSession({
   createInitialMessages,
 }: UseChatConversationSessionOptions): ChatConversationSession {
   const [conversationId, setConversationId] = useState<string | null>(null);
-  const [isLoadingMessages, setIsLoadingMessages] = useState(false);
+  const [isLoadingMessages, setIsLoadingMessages] = useState(true);
 
   const newConversation = useCallback(() => {
     setConversationId(null);

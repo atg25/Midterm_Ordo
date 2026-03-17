@@ -14,5 +14,5 @@ export default async function CorpusSectionResolverPage({
     notFound();
   }
 
-  redirect(`/corpus/${match.bookSlug}/${match.chapterSlug}`);
+  redirect(`/library/${match.bookSlug}/${match.chapterSlug}`);
 }

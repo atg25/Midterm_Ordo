@@ -18,7 +18,7 @@ describe("ThemeManagementInteractor", () => {
   it("should return all themes", () => {
     const interactor = new ThemeManagementInteractor();
     const themes = interactor.getAllThemes();
-    expect(themes).toHaveLength(5);
+    expect(themes).toHaveLength(4);
     expect(themes[0].id).toBeDefined();
   });
 });

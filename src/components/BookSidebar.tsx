@@ -22,14 +22,14 @@ export function BookSidebar({ book, chapters, currentChapterSlug }: BookSidebarP
 
   return (
     <aside 
-      className={`relative transition-all duration-500 ease-in-out border-r border-color-theme bg-surface flex flex-col h-full ${
-        isCollapsed ? "w-16" : "w-72"
+      className={`library-sidebar-surface relative flex h-full flex-col transition-all duration-500 ease-in-out ${
+        isCollapsed ? "w-16" : "w-full max-w-[18rem]"
       }`}
     >
       {/* Collapse Toggle */}
       <button
         onClick={() => setIsCollapsed(!isCollapsed)}
-        className="absolute -right-3 top-10 w-6 h-6 bg-surface border-theme rounded-full flex items-center justify-center z-50 hover:bg-accent hover:text-accent-foreground transition-colors shadow-sm focus-ring"
+        className="absolute -right-3 top-8 z-50 flex h-7 w-7 items-center justify-center rounded-full bg-[linear-gradient(180deg,color-mix(in_oklab,var(--surface)_96%,var(--background))_0%,color-mix(in_oklab,var(--surface-muted)_80%,transparent)_100%)] text-foreground/50 shadow-[0_8px_16px_-12px_color-mix(in_srgb,var(--shadow-base)_16%,transparent)] transition-all hover:text-foreground focus-ring"
         aria-label="Toggle sidebar"
       >
         <svg
@@ -47,23 +47,23 @@ export function BookSidebar({ book, chapters, currentChapterSlug }: BookSidebarP
         </svg>
       </button>
 
-      <div className={`flex-1 overflow-y-auto overflow-x-hidden flex flex-col p-(--container-padding) gap-8 ${isCollapsed ? "items-center px-0" : ""}`}>
+      <div className={`flex flex-1 flex-col gap-8 overflow-x-hidden overflow-y-auto p-(--container-padding) ${isCollapsed ? "items-center px-0" : ""}`}>
         {/* Header Section */}
         <div className={`flex flex-col gap-4 ${isCollapsed ? "hidden" : "animate-in fade-in duration-500"}`}>
           <Link
-            href="/corpus"
-            className="text-label tracking-[0.2em] opacity-40 hover:opacity-100 transition-opacity flex items-center gap-2"
+            href="/library"
+            className="tier-micro flex items-center gap-2 font-semibold uppercase tracking-[0.14em] text-foreground/42 transition-opacity hover:text-foreground/72"
           >
             <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
               <path d="m15 18-6-6 6-6" />
             </svg>
-            Corpus
+            Library
           </Link>
           <div className="flex flex-col gap-1">
-            <span className="text-label text-accent opacity-80">
+            <span className="tier-micro font-semibold uppercase tracking-[0.14em] text-accent/72">
               Book {book.number}
             </span>
-            <h2 className="text-sm font-bold tracking-tight leading-tight">
+            <h2 className="theme-display text-[1.05rem] font-medium leading-tight tracking-[-0.04em] text-foreground">
               {book.title}
             </h2>
           </div>
@@ -74,19 +74,19 @@ export function BookSidebar({ book, chapters, currentChapterSlug }: BookSidebarP
           {chapters.map((chapter) => (
             <Link
               key={chapter.slug}
-              href={`/corpus/${book.slug}/${chapter.slug}`}
-              className={`group flex items-center gap-3 py-2.5 px-3 rounded-lg transition-all duration-200 ${
+              href={`/library/${book.slug}/${chapter.slug}`}
+              className={`group flex items-center gap-3 rounded-2xl px-3 py-2.5 transition-all duration-200 ${
                 currentChapterSlug === chapter.slug
-                  ? "accent-fill shadow-md"
-                  : "hover-surface opacity-70 hover:opacity-100"
+                  ? "bg-[color-mix(in_oklab,var(--accent)_8%,var(--surface))] text-foreground shadow-[0_8px_16px_-14px_color-mix(in_srgb,var(--shadow-base)_10%,transparent)]"
+                  : "text-foreground/58 hover:bg-[color-mix(in_oklab,var(--surface-muted)_50%,transparent)] hover:text-foreground"
               }`}
               title={isCollapsed ? chapter.title : undefined}
             >
-              <div className={`w-1.5 h-1.5 rounded-full shrink-0 transition-all ${
-                currentChapterSlug === chapter.slug ? "bg-white scale-125" : "bg-border group-hover:bg-accent"
+              <div className={`h-1.5 w-1.5 shrink-0 rounded-full transition-all ${
+                currentChapterSlug === chapter.slug ? "scale-125 bg-accent" : "bg-border group-hover:bg-accent/80"
               }`} />
               {!isCollapsed && (
-                <span className="text-xs font-medium truncate animate-in slide-in-from-left-2 duration-300">
+                <span className="truncate text-[0.83rem] font-medium animate-in slide-in-from-left-2 duration-300">
                   {chapter.title}
                 </span>
               )}
@@ -95,14 +95,14 @@ export function BookSidebar({ book, chapters, currentChapterSlug }: BookSidebarP
         </nav>
 
         {/* Footer Section */}
-        <div className={`mt-auto flex flex-col gap-6 pt-6 border-t border-color-theme ${isCollapsed ? "items-center px-0" : ""}`}>
+        <div className={`mt-auto flex flex-col gap-6 pt-6 ${isCollapsed ? "items-center px-0" : ""}`} style={{ borderTop: '1px solid color-mix(in oklab, var(--foreground) 6%, transparent)' }}>
           <div className={isCollapsed ? "scale-75 origin-center" : ""}>
             <ThemeSwitcher />
           </div>
           {!isCollapsed && (
             <Link
               href="/"
-              className="text-label tracking-[0.2em] text-accent hover:opacity-80 transition-opacity animate-in fade-in duration-500"
+              className="tier-micro animate-in font-semibold uppercase tracking-[0.14em] text-accent transition-opacity duration-500 hover:opacity-80 fade-in"
             >
               ← Back to Chat
             </Link>

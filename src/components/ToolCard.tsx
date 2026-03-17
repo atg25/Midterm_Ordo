@@ -47,7 +47,7 @@ export function ToolCard({
         <Dialog.Portal>
           <Dialog.Overlay className="glass-overlay fixed inset-0 z-[99999] animate-in fade-in duration-200" />
           <Dialog.Content className="fixed inset-0 z-[100000] flex items-start justify-center p-3 pt-[max(0.75rem,var(--safe-area-inset-top))] pb-[max(0.75rem,var(--safe-area-inset-bottom))] sm:p-6 sm:pt-[max(1.5rem,var(--safe-area-inset-top))] sm:pb-[max(1.5rem,var(--safe-area-inset-bottom))] outline-none">
-            <div className="glass-surface flex max-h-full w-full max-w-7xl flex-col overflow-hidden rounded-[28px] border-theme text-foreground shadow-[0_32px_90px_rgba(15,23,42,0.2)] animate-in zoom-in-95 duration-200">
+            <div className="glass-surface flex max-h-full w-full max-w-7xl flex-col overflow-hidden rounded-[28px] border-theme text-foreground shadow-[0_32px_90px_color-mix(in_srgb,var(--shadow-base)_20%,transparent)] animate-in zoom-in-95 duration-200">
               <div className="flex items-center justify-between border-b border-border bg-surface/80 p-4 sm:p-5">
                 <div className="flex items-center gap-3">
                   <span className="text-xl">{icon}</span>

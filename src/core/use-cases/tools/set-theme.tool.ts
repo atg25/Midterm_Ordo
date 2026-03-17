@@ -8,7 +8,7 @@ export const setThemeTool: ToolDescriptor = {
     input_schema: {
       type: "object",
       properties: {
-        theme: { type: "string", enum: ["bauhaus", "swiss", "postmodern", "skeuomorphic", "fluid"] },
+        theme: { type: "string", enum: ["bauhaus", "swiss", "skeuomorphic", "fluid"] },
       },
       required: ["theme"],
     },

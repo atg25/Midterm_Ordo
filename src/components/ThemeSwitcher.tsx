@@ -5,7 +5,6 @@ import { useTheme, type Theme } from "./ThemeProvider";
 const THEMES: { id: Theme; label: string }[] = [
   { id: "bauhaus", label: "Bauhaus (1919)" },
   { id: "swiss", label: "Swiss Grid (1950s)" },
-  { id: "postmodern", label: "Postmodern (1990s)" },
   { id: "skeuomorphic", label: "Skeuomorphic (2000s)" },
   { id: "fluid", label: "Modern Fluid (Present)" },
 ];

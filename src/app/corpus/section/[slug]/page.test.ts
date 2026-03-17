@@ -26,7 +26,7 @@ vi.mock("next/navigation", () => ({
 import CorpusSectionResolverPage from "@/app/corpus/section/[slug]/page";
 
 describe("corpus section resolver route", () => {
-  it("redirects a section slug to the canonical corpus route", async () => {
+  it("redirects a section slug to the canonical library route", async () => {
     getCorpusIndexMock.mockResolvedValue([
       {
         bookSlug: "software-engineering",
@@ -38,7 +38,7 @@ describe("corpus section resolver route", () => {
       CorpusSectionResolverPage({
         params: Promise.resolve({ slug: "audit-to-sprint" }),
       }),
-    ).rejects.toThrow("redirect:/corpus/software-engineering/audit-to-sprint");
+    ).rejects.toThrow("redirect:/library/software-engineering/audit-to-sprint");
   });
 
   it("returns notFound for unknown section slugs", async () => {

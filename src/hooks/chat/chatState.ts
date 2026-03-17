@@ -19,13 +19,13 @@ export type ChatAction =
   | { type: "SET_ERROR"; index: number; error: string };
 
 const HERO_MESSAGE =
-  "The PD Advisor helps you build high-performance products by combining deep architectural wisdom with modern AI workflows. I can help you navigate the library, check your development patterns, or identify the best practitioners for your next sprint.";
+  "Ask for architecture decisions, library retrieval, implementation plans, or system diagnostics. I can inspect the library, compare approaches, and turn ambiguous requirements into concrete next steps.";
 
 const HERO_SUGGESTIONS = [
-  "Explore the Library",
-  "Check Architectural Patterns",
-  "Find Practitioners",
-  "Switch to Bauhaus Theme",
+  "Map the current architecture",
+  "Search the library",
+  "Plan the next sprint",
+  "Review system health",
 ];
 
 export function createInitialChatMessages(): ChatMessage[] {

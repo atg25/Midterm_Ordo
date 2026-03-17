@@ -44,6 +44,7 @@ export const ChatInput: React.FC<ChatInputProps> = ({
   const internalTextareaRef = useRef<HTMLTextAreaElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const textareaRef = inputRef ?? internalTextareaRef;
+  const hasInput = value.trim().length > 0;
 
   useEffect(() => {
     const element = textareaRef.current;
@@ -138,9 +139,11 @@ export const ChatInput: React.FC<ChatInputProps> = ({
           e.preventDefault();
           onSend();
         }}
-        className="relative flex items-end gap-2 bg-surface border-theme rounded-[28px] transition-all duration-500 focus-within:border-accent focus-within:ring-2 focus-within:ring-accent/10 shadow-sm hover:shadow-md"
+            className="relative flex min-h-(--chat-composer-min-height) items-end gap-(--phi-1) overflow-hidden rounded-(--chat-composer-radius) border border-foreground/8 bg-[linear-gradient(180deg,color-mix(in_oklab,var(--surface)_99%,var(--background))_0%,color-mix(in_oklab,var(--surface)_95%,var(--background))_50%,color-mix(in_oklab,var(--surface)_93%,var(--background))_100%)] shadow-[0_18px_36px_-32px_color-mix(in_srgb,var(--shadow-base)_8%,transparent),inset_0_1px_0_color-mix(in_srgb,var(--highlight-base)_6%,transparent)] transition-all duration-500 focus-within:border-foreground/14 focus-within:shadow-[0_24px_44px_-30px_color-mix(in_srgb,var(--shadow-base)_12%,transparent),inset_0_1px_0_color-mix(in_srgb,var(--highlight-base)_8%,transparent)] hover:border-foreground/11 hover:shadow-[0_20px_38px_-32px_color-mix(in_srgb,var(--shadow-base)_10%,transparent)]"
         style={{ padding: 'var(--input-padding)' }}
       >
+        <div aria-hidden="true" className="pointer-events-none absolute inset-x-0 inset-y-0 bg-[radial-gradient(circle_at_top,color-mix(in_srgb,var(--highlight-base)_45%,transparent),transparent_60%)] opacity-70" />
+        <div aria-hidden="true" className="pointer-events-none absolute inset-x-(--phi-1p) bottom-0 h-12 bg-linear-to-t from-accent/4 to-transparent opacity-60" />
         {activeTrigger && suggestions.length > 0 && (
           <MentionsMenu
             suggestions={suggestions}
@@ -159,7 +162,7 @@ export const ChatInput: React.FC<ChatInputProps> = ({
         <button
           type="button"
           onClick={() => fileInputRef.current?.click()}
-          className="focus-ring min-h-11 min-w-11 shrink-0 rounded-full p-2 text-foreground/70 transition-all hover:text-accent hover-surface active:scale-95"
+                className="focus-ring min-h-11 min-w-11 shrink-0 rounded-full bg-transparent p-(--phi-2) text-foreground/24 transition-all hover:text-foreground/48 active:scale-95"
           aria-label="Attach file"
         >
           <svg
@@ -169,20 +172,30 @@ export const ChatInput: React.FC<ChatInputProps> = ({
           </svg>
         </button>
 
-        <textarea
-          ref={textareaRef}
-          value={value}
-          onChange={(e) => onChange(e.target.value, e.target.selectionStart ?? 0)}
-          onKeyDown={handleKeyDown}
-          placeholder="Ask anything…"
-          rows={1}
-          className="max-h-56 min-h-11 flex-1 resize-none overflow-y-auto bg-transparent px-2 py-2 text-[13px] leading-6 outline-none placeholder:text-foreground/50 font-normal text-foreground sm:px-3 sm:text-sm"
-        />
+        <div className="relative flex min-h-11 flex-1 items-center self-stretch rounded-[calc(var(--chat-composer-radius)-var(--phi-1))] bg-[linear-gradient(180deg,color-mix(in_oklab,var(--background)_78%,var(--surface))_0%,color-mix(in_oklab,var(--background)_90%,var(--surface-muted))_100%)] shadow-[inset_0_1px_0_color-mix(in_srgb,var(--highlight-base)_72%,transparent),inset_0_-1px_0_color-mix(in_srgb,var(--shadow-base)_3%,transparent),0_1px_2px_color-mix(in_srgb,var(--shadow-base)_3%,transparent)] transition-shadow duration-300 focus-within:shadow-[inset_0_1px_0_color-mix(in_srgb,var(--highlight-base)_82%,transparent),inset_0_-1px_0_color-mix(in_srgb,var(--shadow-base)_4%,transparent),0_0_0_1.5px_color-mix(in_oklab,var(--accent)_14%,transparent),0_2px_8px_-4px_color-mix(in_oklab,var(--accent)_10%,transparent)]">
+          <div aria-hidden="true" className="pointer-events-none absolute inset-x-(--chat-bubble-padding-inline) top-0 h-px bg-linear-to-r from-transparent via-foreground/10 to-transparent" />
+          <textarea
+            ref={textareaRef}
+            value={value}
+            onChange={(e) => onChange(e.target.value, e.target.selectionStart ?? 0)}
+            onKeyDown={handleKeyDown}
+            placeholder="Ask anything…"
+            rows={1}
+                  className="theme-body tier-body max-h-56 min-h-11 flex-1 resize-none overflow-y-auto bg-transparent px-(--chat-bubble-padding-inline) py-(--chat-bubble-padding-block) font-normal text-foreground outline-none placeholder:text-foreground/40"
+          />
+        </div>
 
         <button
           type="submit"
           disabled={!canSend}
-          className="focus-ring flex min-h-11 shrink-0 items-center gap-2 rounded-full accent-fill px-4 py-2 text-[11px] font-bold uppercase tracking-[0.15em] shadow-sm transition-all duration-200 hover:scale-[1.02] hover:shadow-md active:scale-95 disabled:bg-surface-muted disabled:text-foreground/40 disabled:shadow-none sm:px-5"
+          className={[
+            "focus-ring theme-label tier-micro flex min-h-10 shrink-0 items-center gap-2 rounded-full px-(--chat-composer-button-padding-inline) py-(--chat-composer-button-padding-block) font-semibold transition-all duration-300 hover:-translate-y-px active:translate-y-0 active:scale-95",
+            hasInput
+              ? "bg-[linear-gradient(180deg,color-mix(in_oklab,var(--foreground)_64%,var(--accent))_0%,color-mix(in_oklab,var(--foreground)_86%,var(--accent))_100%)] text-background shadow-[0_14px_22px_-14px_color-mix(in_srgb,var(--shadow-base)_22%,transparent),inset_0_1px_0_color-mix(in_srgb,var(--highlight-base)_18%,transparent)] hover:shadow-[0_18px_26px_-14px_color-mix(in_srgb,var(--shadow-base)_26%,transparent),inset_0_1px_0_color-mix(in_srgb,var(--highlight-base)_22%,transparent)]"
+              : "bg-transparent text-foreground/20 shadow-none hover:text-foreground/32",
+            !canSend && !hasInput ? "opacity-100" : "",
+            !canSend && hasInput ? "disabled:bg-[color-mix(in_oklab,var(--surface-muted)_92%,var(--background))] disabled:text-foreground/42 disabled:shadow-none" : "",
+          ].join(" ")}
         >
           {isSending ? (
             <span className="flex gap-1">

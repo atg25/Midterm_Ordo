@@ -8,7 +8,7 @@ export const corpusConfig = {
   sectionLabelPlural: "sections",
   sourceType: "document_chunk",
   legacySourceType: "book_chunk",
-  routeBase: "/corpus",
+  routeBase: "/library",
   documentCount: 10,
   sectionCount: 104,
 } as const;
@@ -54,7 +54,7 @@ TOOLS:
 - **get_checklist**: Actionable checklists from section endings.
 - **list_practitioners**: Find key people referenced in the corpus.
 - **${getCorpusToolName("summary")}**: ${getCorpusSummaryDescription()}
-- **set_theme**: Change the site aesthetic (bauhaus, swiss, postmodern, skeuomorphic, fluid).
+- **set_theme**: Change the site aesthetic (bauhaus, swiss, skeuomorphic, fluid).
 - **generate_audio**: Generate title + text for TTS. The frontend renders an Audio Player inline.
 - **navigate**: Send the user to a specific route.
 

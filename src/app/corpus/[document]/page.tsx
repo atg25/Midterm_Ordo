@@ -15,15 +15,15 @@ export default async function CorpusDocumentPage({
   const documents = await getDocuments();
   const document = documents.find((item) => item.slug === resolvedParams.document);
   if (!document) {
-    redirect("/corpus");
+    redirect("/library");
   }
 
   const summaries = await getCorpusSummaries();
   const summary = summaries.find((item) => item.slug === document.slug);
 
   if (summary?.sectionSlugs?.[0]) {
-    redirect(`/corpus/${document.slug}/${summary.sectionSlugs[0]}`);
+    redirect(`/library/${document.slug}/${summary.sectionSlugs[0]}`);
   }
 
-  return <div>No sections found.</div>;
+  redirect("/library");
 }

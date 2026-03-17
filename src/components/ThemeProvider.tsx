@@ -1,6 +1,6 @@
 "use client";
 
-import React, { createContext, useContext, useEffect, useState } from "react";
+import React, { createContext, useContext, useEffect, useMemo, useRef, useState } from "react";
 import {
   prefersDarkColorScheme,
   supportsReducedMotion,
@@ -86,6 +86,7 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
   );
   const [gridEnabled, setGridEnabled] = useState(false);
   const [mounted, setMounted] = useState(false);
+  const transitionRef = useRef<ViewTransition | null>(null);
 
   useEffect(() => {
     // eslint-disable-next-line react-hooks/set-state-in-effect
@@ -137,7 +138,6 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
         "fluid",
         "bauhaus",
         "swiss",
-        "postmodern",
         "skeuomorphic",
       ];
       root.classList.remove(...themes.map((t) => `theme-${t}`));
@@ -183,25 +183,30 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
       !supportsReducedMotion() &&
       document.visibilityState === "visible"
     ) {
-      document.startViewTransition(updateState);
+      // Skip the outgoing transition so it doesn't flash the old state
+      transitionRef.current?.skipTransition();
+      transitionRef.current = document.startViewTransition(updateState);
     } else {
       updateState();
     }
   }, [theme, isDark, accessibility, gridEnabled, mounted]);
 
+  const contextValue = useMemo(
+    () => ({
+      theme,
+      setTheme,
+      isDark,
+      setIsDark,
+      accessibility,
+      setAccessibility,
+      gridEnabled,
+      setGridEnabled,
+    }),
+    [theme, isDark, accessibility, gridEnabled],
+  );
+
   return (
-    <ThemeContext.Provider
-      value={{
-        theme,
-        setTheme,
-        isDark,
-        setIsDark,
-        accessibility,
-        setAccessibility,
-        gridEnabled,
-        setGridEnabled,
-      }}
-    >
+    <ThemeContext.Provider value={contextValue}>
       {children}
     </ThemeContext.Provider>
   );

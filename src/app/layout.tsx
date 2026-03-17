@@ -1,5 +1,14 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono, Inter, Syne, Space_Mono } from "next/font/google";
+import {
+  Archivo,
+  Fraunces,
+  Geist,
+  Geist_Mono,
+  IBM_Plex_Mono,
+  IBM_Plex_Sans,
+  League_Spartan,
+  Space_Mono,
+} from "next/font/google";
 import "./globals.css";
 
 const geistSans = Geist({
@@ -12,17 +21,40 @@ const geistMono = Geist_Mono({
   subsets: ["latin"],
 });
 
-const inter = Inter({
+const archivo = Archivo({
+  variable: "--font-archivo",
   subsets: ["latin"],
   display: "swap",
 });
 
-const syne = Syne({
+const leagueSpartan = League_Spartan({
+  variable: "--font-league-spartan",
+  subsets: ["latin"],
+  display: "swap",
+});
+
+const ibmPlexSans = IBM_Plex_Sans({
+  variable: "--font-ibm-plex-sans",
+  weight: ["400", "500", "600", "700"],
+  subsets: ["latin"],
+  display: "swap",
+});
+
+const ibmPlexMono = IBM_Plex_Mono({
+  variable: "--font-ibm-plex-mono",
+  weight: ["400", "500", "600"],
+  subsets: ["latin"],
+  display: "swap",
+});
+
+const fraunces = Fraunces({
+  variable: "--font-fraunces",
   subsets: ["latin"],
   display: "swap",
 });
 
 const spaceMono = Space_Mono({
+  variable: "--font-space-mono",
   weight: ["400", "700"],
   subsets: ["latin"],
   display: "swap",
@@ -53,7 +85,7 @@ export default async function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning>
       <body
-        className={`${geistSans.variable} ${geistMono.variable} ${inter.className} ${syne.className} ${spaceMono.className} antialiased`}
+        className={`${geistSans.variable} ${geistMono.variable} ${archivo.variable} ${leagueSpartan.variable} ${ibmPlexSans.variable} ${ibmPlexMono.variable} ${fraunces.variable} ${spaceMono.variable} antialiased`}
       >
         <ThemeProvider>
           <ChatProvider>

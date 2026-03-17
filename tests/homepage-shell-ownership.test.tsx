@@ -139,7 +139,7 @@ describe("homepage shell ownership", () => {
     expect(viewportStage).not.toContainElement(footer);
   });
 
-  it("renders the sparse homepage nav contract", () => {
+  it("renders the canonical homepage nav contract", () => {
     render(
       <AppShell user={baseUser}>
         <div>Homepage Stage</div>
@@ -147,9 +147,10 @@ describe("homepage shell ownership", () => {
     );
 
     const nav = screen.getByRole("navigation", { name: "Primary" });
-    expect(
-      within(nav).getByRole("link", { name: /studio ordo/i }),
-    ).toBeInTheDocument();
+    expect(within(nav).getByRole("link", { name: /studio ordo home/i })).toBeInTheDocument();
+    expect(within(nav).getByRole("link", { name: "Library" })).toBeInTheDocument();
+    expect(within(nav).queryByRole("link", { name: "Home" })).toBeNull();
+    expect(within(nav).queryByRole("link", { name: "Dashboard" })).toBeNull();
     expect(within(nav).getByTestId("account-menu")).toBeInTheDocument();
     expect(within(nav).queryByText(/site links/i)).not.toBeInTheDocument();
   });

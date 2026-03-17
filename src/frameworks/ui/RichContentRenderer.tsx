@@ -15,7 +15,7 @@ const MermaidRenderer = dynamic(
   {
     ssr: false,
     loading: () => (
-      <div className="h-[160px] w-full flex items-center justify-center text-xs opacity-50 animate-pulse bg-surface-muted rounded-theme border-theme my-2">
+      <div className="h-40 w-full flex items-center justify-center text-xs opacity-50 animate-pulse bg-surface-muted rounded-theme border-theme my-2">
         Loading Diagram Engine...
       </div>
     ),
@@ -27,7 +27,7 @@ const AudioPlayer = dynamic(
   {
     ssr: false,
     loading: () => (
-      <div className="h-[72px] w-full max-w-sm flex items-center justify-center text-xs opacity-50 animate-pulse bg-surface-muted rounded-theme border-theme my-2">
+      <div className="h-18 w-full max-w-sm flex items-center justify-center text-xs opacity-50 animate-pulse bg-surface-muted rounded-theme border-theme my-2">
         Loading Audio Engine...
       </div>
     ),
@@ -42,7 +42,7 @@ const WebSearchResultCard = dynamic(
   {
     ssr: false,
     loading: () => (
-      <div className="h-[72px] w-full max-w-2xl flex items-center justify-center text-xs opacity-50 animate-pulse bg-surface-muted rounded-theme border-theme my-2">
+      <div className="h-18 w-full max-w-2xl flex items-center justify-center text-xs opacity-50 animate-pulse bg-surface-muted rounded-theme border-theme my-2">
         Loading Web Search...
       </div>
     ),
@@ -80,7 +80,7 @@ type BlockProps<T extends BlockNode> = { block: T; onLinkClick?: (slug: string) 
 
 const blockRegistry: { [K in BlockNode["type"]]: React.FC<BlockProps<Extract<BlockNode, { type: K }>>> } = {
   paragraph: ({ block, onLinkClick }) => (
-    <p className="mb-2 last:mb-0 leading-relaxed">
+    <p className="mb-2 last:mb-0 leading-[inherit]">
       <InlineRenderer nodes={block.content} onLinkClick={onLinkClick} />
     </p>
   ),
@@ -88,23 +88,23 @@ const blockRegistry: { [K in BlockNode["type"]]: React.FC<BlockProps<Extract<Blo
     const Tag = `h${block.level + 1}` as "h1" | "h2" | "h3" | "h4";
     const sizeClass =
       block.level === 1
-        ? "text-lg"
+        ? "theme-display tier-body text-[1.08em] tracking-[-0.03em]"
         : block.level === 2
-          ? "text-base"
-          : "text-sm";
+          ? "theme-display tier-body text-[1em] tracking-[-0.025em]"
+          : "theme-label tier-micro text-foreground/62";
     return (
-      <Tag className={`${sizeClass} font-bold mt-4 mb-2`}>
+      <Tag className={`${sizeClass} mt-4 mb-2 font-medium`}>
         <InlineRenderer nodes={block.content} onLinkClick={onLinkClick} />
       </Tag>
     );
   },
   blockquote: ({ block, onLinkClick }) => (
-    <blockquote className="my-3 pl-4 border-l-4 border-border opacity-75 italic text-sm leading-relaxed">
+    <blockquote className="my-3 pl-4 italic text-foreground/68 leading-[inherit]">
       <InlineRenderer nodes={block.content} onLinkClick={onLinkClick} />
     </blockquote>
   ),
   list: ({ block, onLinkClick }) => (
-    <ul className="mb-4 ml-6 space-y-2 list-disc marker:text-accent">
+    <ul className="mb-4 ml-6 space-y-2 list-disc marker:text-accent/58">
       {block.items.map((item, i) => (
         <li key={i} className="leading-relaxed pl-1">
           <InlineRenderer nodes={item} onLinkClick={onLinkClick} />
@@ -159,7 +159,7 @@ const inlineRegistry: { [K in InlineNode["type"]]: React.FC<InlineProps<Extract<
   text: ({ node }) => <>{node.text}</>,
   bold: ({ node }) => <strong>{node.text}</strong>,
   "code-inline": ({ node }) => (
-    <code className="bg-surface-muted text-foreground px-1.5 py-0.5 rounded-md text-[0.85em] font-mono border-theme">
+    <code className="bg-surface-muted/72 text-foreground px-1.5 py-0.5 rounded-md text-[0.85em] font-mono">
       {node.text}
     </code>
   ),

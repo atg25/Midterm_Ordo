@@ -41,6 +41,7 @@ describe("MessageList", () => {
         messages={messages}
         isSending={false}
         dynamicSuggestions={["Explore next sprint"]}
+        isHeroState={false}
         onSuggestionClick={vi.fn()}
         onLinkClick={vi.fn()}
         searchQuery="alpha"
@@ -62,6 +63,7 @@ describe("MessageList", () => {
         messages={messages}
         isSending={false}
         dynamicSuggestions={[]}
+        isHeroState={false}
         onSuggestionClick={vi.fn()}
         onLinkClick={vi.fn()}
         searchQuery="delivery"
@@ -75,7 +77,7 @@ describe("MessageList", () => {
 
   it("adds an embedded fold gutter so the latest message and chips rest above the fold", () => {
     const messages = [
-      makeMessage({ id: "assistant-1", role: "assistant", rawContent: "Ready with next steps" }),
+      makeMessage({ id: "assistant-1", role: "assistant", rawContent: "Ready with next steps", suggestions: ["Explore next sprint"] }),
     ];
 
     render(
@@ -83,6 +85,7 @@ describe("MessageList", () => {
         messages={messages}
         isSending={false}
         dynamicSuggestions={["Explore next sprint"]}
+        isHeroState
         onSuggestionClick={vi.fn()}
         onLinkClick={vi.fn()}
         searchQuery=""
@@ -92,13 +95,13 @@ describe("MessageList", () => {
 
     const list = screen.getByText("Ready with next steps").closest("[data-message-list-mode]");
     expect(list).toHaveAttribute("data-chat-fold-buffer", "true");
+    expect(list).toHaveAttribute("data-message-list-state", "hero");
     expect(list).toHaveStyle({
-      paddingBottom:
-        "calc(var(--chat-fold-gutter) + var(--chat-composer-gap) + var(--chat-suggestion-stack-clearance))",
+      paddingBottom: "var(--hero-composer-offset)",
     });
   });
 
-  it("does not reserve extra chip clearance when no suggestion chips are visible", () => {
+  it("falls back to conversation state when the single message is not the seeded hero", () => {
     const messages = [
       makeMessage({ id: "assistant-1", role: "assistant", rawContent: "Ready with next steps" }),
     ];
@@ -108,6 +111,7 @@ describe("MessageList", () => {
         messages={messages}
         isSending={false}
         dynamicSuggestions={[]}
+        isHeroState={false}
         onSuggestionClick={vi.fn()}
         onLinkClick={vi.fn()}
         searchQuery=""
@@ -116,8 +120,30 @@ describe("MessageList", () => {
     );
 
     const list = screen.getByText("Ready with next steps").closest("[data-message-list-mode]");
+    expect(list).toHaveAttribute("data-message-list-state", "conversation");
     expect(list).toHaveStyle({
       paddingBottom: "calc(var(--chat-fold-gutter) + var(--chat-composer-gap) + 0px)",
     });
+  });
+
+  it("centers the initial suggestion chips as part of the hero stack", () => {
+    const messages = [
+      makeMessage({ id: "assistant-1", role: "assistant", rawContent: "Ready with next steps", suggestions: ["Plan the next sprint"] }),
+    ];
+
+    render(
+      <MessageList
+        messages={messages}
+        isSending={false}
+        dynamicSuggestions={["Plan the next sprint"]}
+        isHeroState
+        onSuggestionClick={vi.fn()}
+        onLinkClick={vi.fn()}
+        searchQuery=""
+        isEmbedded
+      />,
+    );
+
+    expect(screen.getByRole("button", { name: "Plan the next sprint" }).closest("div")?.className).toContain("justify-center");
   });
 });

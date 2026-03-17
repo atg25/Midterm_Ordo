@@ -7,5 +7,5 @@ export const metadata = {
 };
 
 export default async function BooksIndex() {
-  redirect("/corpus");
+  redirect("/library");
 }

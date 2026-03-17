@@ -7,7 +7,7 @@ import {
   scrollElementTo,
 } from "@/lib/ui/browserSupport";
 
-const BOTTOM_THRESHOLD_PX = 32;
+const BOTTOM_THRESHOLD_PX = 2;
 
 function getPinnedScrollTop(element: HTMLDivElement): number {
   return Math.max(element.scrollHeight - element.clientHeight, 0);

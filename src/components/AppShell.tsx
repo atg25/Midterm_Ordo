@@ -39,7 +39,7 @@ export function AppShell({ user, children }: AppShellProps) {
       </div>
 
       <div className="flex-none">
-        <SiteFooter />
+        <SiteFooter user={user} />
       </div>
     </div>
   );

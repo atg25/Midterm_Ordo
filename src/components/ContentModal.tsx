@@ -41,7 +41,7 @@ export function ContentModal({
       <Dialog.Portal>
         <Dialog.Overlay className="glass-overlay fixed inset-0 z-100 animate-in fade-in duration-300" />
         <Dialog.Content className="fixed inset-0 z-101 flex items-start justify-center p-3 pt-[max(0.75rem,var(--safe-area-inset-top))] pb-[max(0.75rem,var(--safe-area-inset-bottom))] sm:p-6 sm:pt-[max(1.5rem,var(--safe-area-inset-top))] sm:pb-[max(1.5rem,var(--safe-area-inset-bottom))] outline-none">
-          <div className="glass-surface flex max-h-full w-full max-w-3xl flex-col overflow-hidden rounded-[32px] border-theme shadow-[0_32px_90px_rgba(15,23,42,0.2)] animate-in zoom-in-95 duration-300">
+          <div className="glass-surface flex max-h-full w-full max-w-3xl flex-col overflow-hidden rounded-[32px] border-theme shadow-[0_32px_90px_color-mix(in_srgb,var(--shadow-base)_20%,transparent)] animate-in zoom-in-95 duration-300">
             <div className="flex min-h-16 items-center justify-between border-b border-border bg-surface/80 px-5 py-4 sm:px-6">
               <Dialog.Title className="font-semibold uppercase opacity-60">
                 Library Reader

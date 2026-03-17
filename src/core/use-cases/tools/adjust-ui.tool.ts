@@ -14,7 +14,7 @@ export const adjustUiTool: ToolDescriptor = {
         letterSpacing: { type: "string", enum: ["tight", "normal", "relaxed"], description: "Letter spacing." },
         density: { type: "string", enum: ["compact", "normal", "relaxed"], description: "UI density — affects padding and gaps." },
         dark: { type: "boolean", description: "Enable or disable dark mode." },
-        theme: { type: "string", enum: ["bauhaus", "swiss", "postmodern", "skeuomorphic", "fluid"], description: "Visual theme era." },
+        theme: { type: "string", enum: ["bauhaus", "swiss", "skeuomorphic", "fluid"], description: "Visual theme era." },
         colorBlindMode: { type: "string", enum: ["none", "deuteranopia", "protanopia", "tritanopia"], description: "Color-blind safe palette." },
       },
     },

@@ -93,16 +93,34 @@ describe("browser overlay hardening", () => {
     fireEvent.keyDown(document, { key: "k", metaKey: true });
 
     expect(
-      await screen.findByPlaceholderText("Search documents, themes, or tools..."),
+      await screen.findByPlaceholderText("Search navigation or theme commands..."),
     ).toBeInTheDocument();
 
     fireEvent.keyDown(document.activeElement ?? document, { key: "Escape" });
 
     await waitFor(() => {
       expect(
-        screen.queryByPlaceholderText("Search documents, themes, or tools..."),
+        screen.queryByPlaceholderText("Search navigation or theme commands..."),
       ).not.toBeInTheDocument();
     });
+  });
+
+  it("renders canonical shell commands from the shared command source", async () => {
+    render(
+      <ThemeProvider>
+        <CommandPalette />
+      </ThemeProvider>,
+    );
+
+    fireEvent.keyDown(document, { key: "k", metaKey: true });
+
+    expect(await screen.findByText("Library")).toBeInTheDocument();
+    expect(screen.queryByText("Home")).toBeNull();
+    expect(screen.queryByText("Dashboard")).toBeNull();
+    expect(screen.getByText("Set Theme: Bauhaus")).toBeInTheDocument();
+    expect(screen.getByText("Set Theme: Modern Fluid")).toBeInTheDocument();
+    expect(screen.queryByText("Go to Library")).toBeNull();
+    expect(screen.queryByText("Search Library")).toBeNull();
   });
 
   it("dismisses the account menu on pointer interactions outside the panel", async () => {

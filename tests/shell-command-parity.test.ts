@@ -1,0 +1,97 @@
+import { render, screen } from "@testing-library/react";
+import { createElement } from "react";
+import { describe, expect, it, vi } from "vitest";
+
+import { useCommandRegistry } from "@/hooks/useCommandRegistry";
+import {
+  createCommandMentions,
+  createShellCommands,
+  SHELL_COMMAND_DEFINITIONS,
+  SHELL_NAVIGATION_COMMAND_DEFINITIONS,
+  SHELL_THEME_DEFINITIONS,
+} from "@/lib/shell/shell-commands";
+
+const pushMock = vi.fn();
+
+vi.mock("next/navigation", () => ({
+  useRouter: () => ({ push: pushMock }),
+}));
+
+vi.mock("@/components/ThemeProvider", () => ({
+  useTheme: () => ({ setTheme: () => undefined }),
+}));
+
+function RegistryHarness() {
+  const { findCommands } = useCommandRegistry();
+  const commands = findCommands("theme");
+
+  return createElement(
+    "pre",
+    { "data-testid": "command-results" },
+    JSON.stringify(commands),
+  );
+}
+
+describe("shell command parity", () => {
+  it("keeps palette and slash surfaces aligned to the same command ids", () => {
+    const paletteCommands = createShellCommands({
+      navigate: () => undefined,
+      setTheme: () => undefined,
+    });
+    const slashMentions = createCommandMentions();
+
+    expect(paletteCommands.map((command) => command.id)).toEqual(
+      slashMentions.map((command) => command.id),
+    );
+  });
+
+  it("uses canonical shell navigation ids and destinations", () => {
+    expect(SHELL_NAVIGATION_COMMAND_DEFINITIONS).toEqual([
+      {
+        id: "nav-corpus",
+        title: "Library",
+        category: "Navigation",
+        kind: "navigation",
+        href: "/library",
+      },
+    ]);
+  });
+
+  it("keeps theme command ids stable across both surfaces", () => {
+    expect(SHELL_THEME_DEFINITIONS.map((command) => command.id)).toEqual([
+      "theme-bauhaus",
+      "theme-swiss",
+      "theme-skeuomorphic",
+      "theme-fluid",
+    ]);
+  });
+
+  it("does not reintroduce removed placeholder or dead-route commands", () => {
+    const commandIds = SHELL_COMMAND_DEFINITIONS.map((command) => command.id);
+
+    expect(commandIds).not.toContain("training");
+    expect(commandIds).not.toContain("studio");
+    expect(commandIds).not.toContain("search");
+    expect(commandIds).not.toContain("checklists");
+    expect(commandIds).not.toContain("practitioners");
+  });
+
+  it("projects mention items directly from the shared command definitions", () => {
+    expect(createCommandMentions()).toEqual(
+      SHELL_COMMAND_DEFINITIONS.map((command) => ({
+        id: command.id,
+        name: command.title,
+        category: "command",
+        description: command.category,
+      })),
+    );
+  });
+
+  it("keeps useCommandRegistry aligned with the shared command mentions", () => {
+    render(createElement(RegistryHarness));
+
+    expect(screen.getByTestId("command-results")).toHaveTextContent(
+      JSON.stringify(createCommandMentions().filter((command) => command.description === "Themes")),
+    );
+  });
+});

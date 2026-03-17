@@ -3,6 +3,7 @@ import { useCallback, useMemo, useState } from "react";
 interface ChatComposerState {
   canSend: boolean;
   clearComposer: () => void;
+  restoreComposer: (text: string, files: File[]) => void;
   input: string;
   mentionIndex: number;
   pendingFiles: File[];
@@ -27,6 +28,11 @@ export function useChatComposerState(isSending: boolean): ChatComposerState {
     setInput("");
     setMentionIndex(0);
     setPendingFiles([]);
+  }, []);
+
+  const restoreComposer = useCallback((text: string, files: File[]) => {
+    setInput(text);
+    setPendingFiles(files);
   }, []);
 
   const updateInput = useCallback((value: string) => {
@@ -55,6 +61,7 @@ export function useChatComposerState(isSending: boolean): ChatComposerState {
   return {
     canSend,
     clearComposer,
+    restoreComposer,
     input,
     mentionIndex,
     pendingFiles,

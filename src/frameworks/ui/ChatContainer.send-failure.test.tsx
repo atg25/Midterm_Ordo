@@ -118,9 +118,11 @@ describe("ChatContainer send failure regression", () => {
       );
     });
 
-    expect(textarea.value).toBe("Draft with attachment");
-    expect(
-      screen.getByRole("button", { name: "Remove brief.txt" }),
-    ).toBeInTheDocument();
+    await waitFor(() => {
+      expect(textarea.value).toBe("Draft with attachment");
+      expect(
+        screen.getByRole("button", { name: "Remove brief.txt" }),
+      ).toBeInTheDocument();
+    });
   });
 });

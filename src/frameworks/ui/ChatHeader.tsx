@@ -36,31 +36,28 @@ export const ChatHeader: React.FC<ChatHeaderProps> = ({
   onGridToggle,
 }) => {
   const floatingHeaderClasses = isFullScreen
-    ? "glass-surface safe-area-pt safe-area-px relative z-10 flex shrink-0 items-center justify-between border-b border-color-theme pb-4 pt-3 shadow-[0_10px_30px_rgba(15,23,42,0.1)] transition-colors duration-500"
-    : "glass-surface relative z-10 flex shrink-0 items-center justify-between border-b border-color-theme px-(--container-padding) py-4 shadow-[0_10px_30px_rgba(15,23,42,0.1)] transition-colors duration-500";
+    ? "glass-surface safe-area-pt safe-area-px relative z-10 flex shrink-0 items-center justify-between border-b border-color-theme pb-4 pt-3 shadow-[0_10px_30px_color-mix(in_srgb,var(--shadow-base)_10%,transparent)] transition-colors duration-500"
+    : "glass-surface relative z-10 flex shrink-0 items-center justify-between border-b border-color-theme px-(--container-padding) py-4 shadow-[0_10px_30px_color-mix(in_srgb,var(--shadow-base)_10%,transparent)] transition-colors duration-500";
 
   if (isFloating) {
     return (
       <div className={floatingHeaderClasses}>
-        <div className="flex items-center gap-3">
-          <div className="w-8 h-8 rounded-full bg-accent flex items-center justify-center text-white shadow-sm">
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
-              <path d="M4 19.5A2.5 2.5 0 016.5 17H20" />
-              <path d="M6.5 2H20v20H6.5A2.5 2.5 0 014 19.5v-15A2.5 2.5 0 016.5 2z" />
-            </svg>
+        <div className="shell-action-row">
+          <div className="flex h-8 w-8 items-center justify-center overflow-hidden rounded-full shadow-[0_8px_16px_-14px_color-mix(in_srgb,var(--shadow-base)_8%,transparent)]">
+            <img src="/ordo-avatar.png" alt="" width={32} height={32} className="h-full w-full object-cover" />
           </div>
           <div>
-            <h3 className="text-sm font-bold tracking-tight">{title}</h3>
-            <div className="flex items-center gap-1.5 leading-none">
+            <h3 className="shell-panel-heading">{title}</h3>
+            <div className="shell-action-row leading-none">
               <span className="w-1.5 h-1.5 rounded-full bg-status-success animate-pulse" />
-              <span className="text-[9px] opacity-40 font-bold uppercase tracking-wider">
+              <span className="shell-meta-text opacity-40">
                 {subtitle}
               </span>
             </div>
           </div>
         </div>
         
-        <div className="flex items-center gap-1">
+        <div className="shell-action-row">
           <button
             onClick={onFullScreenToggle}
             className="icon-btn"
@@ -92,20 +89,20 @@ export const ChatHeader: React.FC<ChatHeaderProps> = ({
   }
 
   return (
-      <header className="glass-surface sticky top-0 z-30 flex h-14 items-center justify-between border-b border-color-theme px-(--container-padding) shadow-[0_10px_30px_rgba(15,23,42,0.08)] transition-colors duration-500">
-      <div className="flex items-center gap-3">
-          <div className="w-8 h-8 rounded-full accent-fill flex items-center justify-center font-bold shadow-sm shadow-accent/20">
-          A
+      <header className="glass-surface sticky top-0 z-30 flex h-14 items-center justify-between border-b border-color-theme px-(--container-padding) shadow-[0_10px_30px_color-mix(in_srgb,var(--shadow-base)_8%,transparent)] transition-colors duration-500">
+      <div className="shell-action-row">
+          <div className="flex h-8 w-8 items-center justify-center overflow-hidden rounded-full shadow-[0_8px_16px_-14px_color-mix(in_srgb,var(--shadow-base)_8%,transparent)]">
+          <img src="/ordo-avatar.png" alt="" width={32} height={32} className="h-full w-full object-cover" />
         </div>
         <div className="flex flex-col">
-          <h1 className="text-sm font-bold leading-none">{title}</h1>
-          <span className="text-label font-medium opacity-50">
+          <h1 className="shell-panel-heading leading-none">{title}</h1>
+          <span className="shell-meta-text opacity-50">
             {subtitle}
           </span>
         </div>
       </div>
 
-      <div className="flex items-center gap-3">
+      <div className="shell-action-row">
         {/* Search */}
         <div className="relative group hidden sm:block">
           <svg
@@ -130,12 +127,12 @@ export const ChatHeader: React.FC<ChatHeaderProps> = ({
         </div>
 
         {/* Density */}
-        <div className="flex items-center gap-1 bg-surface-muted p-1 rounded-full">
+        <div className="shell-action-row rounded-full bg-surface-muted p-1">
           {(["compact", "normal", "relaxed"] as const).map((d) => (
             <button
               key={d}
               onClick={() => onDensityChange(d)}
-              className={`w-7 h-7 flex items-center justify-center rounded-full text-[10px] font-bold transition-all ${density === d ? "accent-fill shadow-sm" : "hover-surface opacity-50"}`}
+              className={`shell-micro-text flex h-7 w-7 items-center justify-center rounded-full transition-all ${density === d ? "accent-fill shadow-sm" : "hover-surface opacity-50"}`}
               title={`Density: ${d}`}
               aria-label={`Set density to ${d}`}
             >

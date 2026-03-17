@@ -6,5 +6,5 @@ export default async function BookIndex({
   params: Promise<{ book: string }>;
 }) {
   const resolvedParams = await params;
-  redirect(`/corpus/${resolvedParams.book}`);
+  redirect(`/library/${resolvedParams.book}`);
 }
