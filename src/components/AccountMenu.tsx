@@ -63,6 +63,30 @@ const ControlButton = ({ active, onClick, label }: { active: boolean; onClick: (
   </button>
 );
 
+const DarkModeButton = ({ isDark, onClick }: { isDark: boolean; onClick: () => void }) => (
+  <button
+    type="button"
+    onClick={onClick}
+    className={`focus-ring shell-account-trigger flex h-10 w-10 items-center justify-center rounded-full transition-all ${isDark ? "accent-fill shadow-[0_10px_18px_-18px_color-mix(in_srgb,var(--shadow-base)_18%,transparent)]" : "bg-transparent text-foreground/62 hover:bg-[color-mix(in_oklab,var(--surface)_82%,transparent)] hover:text-foreground"}`}
+    title={isDark ? "Switch to light mode" : "Switch to dark mode"}
+    aria-label={isDark ? "Switch to light mode" : "Switch to dark mode"}
+  >
+    {isDark ? (
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" aria-hidden="true">
+        <path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z" />
+      </svg>
+    ) : (
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" aria-hidden="true">
+        <circle cx="12" cy="12" r="5" />
+        <line x1="12" y1="1" x2="12" y2="3" />
+        <line x1="1" y1="12" x2="3" y2="12" />
+        <line x1="21" y1="12" x2="23" y2="12" />
+        <line x1="12" y1="21" x2="12" y2="23" />
+      </svg>
+    )}
+  </button>
+);
+
 export function AccountMenu({ user }: AccountMenuProps) {
   const [open, setOpen] = useState(false);
   const [showAccessibility, setShowAccessibility] = useState(false);
@@ -128,6 +152,7 @@ export function AccountMenu({ user }: AccountMenuProps) {
   if (!isAuth) {
     return (
       <div className="flex flex-nowrap items-center justify-end gap-(--shell-account-rail-gap) whitespace-nowrap" data-shell-account-rail="anonymous">
+        <DarkModeButton isDark={isDark} onClick={() => setIsDark(!isDark)} />
         <Link
           href="/login"
           className="focus-ring shell-account-trigger shell-account-label whitespace-nowrap bg-transparent px-(--phi-2) py-(--phi-2) text-foreground/62 transition-all hover:bg-[color-mix(in_oklab,var(--surface)_82%,transparent)] hover:text-foreground"

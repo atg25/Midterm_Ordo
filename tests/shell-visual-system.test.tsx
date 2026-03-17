@@ -165,6 +165,20 @@ describe("shell visual system", () => {
     expect(screen.getByRole("link", { name: "Register" }).className).toContain("shell-account-label");
   });
 
+  it("lets anonymous users toggle dark mode from the account rail", () => {
+    render(
+      <ThemeProvider>
+        <AccountMenu user={anonymousUser} />
+      </ThemeProvider>,
+    );
+
+    const toggle = screen.getByRole("button", { name: "Switch to dark mode" });
+    fireEvent.click(toggle);
+
+    expect(document.documentElement.classList.contains("dark")).toBe(true);
+    expect(screen.getByRole("button", { name: "Switch to light mode" })).toBeInTheDocument();
+  });
+
   it("applies shared shell meta roles in the floating chat header variant", () => {
     render(
       <ChatHeader
