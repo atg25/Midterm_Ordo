@@ -17,7 +17,7 @@ export function createGetSectionTool(repo: CorpusRepository): ToolDescriptor {
       },
     },
     command: new GetSectionCommand(repo),
-    roles: ["AUTHENTICATED", "STAFF", "ADMIN"],
+    roles: ["AUTHENTICATED", "APPRENTICE", "STAFF", "ADMIN"],
     category: "content",
   };
 }

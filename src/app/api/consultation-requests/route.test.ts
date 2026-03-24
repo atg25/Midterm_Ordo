@@ -1,6 +1,10 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
-import { createJsonRequest } from "../../../../tests/helpers/request";
+import {
+  createAuthenticatedSessionUser,
+  createAnonymousSessionUser,
+  createRouteRequest,
+} from "../../../../tests/helpers/workflow-route-fixture";
 
 const {
   getSessionUserMock,
@@ -26,24 +30,6 @@ import {
   DuplicateConsultationRequestError,
 } from "@/core/use-cases/RequestConsultationInteractor";
 
-function authenticatedUser() {
-  return {
-    id: "usr_auth",
-    email: "test@example.com",
-    name: "Test User",
-    roles: ["AUTHENTICATED"],
-  };
-}
-
-function anonymousUser() {
-  return {
-    id: "usr_anonymous",
-    email: "anonymous@example.com",
-    name: "Anonymous User",
-    roles: ["ANONYMOUS"],
-  };
-}
-
 const validPayload = {
   conversationId: "conv_1",
   requestSummary: "I need help scoping an internal workflow redesign.",
@@ -64,7 +50,7 @@ const mockConsultationRequest = {
 describe("POST /api/consultation-requests", () => {
   beforeEach(() => {
     vi.clearAllMocks();
-    getSessionUserMock.mockResolvedValue(authenticatedUser());
+    getSessionUserMock.mockResolvedValue(createAuthenticatedSessionUser({ id: "usr_auth", email: "test@example.com", name: "Test User" }));
     requestConsultationMock.mockResolvedValue(mockConsultationRequest);
     getRequestConsultationInteractorMock.mockReturnValue({
       requestConsultation: requestConsultationMock,
@@ -73,7 +59,7 @@ describe("POST /api/consultation-requests", () => {
 
   it("returns 201 with a consultation request record on valid request", async () => {
     const response = await POST(
-      createJsonRequest("http://localhost/api/consultation-requests", validPayload) as never,
+      createRouteRequest("http://localhost/api/consultation-requests", "POST", validPayload) as never,
     );
 
     const body = (await response.json()) as Record<string, unknown>;
@@ -91,10 +77,10 @@ describe("POST /api/consultation-requests", () => {
   });
 
   it("returns 403 for anonymous user", async () => {
-    getSessionUserMock.mockResolvedValue(anonymousUser());
+    getSessionUserMock.mockResolvedValue(createAnonymousSessionUser());
 
     const response = await POST(
-      createJsonRequest("http://localhost/api/consultation-requests", validPayload) as never,
+      createRouteRequest("http://localhost/api/consultation-requests", "POST", validPayload) as never,
     );
 
     const body = (await response.json()) as Record<string, unknown>;
@@ -104,7 +90,7 @@ describe("POST /api/consultation-requests", () => {
 
   it("returns 400 for missing conversationId", async () => {
     const response = await POST(
-      createJsonRequest("http://localhost/api/consultation-requests", {
+      createRouteRequest("http://localhost/api/consultation-requests", "POST", {
         requestSummary: "Help",
       }) as never,
     );
@@ -116,7 +102,7 @@ describe("POST /api/consultation-requests", () => {
 
   it("returns 400 for missing requestSummary", async () => {
     const response = await POST(
-      createJsonRequest("http://localhost/api/consultation-requests", {
+      createRouteRequest("http://localhost/api/consultation-requests", "POST", {
         conversationId: "conv_1",
       }) as never,
     );
@@ -132,7 +118,7 @@ describe("POST /api/consultation-requests", () => {
     );
 
     const response = await POST(
-      createJsonRequest("http://localhost/api/consultation-requests", validPayload) as never,
+      createRouteRequest("http://localhost/api/consultation-requests", "POST", validPayload) as never,
     );
 
     const body = (await response.json()) as Record<string, unknown>;
@@ -148,7 +134,7 @@ describe("POST /api/consultation-requests", () => {
     );
 
     const response = await POST(
-      createJsonRequest("http://localhost/api/consultation-requests", validPayload) as never,
+      createRouteRequest("http://localhost/api/consultation-requests", "POST", validPayload) as never,
     );
 
     const body = (await response.json()) as Record<string, unknown>;

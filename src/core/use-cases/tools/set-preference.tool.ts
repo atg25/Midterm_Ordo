@@ -61,7 +61,7 @@ export function createSetPreferenceTool(repo: UserPreferencesRepository): ToolDe
       },
     },
     command: new SetPreferenceCommand(repo),
-    roles: ["AUTHENTICATED", "STAFF", "ADMIN"],
+    roles: ["AUTHENTICATED", "APPRENTICE", "STAFF", "ADMIN"],
     category: "system",
   };
 }

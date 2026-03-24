@@ -6,6 +6,10 @@ import {
   createRouteParams,
   createRouteRequest,
 } from "../../../../../tests/helpers/workflow-route-fixture";
+import {
+  createConversationEventRecorderMock,
+  createTrainingPathRecordRepositoryMock,
+} from "../../../../../tests/helpers/repository-fixture";
 
 const {
   getSessionUserMock,
@@ -65,12 +69,12 @@ describe("/api/training-paths/[id]", () => {
   beforeEach(() => {
     vi.clearAllMocks();
     getSessionUserMock.mockResolvedValue(createAdminSessionUser());
-    getTrainingPathRecordRepositoryMock.mockReturnValue({
-      findById: findByIdMock,
-      update: updateMock,
-      updateStatus: updateStatusMock,
-    });
-    getConversationEventRecorderMock.mockReturnValue({ record: recordMock });
+    getTrainingPathRecordRepositoryMock.mockReturnValue(
+      createTrainingPathRecordRepositoryMock({ findById: findByIdMock, update: updateMock, updateStatus: updateStatusMock }),
+    );
+    getConversationEventRecorderMock.mockReturnValue(
+      createConversationEventRecorderMock({ record: recordMock }),
+    );
     findByIdMock.mockResolvedValue(makeTrainingPath());
     updateMock.mockResolvedValue(makeTrainingPath({ recommendedPath: "mentorship_sprint" }));
     updateStatusMock.mockResolvedValue(makeTrainingPath({ status: "recommended" }));

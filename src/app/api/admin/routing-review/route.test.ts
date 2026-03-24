@@ -1,5 +1,5 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
-import { NextRequest } from "next/server";
+import { createAdminSessionUser, createStaffSessionUser, createRouteRequest } from "../../../../../tests/helpers/workflow-route-fixture";
 
 const { getSessionUserMock, conversationAnalyticsMock, getDbMock } = vi.hoisted(() => ({
   getSessionUserMock: vi.fn(),
@@ -22,18 +22,15 @@ vi.mock("@mcp/analytics-tool", () => ({
 import { GET } from "./route";
 
 function makeRequest(path: string) {
-  return new NextRequest(new URL(path, "http://localhost:3000"), { method: "GET" });
+  return createRouteRequest(path, "GET");
 }
 
 describe("GET /api/admin/routing-review", () => {
   beforeEach(() => {
     vi.clearAllMocks();
-    getSessionUserMock.mockResolvedValue({
-      id: "usr_admin",
-      email: "admin@example.com",
-      name: "System Admin",
-      roles: ["ADMIN"],
-    });
+    getSessionUserMock.mockResolvedValue(
+      createAdminSessionUser({ id: "usr_admin", email: "admin@example.com", name: "System Admin" }),
+    );
     conversationAnalyticsMock.mockResolvedValue({
       metric: "routing_review",
       summary: {
@@ -61,12 +58,9 @@ describe("GET /api/admin/routing-review", () => {
   });
 
   it("rejects non-admin callers", async () => {
-    getSessionUserMock.mockResolvedValueOnce({
-      id: "usr_staff",
-      email: "staff@example.com",
-      name: "Staff User",
-      roles: ["STAFF"],
-    });
+    getSessionUserMock.mockResolvedValueOnce(
+      createStaffSessionUser({ id: "usr_staff", email: "staff@example.com", name: "Staff User" }),
+    );
 
     const response = await GET(makeRequest("/api/admin/routing-review"));
 

@@ -1,3 +1,4 @@
+import { NextRequest } from "next/server";
 import { createConversationRoutingSnapshot } from "@/core/entities/conversation-routing";
 import { SystemPromptBuilder } from "@/core/use-cases/SystemPromptBuilder";
 
@@ -164,4 +165,11 @@ export function seedChatStreamRouteMocks(mocks: StreamRouteMockSet): void {
     diskPath: "/tmp/brief.txt",
   });
   mocks.assignConversationMock.mockResolvedValue(undefined);
+}
+
+export function createStreamRouteRequest(body: unknown) {
+  return new NextRequest(new URL("http://localhost/api/chat/stream"), {
+    method: "POST",
+    body: JSON.stringify(body),
+  });
 }

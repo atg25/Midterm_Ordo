@@ -5,6 +5,7 @@ import {
   createRouteRequest,
   createStaffSessionUser,
 } from "../../../../../tests/helpers/workflow-route-fixture";
+import { createConsultationRequestRepositoryMock } from "../../../../../tests/helpers/repository-fixture";
 
 const {
   getSessionUserMock,
@@ -54,9 +55,9 @@ describe("/api/consultation-requests/[id]", () => {
   beforeEach(() => {
     vi.clearAllMocks();
     getSessionUserMock.mockResolvedValue(createAdminSessionUser({ name: "Admin User" }));
-    getConsultationRequestRepositoryMock.mockReturnValue({
-      findById: findByIdMock,
-    });
+    getConsultationRequestRepositoryMock.mockReturnValue(
+      createConsultationRequestRepositoryMock({ findById: findByIdMock }),
+    );
     getTriageConsultationRequestInteractorMock.mockReturnValue({
       triage: triageMock,
     });

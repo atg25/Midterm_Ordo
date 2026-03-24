@@ -49,7 +49,8 @@ export function createRouteRequest(
   method: "GET" | "POST" | "PATCH" = "GET",
   body?: unknown,
 ) {
-  return new NextRequest(new URL(url), {
+  const parsed = url.startsWith("http") ? new URL(url) : new URL(url, "http://localhost:3000");
+  return new NextRequest(parsed, {
     method,
     body: body === undefined ? undefined : JSON.stringify(body),
   });

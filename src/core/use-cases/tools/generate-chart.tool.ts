@@ -15,6 +15,6 @@ export const generateChartTool: ToolDescriptor = {
     },
   },
   command: new GenerateChartCommand(),
-  roles: ["AUTHENTICATED", "STAFF", "ADMIN"],
+  roles: ["AUTHENTICATED", "APPRENTICE", "STAFF", "ADMIN"],
   category: "ui",
 };

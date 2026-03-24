@@ -213,6 +213,89 @@ describe("useUICommands", () => {
     expect(document.documentElement.classList.contains("theme-swiss")).toBe(true);
   });
 
+  it("applies commands added later to an existing streamed assistant message", async () => {
+    const baselineMessages: PresentedMessage[] = [
+      createAssistantMessage("assistant-baseline", "Welcome", []),
+    ];
+    const streamingMessages: PresentedMessage[] = [
+      ...baselineMessages,
+      createAssistantMessage("assistant-stream", "Working on it", []),
+    ];
+    const streamedCommandMessages: PresentedMessage[] = [
+      ...baselineMessages,
+      createAssistantMessage("assistant-stream", "Working on it", [{
+        type: "set_theme",
+        theme: "bauhaus",
+      }]),
+    ];
+
+    const { getByTestId, rerender } = render(
+      <ThemeProvider>
+        <UICommandsHarness messages={baselineMessages} />
+      </ThemeProvider>,
+    );
+
+    rerender(
+      <ThemeProvider>
+        <UICommandsHarness messages={streamingMessages} />
+      </ThemeProvider>,
+    );
+
+    expect(document.documentElement.classList.contains("theme-bauhaus")).toBe(false);
+
+    rerender(
+      <ThemeProvider>
+        <UICommandsHarness messages={streamedCommandMessages} />
+      </ThemeProvider>,
+    );
+
+    await waitFor(() => {
+      expect(document.documentElement.classList.contains("theme-bauhaus")).toBe(true);
+    });
+
+    expect(getByTestId("ui-state")).toHaveAttribute("data-theme", "bauhaus");
+  });
+
+  it("does not replay a streamed command when the same assistant message rerenders", async () => {
+    const baselineMessages: PresentedMessage[] = [
+      createAssistantMessage("assistant-baseline", "Welcome", []),
+    ];
+    const streamedCommandMessages: PresentedMessage[] = [
+      ...baselineMessages,
+      createAssistantMessage("assistant-stream", "Making compact", [{
+        type: "adjust_ui",
+        settings: { density: "compact" },
+      }]),
+    ];
+
+    const { rerender } = render(
+      <ThemeProvider>
+        <UICommandsHarness messages={baselineMessages} />
+      </ThemeProvider>,
+    );
+
+    rerender(
+      <ThemeProvider>
+        <UICommandsHarness messages={streamedCommandMessages} />
+      </ThemeProvider>,
+    );
+
+    await waitFor(() => {
+      expect(document.documentElement.getAttribute("data-density")).toBe("compact");
+    });
+
+    localStorageMock.setItem.mockClear();
+
+    rerender(
+      <ThemeProvider>
+        <UICommandsHarness messages={streamedCommandMessages} />
+      </ThemeProvider>,
+    );
+
+    expect(localStorageMock.setItem).not.toHaveBeenCalled();
+    expect(document.documentElement.getAttribute("data-density")).toBe("compact");
+  });
+
   it("preserves adjust_ui state on the document element after the consuming component remounts", async () => {
     const baselineMessages: PresentedMessage[] = [
       createAssistantMessage("assistant-baseline", "Welcome", []),

@@ -15,7 +15,7 @@ export function createGetChecklistTool(repo: CorpusRepository): ToolDescriptor {
       },
     },
     command: new GetChecklistCommand(repo),
-    roles: ["AUTHENTICATED", "STAFF", "ADMIN"],
+    roles: ["AUTHENTICATED", "APPRENTICE", "STAFF", "ADMIN"],
     category: "content",
   };
 }

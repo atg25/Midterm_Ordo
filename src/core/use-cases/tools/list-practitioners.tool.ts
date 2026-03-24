@@ -15,7 +15,7 @@ export function createListPractitionersTool(repo: CorpusRepository): ToolDescrip
       },
     },
     command: new ListPractitionersCommand(repo),
-    roles: ["AUTHENTICATED", "STAFF", "ADMIN"],
+    roles: ["AUTHENTICATED", "APPRENTICE", "STAFF", "ADMIN"],
     category: "content",
   };
 }

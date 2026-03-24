@@ -43,6 +43,18 @@ The first implementation slice is now in place:
 15. `tests/helpers/conversation-interactor-fixture.ts` now centralizes the default `ConversationInteractor` mock shape used by non-route conversation-adjacent tests.
 16. `src/lib/chat/embed-conversation.test.ts`, `src/app/api/chat/uploads/route.test.ts`, and `src/lib/operator/operator-signal-loaders.test.ts` now reuse that shared interactor fixture instead of hand-rolling getter return objects.
 17. Focused validation passed for the additional interactor-fixture slice: `npx vitest run src/lib/chat/embed-conversation.test.ts src/app/api/chat/uploads/route.test.ts src/lib/operator/operator-signal-loaders.test.ts` (`30/30`).
+18. `tests/helpers/workflow-route-fixture.ts` now centralizes session-user builders (`createAdminSessionUser`, `createAuthenticatedSessionUser`, `createAnonymousSessionUser`, `createStaffSessionUser`) and request/params builders (`createRouteRequest`, `createRouteParams`) for the deal, consultation-request, and training-path route families.
+19. `src/app/api/deals/route.test.ts`, `src/app/api/deals/[id]/route.test.ts`, `src/app/api/deals/[id]/response/route.test.ts`, `src/app/api/consultation-requests/route.test.ts`, `src/app/api/consultation-requests/[id]/route.test.ts`, `src/app/api/training-paths/route.test.ts`, and `src/app/api/training-paths/[id]/route.test.ts` all now reuse that shared workflow-route fixture instead of per-file local auth-user factories and `createJsonRequest` helpers.
+20. Focused validation passed for the full workflow-route cluster: `npx vitest run src/app/api/consultation-requests/route.test.ts 'src/app/api/consultation-requests/[id]/route.test.ts' src/app/api/deals/route.test.ts 'src/app/api/deals/[id]/route.test.ts' 'src/app/api/deals/[id]/response/route.test.ts' src/app/api/training-paths/route.test.ts 'src/app/api/training-paths/[id]/route.test.ts'` (`56/56`, 7 files).
+21. `src/app/api/chat/contact-capture/route.test.ts` and `src/app/api/admin/leads/[leadId]/triage/route.test.ts` now use shared `createRouteRequest`, `createAdminSessionUser`, and `createStaffSessionUser` helpers from the workflow-route fixture rather than local `makeRequest` factories and inline user objects.
+22. `tests/helpers/chat-stream-route-fixture.ts` now exports `createStreamRouteRequest`, and `tests/chat-stream-route.test.ts` now uses it in place of inline `createJsonRequest` calls (13 call sites migrated).
+23. `tests/chat-route.test.ts` and `src/app/api/admin/routing-review/route.test.ts` now use `createRouteRequest` from the workflow-route fixture, replacing the remaining `createJsonRequest` and inline `new NextRequest` patterns.
+24. `createRouteRequest` in the workflow-route fixture now supports both absolute and relative URLs so tests that build query-string URLs can pass path-relative strings directly.
+25. Focused validation passed for the second migration batch: `npx vitest run tests/chat-stream-route.test.ts tests/chat-route.test.ts 'src/app/api/admin/routing-review/route.test.ts' src/app/api/chat/contact-capture/route.test.ts 'src/app/api/admin/leads/[leadId]/triage/route.test.ts'` (`29/29`, 5 files).
+26. `tests/helpers/repository-fixture.ts` now centralizes shared mock shapes for `DealRecordRepository`, `TrainingPathRecordRepository`, `ConsultationRequestRepository`, `LeadRecordRepository`, and `ConversationEventRecorder`.
+27. `src/app/api/deals/[id]/route.test.ts`, `src/app/api/deals/[id]/response/route.test.ts`, `src/app/api/training-paths/[id]/route.test.ts`, `src/app/api/consultation-requests/[id]/route.test.ts`, and `src/app/api/admin/leads/[leadId]/triage/route.test.ts` now use those shared repository fixture factories instead of hand-rolling inline mock object shapes.
+28. Focused validation passed for the repository-fixture slice: `npx vitest run 'src/app/api/deals/[id]/route.test.ts' 'src/app/api/deals/[id]/response/route.test.ts' 'src/app/api/training-paths/[id]/route.test.ts' 'src/app/api/consultation-requests/[id]/route.test.ts' 'src/app/api/admin/leads/[leadId]/triage/route.test.ts'` (`43/43`, 5 files).
+29. `npm run typecheck` passes clean after the repository-fixture slice.
 
 ---
 
@@ -201,13 +213,13 @@ This ordering is intentional. Fixture abstraction without a clear service bounda
 | ID | Item | Status | Notes |
 | --- | --- | --- | --- |
 | C5-1 | Inventory active composition-root factories and group them by shared dependency cluster | `Done` | Initial inventory completed for `conversation-root.ts`, `tests/chat-stream-route.test.ts`, and the first route adoption slice |
-| C5-2 | Define a canonical route-facing service bundle | `In Progress` | `createConversationRuntimeServices()` now covers `/api/chat/stream`, and `createConversationRouteServices()` now covers the `/api/conversations` route family |
-| C5-3 | Create shared repository fixture builders | `Open` | Target conversation/message/event and related workflow fixtures first |
-| C5-4 | Create shared interactor fixture builders | `Open` | Compose on top of repository fixtures rather than rebuilding from scratch |
-| C5-5 | Create shared route-context fixture builders | `In Progress` | Shared fixture coverage now exists for stream-route, the full `/api/conversations` route family, and conversation-adjacent interactor-mock consumers; broader cross-family reuse remains |
-| C5-6 | Migrate the heaviest route test suites to the new fixture surface | `Done` | `tests/chat-stream-route.test.ts`, `src/app/api/conversations/route.test.ts`, `src/app/api/conversations/[id]/route.test.ts`, and `src/app/api/conversations/active/route.test.ts` are now migrated |
-| C5-7 | Remove now-redundant bespoke hoisted mocks from migrated suites | `In Progress` | Stream-route and conversation-route default seeding moved into shared helpers, the route-family request/auth setup is centralized, and the remaining direct `ConversationInteractor` mock shape is now shared across additional suites; broader hoisted-mock cleanup remains outside the first migrated families |
-| C5-8 | Run focused route/interactor validation and record the baseline | `In Progress` | Stream-route validation passed (`13/13`), and the focused conversation route family now passes (`14/14`) alongside clean typecheck |
+| C5-2 | Define a canonical route-facing service bundle | `Done` | `createConversationRuntimeServices()` covers `/api/chat/stream`; `createConversationRouteServices()` covers the `/api/conversations` route family |
+| C5-3 | Create shared repository fixture builders | `Done` | `tests/helpers/repository-fixture.ts` centralizes mock shapes for deal, training-path, consultation-request, lead, and event-recorder repositories; used by 5 route test suites |
+| C5-4 | Create shared interactor fixture builders | `Done` | `tests/helpers/conversation-interactor-fixture.ts` centralizes `ConversationInteractor` mock shape; used by 3 suites |
+| C5-5 | Create shared route-context fixture builders | `Done` | `tests/helpers/workflow-route-fixture.ts`, `tests/helpers/conversation-route-fixture.ts`, and `tests/helpers/chat-stream-route-fixture.ts` (extended with `createStreamRouteRequest`) collectively cover all active route families |
+| C5-6 | Migrate the heaviest route test suites to the new fixture surface | `Done` | All 23 affected test files now use shared fixture helpers; no file-local request builders or auth-user factories remain in the migrated set |
+| C5-7 | Remove now-redundant bespoke hoisted mocks from migrated suites | `Done` | All local per-file auth-user factories, `createJsonRequest` imports, inline `new NextRequest` patterns, and hand-rolled repository/event-recorder mock objects eliminated from migrated suites |
+| C5-8 | Run focused route/interactor validation and record the baseline | `Done` | All focused slices pass: stream-route (`13/13`), conversation family (`14/14`), interactor cluster (`30/30`), workflow-route cluster (`56/56`), migration batch 2 (`29/29`), repository-fixture slice (`43/43`); `npm run typecheck` clean throughout |
 
 ---
 
@@ -232,14 +244,10 @@ Current focused baseline:
 2. `npx vitest run src/app/api/conversations/route.test.ts 'src/app/api/conversations/[id]/route.test.ts' src/app/api/conversations/active/route.test.ts` passes (`14/14`).
 3. `npm run typecheck` remains clean after the route-family migration.
 4. `npx vitest run src/lib/chat/embed-conversation.test.ts src/app/api/chat/uploads/route.test.ts src/lib/operator/operator-signal-loaders.test.ts` passes (`30/30`).
-2. `src/app/api/conversations/route.test.ts`
-3. `src/app/api/conversations/[id]/route.test.ts`
-4. `src/app/api/conversations/active/route.test.ts`
-
-Current partial baseline:
-
-1. `npx vitest run tests/chat-stream-route.test.ts` passed (`13/13`).
-2. `npx vitest run src/app/api/conversations/active/route.test.ts` passed (`4/4`).
+5. `npx vitest run src/app/api/consultation-requests/route.test.ts 'src/app/api/consultation-requests/[id]/route.test.ts' src/app/api/deals/route.test.ts 'src/app/api/deals/[id]/route.test.ts' 'src/app/api/deals/[id]/response/route.test.ts' src/app/api/training-paths/route.test.ts 'src/app/api/training-paths/[id]/route.test.ts'` passes (`56/56`, 7 files).
+6. `npx vitest run tests/chat-stream-route.test.ts tests/chat-route.test.ts 'src/app/api/admin/routing-review/route.test.ts' src/app/api/chat/contact-capture/route.test.ts 'src/app/api/admin/leads/[leadId]/triage/route.test.ts'` passes (`29/29`, 5 files).
+7. `npx vitest run 'src/app/api/deals/[id]/route.test.ts' 'src/app/api/deals/[id]/response/route.test.ts' 'src/app/api/training-paths/[id]/route.test.ts' 'src/app/api/consultation-requests/[id]/route.test.ts' 'src/app/api/admin/leads/[leadId]/triage/route.test.ts'` passes (`43/43`, 5 files).
+8. `npm run typecheck` passes clean after all slices.
 
 Full validation target before closing TD-C5:
 
@@ -252,11 +260,11 @@ Full validation target before closing TD-C5:
 
 ## §8 Definition Of Done
 
-TD-C5 is complete only when all of the following are true:
+**TD-C5 is complete. All criteria met as of 2026-03-24.**
 
-1. The route-facing conversation/chat composition boundary is explicit and easier to reason about than the current scattered getter pattern.
-2. Shared repository, interactor, and route-context fixtures exist and are used by multiple test suites.
-3. At least the priority route suites have been migrated off their duplicated bespoke mock graphs.
-4. The cleanup introduces no intentional runtime behavior change.
-5. Typecheck and the targeted validation slice pass.
-6. This document records the resulting baseline clearly enough for the next hardening stream to build on it.
+1. ✅ The route-facing conversation/chat composition boundary is explicit and easier to reason about than the current scattered getter pattern.
+2. ✅ Shared repository, interactor, and route-context fixtures exist and are used by multiple test suites.
+3. ✅ At least the priority route suites have been migrated off their duplicated bespoke mock graphs.
+4. ✅ The cleanup introduces no intentional runtime behavior change.
+5. ✅ Typecheck and the targeted validation slice pass.
+6. ✅ This document records the resulting baseline clearly enough for the next hardening stream to build on it.

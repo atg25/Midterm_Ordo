@@ -7,6 +7,7 @@ import { createAdminWebSearchTool } from "@/core/use-cases/tools/admin-web-searc
 import { createAdminPrioritizeLeadsTool } from "@/core/use-cases/tools/admin-prioritize-leads.tool";
 import { createAdminPrioritizeOfferTool } from "@/core/use-cases/tools/admin-prioritize-offer.tool";
 import { createAdminTriageRoutingRiskTool } from "@/core/use-cases/tools/admin-triage-routing-risk.tool";
+import { EXPECTED_ROLE_TOOL_SETS } from "./helpers/role-tool-sets";
 import type {
   OperatorAnonymousOpportunitiesData,
   OperatorFunnelRecommendationsData,
@@ -126,16 +127,9 @@ describe("ToolRegistry RBAC", () => {
     },
   });
 
-  it("ANONYMOUS gets exactly 6 tool schemas", () => {
-    const schemas = registry.getSchemasForRole("ANONYMOUS");
-    expect(schemas).toHaveLength(6);
-    const names = schemas.map((s) => s.name);
-    expect(names).toContain("calculator");
-    expect(names).toContain("search_corpus");
-    expect(names).toContain("get_corpus_summary");
-    expect(names).toContain("set_theme");
-    expect(names).toContain("navigate");
-    expect(names).toContain("adjust_ui");
+  it("ANONYMOUS gets exactly the allowed tool set", () => {
+    const names = registry.getSchemasForRole("ANONYMOUS").map((s) => s.name).sort();
+    expect(names).toEqual(EXPECTED_ROLE_TOOL_SETS.ANONYMOUS);
   });
 
   it("ANONYMOUS cannot execute restricted tools", () => {
@@ -146,26 +140,24 @@ describe("ToolRegistry RBAC", () => {
     expect(registry.canExecute("list_practitioners", "ANONYMOUS")).toBe(false);
   });
 
-  it("AUTHENTICATED gets all 13 tool schemas", () => {
-    const schemas = registry.getSchemasForRole("AUTHENTICATED");
-    expect(schemas).toHaveLength(13);
+  it("AUTHENTICATED gets exactly the allowed tool set", () => {
+    const names = registry.getSchemasForRole("AUTHENTICATED").map((s) => s.name).sort();
+    expect(names).toEqual(EXPECTED_ROLE_TOOL_SETS.AUTHENTICATED);
   });
 
-  it("STAFF gets all 13 tool schemas", () => {
-    const schemas = registry.getSchemasForRole("STAFF");
-    expect(schemas).toHaveLength(13);
+  it("APPRENTICE gets exactly the allowed tool set", () => {
+    const names = registry.getSchemasForRole("APPRENTICE").map((s) => s.name).sort();
+    expect(names).toEqual(EXPECTED_ROLE_TOOL_SETS.APPRENTICE);
   });
 
-  it("ADMIN gets 19 tool schemas (13 base + 6 admin-only tools)", () => {
-    const schemas = registry.getSchemasForRole("ADMIN");
-    expect(schemas).toHaveLength(19);
-    const names = schemas.map((s) => s.name);
-    expect(names).toContain("admin_web_search");
-    expect(names).toContain("admin_prioritize_leads");
-    expect(names).toContain("admin_prioritize_offer");
-    expect(names).toContain("admin_triage_routing_risk");
-    expect(names).toContain("draft_content");
-    expect(names).toContain("publish_content");
+  it("STAFF gets exactly the allowed tool set", () => {
+    const names = registry.getSchemasForRole("STAFF").map((s) => s.name).sort();
+    expect(names).toEqual(EXPECTED_ROLE_TOOL_SETS.STAFF);
+  });
+
+  it("ADMIN gets exactly the allowed tool set", () => {
+    const names = registry.getSchemasForRole("ADMIN").map((s) => s.name).sort();
+    expect(names).toEqual(EXPECTED_ROLE_TOOL_SETS.ADMIN);
   });
 
   it("ADMIN gets admin_web_search descriptor with correct RBAC", () => {

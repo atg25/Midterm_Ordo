@@ -6,6 +6,10 @@ import {
   createRouteParams,
   createRouteRequest,
 } from "../../../../../tests/helpers/workflow-route-fixture";
+import {
+  createConversationEventRecorderMock,
+  createDealRecordRepositoryMock,
+} from "../../../../../tests/helpers/repository-fixture";
 
 const {
   getSessionUserMock,
@@ -68,12 +72,12 @@ describe("/api/deals/[id]", () => {
   beforeEach(() => {
     vi.clearAllMocks();
     getSessionUserMock.mockResolvedValue(createAdminSessionUser());
-    getDealRecordRepositoryMock.mockReturnValue({
-      findById: findByIdMock,
-      update: updateMock,
-      updateStatus: updateStatusMock,
-    });
-    getConversationEventRecorderMock.mockReturnValue({ record: recordMock });
+    getDealRecordRepositoryMock.mockReturnValue(
+      createDealRecordRepositoryMock({ findById: findByIdMock, update: updateMock, updateStatus: updateStatusMock }),
+    );
+    getConversationEventRecorderMock.mockReturnValue(
+      createConversationEventRecorderMock({ record: recordMock }),
+    );
     findByIdMock.mockResolvedValue(makeDeal());
     updateMock.mockResolvedValue(makeDeal({ title: "Updated deal" }));
     updateStatusMock.mockResolvedValue(makeDeal({ title: "Updated deal", status: "qualified" }));

@@ -51,7 +51,7 @@ export const ChatMessageViewport: React.FC<ChatMessageViewportProps> = ({
       <div
         ref={scrollRef}
         onScroll={handleScroll}
-        className={`z-10 flex h-full flex-1 min-h-0 overflow-y-auto overscroll-contain px-3 py-2 sm:px-6 sm:py-3 ${isEmbedded ? "pt-1 pb-1 sm:pb-2" : ""}`}
+        className={`z-10 flex flex-col h-full flex-1 min-h-0 overflow-y-auto overscroll-contain px-3 py-2 sm:px-6 sm:py-3 ${isEmbedded ? "pt-1 pb-1 sm:pb-2" : ""}`}
         data-chat-message-viewport="true"
         data-chat-transcript-plane={!isEmbedded ? "true" : undefined}
       >
@@ -61,7 +61,7 @@ export const ChatMessageViewport: React.FC<ChatMessageViewportProps> = ({
           </div>
         ) : (
           <div
-            className={`${isFullScreen ? "mx-auto w-full max-w-4xl" : "w-full"} ${isEmbedded ? `flex min-h-full flex-col ${isHeroState ? "justify-center" : "justify-end"}` : ""}`}
+            className={`shrink-0 ${isFullScreen ? "mx-auto w-full max-w-4xl" : "w-full"} ${isEmbedded ? `flex min-h-full flex-col ${isHeroState ? "justify-center" : "justify-end"}` : ""}`}
             data-chat-message-stack={isEmbedded ? "true" : undefined}
           >
             <MessageList

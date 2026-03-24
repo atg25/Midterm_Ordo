@@ -30,6 +30,8 @@ If you are new to the repository, read these first:
 ## Key Operational Docs
 
 - `operations/agentic-delivery-playbook.md`: how this repo turns LLM work into a controlled engineering workflow
+- `operations/user-handbook.md`: user guide, feature overview, role model, setup notes, and MCP tool catalog
+- `operations/system-architecture.md`: textual architecture walkthrough for the application, tool system, storage, and MCP boundaries
 - `operations/architecture-diagrams.md`: visual maps for the delivery loop, runtime architecture, and tool orchestration
 - `operations/process-model.md`: runtime process and concurrency model
 - `operations/admin-runbook.md`: non-interactive operational commands

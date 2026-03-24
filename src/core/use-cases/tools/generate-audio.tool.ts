@@ -15,6 +15,6 @@ export const generateAudioTool: ToolDescriptor = {
     },
   },
   command: new GenerateAudioCommand(),
-  roles: ["AUTHENTICATED", "STAFF", "ADMIN"],
+  roles: ["AUTHENTICATED", "APPRENTICE", "STAFF", "ADMIN"],
   category: "ui",
 };

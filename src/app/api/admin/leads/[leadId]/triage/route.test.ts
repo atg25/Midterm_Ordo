@@ -1,5 +1,6 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
-import { NextRequest } from "next/server";
+import { createAdminSessionUser, createStaffSessionUser, createRouteRequest } from "../../../../../../../tests/helpers/workflow-route-fixture";
+import { createLeadRecordRepositoryMock } from "../../../../../../../tests/helpers/repository-fixture";
 
 const { getSessionUserMock, getLeadRecordRepositoryMock, findByIdMock, updateTriageStateMock } = vi.hoisted(() => ({
   getSessionUserMock: vi.fn(),
@@ -19,25 +20,18 @@ vi.mock("@/lib/chat/conversation-root", () => ({
 import { PATCH } from "./route";
 
 function makeRequest(body: unknown) {
-  return new NextRequest(new URL("http://localhost:3000/api/admin/leads/lead_1/triage"), {
-    method: "PATCH",
-    body: JSON.stringify(body),
-  });
+  return createRouteRequest("http://localhost:3000/api/admin/leads/lead_1/triage", "PATCH", body);
 }
 
 describe("PATCH /api/admin/leads/[leadId]/triage", () => {
   beforeEach(() => {
     vi.clearAllMocks();
-    getSessionUserMock.mockResolvedValue({
-      id: "usr_admin",
-      email: "admin@example.com",
-      name: "System Admin",
-      roles: ["ADMIN"],
-    });
-    getLeadRecordRepositoryMock.mockReturnValue({
-      findById: findByIdMock,
-      updateTriageState: updateTriageStateMock,
-    });
+    getSessionUserMock.mockResolvedValue(
+      createAdminSessionUser({ id: "usr_admin", email: "admin@example.com", name: "System Admin" }),
+    );
+    getLeadRecordRepositoryMock.mockReturnValue(
+      createLeadRecordRepositoryMock({ findById: findByIdMock, updateTriageState: updateTriageStateMock }),
+    );
     findByIdMock.mockResolvedValue({
       id: "lead_1",
       conversationId: "conv_1",
@@ -101,12 +95,9 @@ describe("PATCH /api/admin/leads/[leadId]/triage", () => {
   });
 
   it("rejects non-admin callers", async () => {
-    getSessionUserMock.mockResolvedValueOnce({
-      id: "usr_staff",
-      email: "staff@example.com",
-      name: "Staff User",
-      roles: ["STAFF"],
-    });
+    getSessionUserMock.mockResolvedValueOnce(
+      createStaffSessionUser({ id: "usr_staff", email: "staff@example.com", name: "Staff User" }),
+    );
 
     const response = await PATCH(makeRequest({ triageState: "contacted" }), {
       params: Promise.resolve({ leadId: "lead_1" }),

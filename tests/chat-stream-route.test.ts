@@ -1,9 +1,9 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { POST } from "@/app/api/chat/stream/route";
-import { createJsonRequest } from "./helpers/request";
 import { createConversationRoutingSnapshot } from "@/core/entities/conversation-routing";
 import {
   createStreamRouteConversationState,
+  createStreamRouteRequest,
   createStreamRouteUser,
   seedChatStreamRouteMocks,
 } from "./helpers/chat-stream-route-fixture";
@@ -167,7 +167,7 @@ describe("POST /api/chat/stream", () => {
     executeDirectChatTurnMock.mockResolvedValue("5");
 
     const response = await POST(
-      createJsonRequest("http://localhost/api/chat/stream", {
+      createStreamRouteRequest({
         messages: [{ role: "user", content: "what is 2 + 3" }],
       }) as never,
     );
@@ -181,7 +181,7 @@ describe("POST /api/chat/stream", () => {
     executeDirectChatTurnMock.mockRejectedValue(new Error("upstream failed"));
 
     const response = await POST(
-      createJsonRequest("http://localhost/api/chat/stream", {
+      createStreamRouteRequest({
         messages: [{ role: "user", content: "what is 2 + 3" }],
       }) as never,
     );
@@ -204,7 +204,7 @@ describe("POST /api/chat/stream", () => {
     });
 
     const response = await POST(
-      createJsonRequest("http://localhost/api/chat/stream", {
+      createStreamRouteRequest({
         messages: [{ role: "user", content: "Tell me more" }],
       }) as never,
     );
@@ -224,7 +224,7 @@ describe("POST /api/chat/stream", () => {
     looksLikeMathMock.mockReturnValue(false);
 
     const response = await POST(
-      createJsonRequest("http://localhost/api/chat/stream", {
+      createStreamRouteRequest({
         messages: [{ role: "user", content: "Our team needs help redesigning an internal workflow." }],
       }) as never,
     );
@@ -251,7 +251,7 @@ describe("POST /api/chat/stream", () => {
     looksLikeMathMock.mockReturnValue(false);
 
     const response = await POST(
-      createJsonRequest("http://localhost/api/chat/stream", {
+      createStreamRouteRequest({
         conversationId: "conv_selected",
         messages: [{ role: "user", content: "Resume this thread" }],
       }) as never,
@@ -276,7 +276,7 @@ describe("POST /api/chat/stream", () => {
     );
 
     const response = await POST(
-      createJsonRequest("http://localhost/api/chat/stream", {
+      createStreamRouteRequest({
         messages: [{ role: "user", content: "I need help for my company." }],
         lane: "individual",
       }) as never,
@@ -311,7 +311,7 @@ describe("POST /api/chat/stream", () => {
     analyzeRoutingMock.mockRejectedValueOnce(new Error("routing analyzer failed"));
 
     const response = await POST(
-      createJsonRequest("http://localhost/api/chat/stream", {
+      createStreamRouteRequest({
         messages: [{ role: "user", content: "Can you help me learn this workflow?" }],
       }) as never,
     );
@@ -327,7 +327,7 @@ describe("POST /api/chat/stream", () => {
     looksLikeMathMock.mockReturnValue(false);
 
     const response = await POST(
-      createJsonRequest("http://localhost/api/chat/stream", {
+      createStreamRouteRequest({
         messages: [{ role: "user", content: "Review the lead queue" }],
         taskOriginHandoff: {
           sourceBlockId: "lead_queue",
@@ -349,7 +349,7 @@ describe("POST /api/chat/stream", () => {
     looksLikeMathMock.mockReturnValue(false);
 
     const response = await POST(
-      createJsonRequest("http://localhost/api/chat/stream", {
+      createStreamRouteRequest({
         messages: [{ role: "user", content: "Review the lead queue" }],
         taskOriginHandoff: {
           sourceBlockId: "lead_queue",
@@ -370,7 +370,7 @@ describe("POST /api/chat/stream", () => {
     looksLikeMathMock.mockReturnValue(false);
 
     const response = await POST(
-      createJsonRequest("http://localhost/api/chat/stream", {
+      createStreamRouteRequest({
         messages: [{ role: "user", content: "Review this file" }],
         attachments: [
           {
@@ -424,7 +424,7 @@ describe("POST /api/chat/stream", () => {
     getSchemasForRoleMock.mockReturnValue([{ name: "admin_prioritize_leads", description: "", input_schema: {} }]);
 
     const response = await POST(
-      createJsonRequest("http://localhost/api/chat/stream", {
+      createStreamRouteRequest({
         messages: [{ role: "user", content: "What should I focus on first today?" }],
       }) as never,
     );
@@ -447,7 +447,7 @@ describe("POST /api/chat/stream", () => {
     );
 
     const response = await POST(
-      createJsonRequest("http://localhost/api/chat/stream", {
+      createStreamRouteRequest({
         messages: [{ role: "user", content: "Audit this workflow" }],
       }) as never,
     );
@@ -479,7 +479,7 @@ describe("POST /api/chat/stream", () => {
     );
 
     const response = await POST(
-      createJsonRequest("http://localhost/api/chat/stream", {
+      createStreamRouteRequest({
         messages: [{ role: "user", content: "Audit this workflow" }],
       }) as never,
     );

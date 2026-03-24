@@ -411,6 +411,7 @@ export async function POST(request: NextRequest) {
       }
 
       const tools = getToolRegistry().getSchemasForRole(role) as Anthropic.Tool[];
+      builder.withToolManifest(tools.map(t => ({ name: t.name, description: t.description ?? "" })));
 
       const execContext: ToolExecutionContext = {
         role,

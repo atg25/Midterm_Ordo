@@ -9,62 +9,49 @@ export function useUICommands(
 ) {
   const router = useRouter();
   const { setTheme, setIsDark, accessibility, setAccessibility } = useTheme();
-  const lastExecutedCommandRef = useRef<string>("");
+  const executedCommandKeysRef = useRef<Set<string>>(new Set());
   const hasEstablishedBaselineRef = useRef(false);
-  const seenAssistantMessageIdsRef = useRef<Set<string>>(new Set());
 
   useEffect(() => {
-    const lastMsg = presentedMessages[presentedMessages.length - 1];
+    const assistantMessages = presentedMessages.filter((message) => message.role === "assistant");
     if (isLoadingMessages) {
-      seenAssistantMessageIdsRef.current = new Set(
-        presentedMessages
-          .filter((message) => message.role === "assistant")
-          .map((message) => message.id),
+      executedCommandKeysRef.current = new Set(
+        assistantMessages.flatMap((message) =>
+          message.commands.map((cmd) => `${message.id}-${JSON.stringify(cmd)}`),
+        ),
       );
       hasEstablishedBaselineRef.current = false;
       return;
     }
 
     if (!hasEstablishedBaselineRef.current) {
-      seenAssistantMessageIdsRef.current = new Set(
-        presentedMessages
-          .filter((message) => message.role === "assistant")
-          .map((message) => message.id),
+      executedCommandKeysRef.current = new Set(
+        assistantMessages.flatMap((message) =>
+          message.commands.map((cmd) => `${message.id}-${JSON.stringify(cmd)}`),
+        ),
       );
       hasEstablishedBaselineRef.current = true;
       return;
     }
 
-    if (!lastMsg || lastMsg.role !== "assistant") {
-      return;
-    }
+    assistantMessages.forEach((message) => {
+      message.commands.forEach((cmd: Record<string, unknown>) => {
+        const cmdKey = `${message.id}-${JSON.stringify(cmd)}`;
+        if (executedCommandKeysRef.current.has(cmdKey)) {
+          return;
+        }
 
-    if (seenAssistantMessageIdsRef.current.has(lastMsg.id)) {
-      return;
-    }
-
-    seenAssistantMessageIdsRef.current.add(lastMsg.id);
-
-    if (lastMsg.commands.length === 0) {
-      return;
-    }
-
-    lastMsg.commands.forEach((cmd: Record<string, unknown>) => {
-      const cmdKey = `${lastMsg.id}-${JSON.stringify(cmd)}`;
-      if (cmdKey === lastExecutedCommandRef.current) {
-        return;
-      }
-
-      lastExecutedCommandRef.current = cmdKey;
-      if (cmd.type === "set_theme") {
-        setTheme(cmd.theme as Theme);
-      } else if (cmd.type === "navigate" && typeof cmd.path === "string") {
-        if (cmd.path.startsWith("/")) router.push(cmd.path);
-        else window.location.href = cmd.path;
-      } else if (cmd.type === "adjust_ui") {
-        const settings = cmd.settings as Record<string, unknown>;
-        applyUIAdjustment(settings, accessibility, setAccessibility, setTheme, setIsDark);
-      }
+        executedCommandKeysRef.current.add(cmdKey);
+        if (cmd.type === "set_theme") {
+          setTheme(cmd.theme as Theme);
+        } else if (cmd.type === "navigate" && typeof cmd.path === "string") {
+          if (cmd.path.startsWith("/")) router.push(cmd.path);
+          else window.location.href = cmd.path;
+        } else if (cmd.type === "adjust_ui") {
+          const settings = cmd.settings as Record<string, unknown>;
+          applyUIAdjustment(settings, accessibility, setAccessibility, setTheme, setIsDark);
+        }
+      });
     });
   }, [presentedMessages, isLoadingMessages, setTheme, setIsDark, accessibility, setAccessibility, router]);
 }

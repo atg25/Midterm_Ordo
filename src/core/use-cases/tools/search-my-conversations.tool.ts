@@ -95,7 +95,7 @@ export function createSearchMyConversationsTool(
       },
     },
     command: new SearchMyConversationsCommand(vectorStore, embedder),
-    roles: ["AUTHENTICATED", "STAFF", "ADMIN"],
+    roles: ["AUTHENTICATED", "APPRENTICE", "STAFF", "ADMIN"],
     category: "content",
   };
 }

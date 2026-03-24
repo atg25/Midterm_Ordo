@@ -1,5 +1,5 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
-import { NextRequest } from "next/server";
+import { createRouteRequest } from "../../../../../tests/helpers/workflow-route-fixture";
 
 const { getLeadCaptureInteractorMock, resolveUserIdMock, submitCaptureMock } = vi.hoisted(() => ({
   getLeadCaptureInteractorMock: vi.fn(),
@@ -17,14 +17,8 @@ vi.mock("@/lib/chat/resolve-user", () => ({
 
 import { POST } from "./route";
 
-function makeRequest(body: unknown): NextRequest {
-  return new NextRequest(new URL("http://localhost:3000/api/chat/contact-capture"), {
-    method: "POST",
-    body: JSON.stringify(body),
-    headers: {
-      "Content-Type": "application/json",
-    },
-  });
+function makeRequest(body: unknown) {
+  return createRouteRequest("http://localhost:3000/api/chat/contact-capture", "POST", body);
 }
 
 describe("POST /api/chat/contact-capture", () => {

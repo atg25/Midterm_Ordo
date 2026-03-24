@@ -1,0 +1,52 @@
+import type { RoleName } from "@/core/entities/user";
+
+const SHARED_MEMBER_TOOL_SET = [
+  "adjust_ui",
+  "calculator",
+  "generate_audio",
+  "generate_chart",
+  "get_checklist",
+  "get_corpus_summary",
+  "get_section",
+  "list_practitioners",
+  "navigate",
+  "search_corpus",
+  "search_my_conversations",
+  "set_preference",
+  "set_theme",
+];
+
+export const EXPECTED_ROLE_TOOL_SETS: Record<RoleName, string[]> = {
+  ANONYMOUS: [
+    "adjust_ui",
+    "calculator",
+    "get_corpus_summary",
+    "navigate",
+    "search_corpus",
+    "set_theme",
+  ],
+  AUTHENTICATED: [...SHARED_MEMBER_TOOL_SET],
+  APPRENTICE: [...SHARED_MEMBER_TOOL_SET],
+  STAFF: [...SHARED_MEMBER_TOOL_SET],
+  ADMIN: [
+    "adjust_ui",
+    "admin_prioritize_leads",
+    "admin_prioritize_offer",
+    "admin_triage_routing_risk",
+    "admin_web_search",
+    "calculator",
+    "draft_content",
+    "generate_audio",
+    "generate_chart",
+    "get_checklist",
+    "get_corpus_summary",
+    "get_section",
+    "list_practitioners",
+    "navigate",
+    "publish_content",
+    "search_corpus",
+    "search_my_conversations",
+    "set_preference",
+    "set_theme",
+  ],
+};

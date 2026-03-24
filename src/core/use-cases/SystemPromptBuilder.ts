@@ -80,6 +80,21 @@ export class SystemPromptBuilder {
     return this;
   }
 
+  withToolManifest(schemas: { name: string; description: string }[]): this {
+    if (!schemas || schemas.length === 0) return this;
+    const lines = ["", "TOOLS AVAILABLE TO YOU:"];
+    for (const schema of schemas) {
+      lines.push(`- **${schema.name}**: ${schema.description}`);
+    }
+    lines.push("", "When the user asks what you can do, list these tools by name with a one-line description of each.");
+    this.sections.set("tool_manifest", {
+      key: "tool_manifest",
+      content: lines.join("\n"),
+      priority: 15,
+    });
+    return this;
+  }
+
   withSection(section: PromptSection): this {
     if (section.content) {
       this.sections.set(section.key, section);

@@ -122,6 +122,38 @@ describe("ChatPresenter", () => {
     expect(presented.actions).toEqual([]);
   });
 
+  it("maps structured UI tool_call parts into UI commands", () => {
+    const presenter = new ChatPresenter(mockMarkdownParser, mockCommandParser);
+    const message: ChatMessage = {
+      id: "msg-8",
+      role: "assistant",
+      content: "Applying your preferences.",
+      timestamp: new Date("2023-01-01T12:00:00Z"),
+      parts: [
+        {
+          type: "tool_call",
+          name: "set_theme",
+          args: { theme: "bauhaus" },
+        },
+        {
+          type: "tool_call",
+          name: "adjust_ui",
+          args: { density: "compact", fontSize: "xl" },
+        },
+      ],
+    };
+
+    const presented = presenter.present(message);
+
+    expect(presented.commands).toEqual([
+      { type: "set_theme", theme: "bauhaus" },
+      {
+        type: "adjust_ui",
+        settings: { density: "compact", fontSize: "xl" },
+      },
+    ]);
+  });
+
   describe("__actions__ streaming safety", () => {
     const freshPresenter = () =>
       new ChatPresenter(

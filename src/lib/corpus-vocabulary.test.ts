@@ -1,8 +1,10 @@
 import { describe, it, expect } from "vitest";
+import { getToolRegistry } from "@/lib/chat/tool-composition-root";
 import { buildCorpusBasePrompt } from "./corpus-vocabulary";
 
 describe("buildCorpusBasePrompt", () => {
   const prompt = buildCorpusBasePrompt();
+  const registryToolNames = getToolRegistry().getToolNames();
 
   // --- Section presence ---
   it("contains INTERACTIVE ACTION FORMATTING section header", () => {
@@ -18,17 +20,16 @@ describe("buildCorpusBasePrompt", () => {
     expect(prompt).toContain('__suggestions__:["Q1?","Q2?","Q3?","Q4?"]');
   });
 
-  it("preserves existing TOOLS section", () => {
-    expect(prompt).toContain("TOOLS:");
-    expect(prompt).toContain("**calculator**");
-    expect(prompt).toContain("**search_corpus**");
-    expect(prompt).toContain("**get_section**");
-    expect(prompt).toContain("**get_checklist**");
-    expect(prompt).toContain("**list_practitioners**");
-    expect(prompt).toContain("**get_corpus_summary**");
-    expect(prompt).toContain("**set_theme**");
-    expect(prompt).toContain("**generate_audio**");
-    expect(prompt).toContain("**navigate**");
+  it("does not include a static hardcoded TOOLS section", () => {
+    expect(prompt).not.toContain("TOOLS:");
+  });
+
+  it("does not include any live registry tool identifiers in the base prompt", () => {
+    for (const toolName of registryToolNames) {
+      expect(prompt).not.toContain(`**${toolName}**`);
+      expect(prompt).not.toContain(`\`${toolName}\``);
+      expect(prompt).not.toMatch(new RegExp(`\\b${toolName}\\b`));
+    }
   });
 
   // --- Action type examples ---
