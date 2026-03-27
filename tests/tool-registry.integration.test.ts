@@ -1,9 +1,15 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
 import { createToolRegistry } from "@/lib/chat/tool-composition-root";
-import { composeMiddleware, type ToolExecuteFn } from "@/core/tool-registry/ToolMiddleware";
+import {
+  composeMiddleware,
+  type ToolExecuteFn,
+} from "@/core/tool-registry/ToolMiddleware";
 import { LoggingMiddleware } from "@/core/tool-registry/LoggingMiddleware";
 import { RbacGuardMiddleware } from "@/core/tool-registry/RbacGuardMiddleware";
-import { ToolAccessDeniedError, UnknownToolError } from "@/core/tool-registry/errors";
+import {
+  ToolAccessDeniedError,
+  UnknownToolError,
+} from "@/core/tool-registry/errors";
 import type { ToolExecutionContext } from "@/core/tool-registry/ToolExecutionContext";
 import type { CorpusRepository } from "@/core/use-cases/CorpusRepository";
 
@@ -13,7 +19,17 @@ const mockCorpusRepo: CorpusRepository = {
   getDocument: vi.fn().mockResolvedValue(null),
   getAllSections: vi.fn().mockResolvedValue([]),
   getSectionsByDocument: vi.fn().mockResolvedValue([]),
-  getSection: vi.fn().mockResolvedValue({ documentSlug: "", sectionSlug: "", title: "", content: "", contributors: [], supplements: [], headings: [] }),
+  getSection: vi
+    .fn()
+    .mockResolvedValue({
+      documentSlug: "",
+      sectionSlug: "",
+      title: "",
+      content: "",
+      contributors: [],
+      supplements: [],
+      headings: [],
+    }),
 };
 
 function buildStack() {
@@ -26,7 +42,10 @@ function buildStack() {
 }
 
 const anonCtx: ToolExecutionContext = { role: "ANONYMOUS", userId: "anon-1" };
-const authCtx: ToolExecutionContext = { role: "AUTHENTICATED", userId: "user-1" };
+const authCtx: ToolExecutionContext = {
+  role: "AUTHENTICATED",
+  userId: "user-1",
+};
 const adminCtx: ToolExecutionContext = { role: "ADMIN", userId: "admin-1" };
 
 describe("Tool Registry Integration", () => {
@@ -36,87 +55,121 @@ describe("Tool Registry Integration", () => {
   beforeEach(() => {
     logSpy = vi.spyOn(console, "log").mockImplementation(() => {});
     errorSpy = vi.spyOn(console, "error").mockImplementation(() => {});
+    vi.stubEnv("GARYS_EVENTS_MCP_ENABLED", "false");
   });
 
   afterEach(() => {
     logSpy.mockRestore();
     errorSpy.mockRestore();
+    vi.unstubAllEnvs();
   });
 
   // TEST-REG-01
-  it("registry has exactly 19 tools after full composition", () => {
+  it("registry has exactly 23 tools after full composition", () => {
     const { registry } = buildStack();
-    expect(registry.getToolNames()).toHaveLength(19);
+    expect(registry.getToolNames()).toHaveLength(23);
   });
 
   // TEST-REG-02
   it("registering a duplicate tool name throws", () => {
     const { registry } = buildStack();
-    expect(() => registry.register({
-      name: "calculator",
-      schema: { description: "dup", input_schema: { type: "object", properties: {} } },
-      command: { execute: async () => ({}) },
-      roles: "ALL",
-      category: "math",
-    })).toThrow('Tool "calculator" is already registered');
+    expect(() =>
+      registry.register({
+        name: "calculator",
+        schema: {
+          description: "dup",
+          input_schema: { type: "object", properties: {} },
+        },
+        command: { execute: async () => ({}) },
+        roles: "ALL",
+        category: "math",
+      }),
+    ).toThrow('Tool "calculator" is already registered');
   });
 
   // TEST-REG-03
   it("ANONYMOUS gets exactly 6 tools", () => {
     const { registry } = buildStack();
     const schemas = registry.getSchemasForRole("ANONYMOUS");
-    const names = schemas.map(s => s.name).sort();
+    const names = schemas.map((s) => s.name).sort();
     expect(names).toEqual([
-      "adjust_ui", "calculator", "get_corpus_summary", "navigate", "search_corpus", "set_theme",
+      "adjust_ui",
+      "calculator",
+      "get_corpus_summary",
+      "navigate",
+      "search_corpus",
+      "set_theme",
     ]);
   });
 
   // TEST-REG-04
-  it("AUTHENTICATED gets all 13 tools", () => {
+  it("AUTHENTICATED gets all 17 tools", () => {
     const { registry } = buildStack();
     const schemas = registry.getSchemasForRole("AUTHENTICATED");
-    expect(schemas).toHaveLength(13);
+    expect(schemas).toHaveLength(17);
   });
 
   // TEST-REG-05
   it("execute calculator via full stack → correct result", async () => {
     const { executor } = buildStack();
-    const result = await executor("calculator", { operation: "add", a: 2, b: 3 }, anonCtx);
+    const result = await executor(
+      "calculator",
+      { operation: "add", a: 2, b: 3 },
+      anonCtx,
+    );
     expect(result).toEqual({ operation: "add", a: 2, b: 3, result: 5 });
   });
 
   // TEST-REG-06
   it("ANONYMOUS executing get_section → ToolAccessDeniedError, command never called", async () => {
     const { executor } = buildStack();
-    await expect(executor("get_section", { document_slug: "x", section_slug: "y" }, anonCtx))
-      .rejects.toThrow(ToolAccessDeniedError);
+    await expect(
+      executor(
+        "get_section",
+        { document_slug: "x", section_slug: "y" },
+        anonCtx,
+      ),
+    ).rejects.toThrow(ToolAccessDeniedError);
   });
 
   // TEST-REG-07
   it("execute nonexistent tool → UnknownToolError", async () => {
     const { executor } = buildStack();
-    await expect(executor("nonexistent_tool", {}, anonCtx))
-      .rejects.toThrow(UnknownToolError);
+    await expect(executor("nonexistent_tool", {}, anonCtx)).rejects.toThrow(
+      UnknownToolError,
+    );
   });
 
   // Logging verification
   it("logs START + SUCCESS for successful execution", async () => {
     const { executor } = buildStack();
     await executor("calculator", { operation: "add", a: 1, b: 2 }, anonCtx);
-    const logs: string[] = logSpy.mock.calls.map((c: unknown[]) => c[0] as string);
-    expect(logs.some(l => l.includes("[Tool:calculator] START"))).toBe(true);
-    expect(logs.some(l => l.includes("[Tool:calculator] SUCCESS"))).toBe(true);
+    const logs: string[] = logSpy.mock.calls.map(
+      (c: unknown[]) => c[0] as string,
+    );
+    expect(logs.some((l) => l.includes("[Tool:calculator] START"))).toBe(true);
+    expect(logs.some((l) => l.includes("[Tool:calculator] SUCCESS"))).toBe(
+      true,
+    );
   });
 
   it("logs START + ERROR for denied access", async () => {
     const { executor } = buildStack();
-    try { await executor("get_section", {}, anonCtx); } catch { /* expected */ }
+    try {
+      await executor("get_section", {}, anonCtx);
+    } catch {
+      /* expected */
+    }
     const allLogs = [
       ...logSpy.mock.calls.map((c: unknown[]) => c[0] as string),
       ...errorSpy.mock.calls.map((c: unknown[]) => c[0] as string),
     ];
-    expect(allLogs.some(l => l.includes("[Tool:get_section] START"))).toBe(true);
-    expect(allLogs.some(l => l.includes("[Tool:get_section] ERROR"))).toBe(true);
+    expect(allLogs.some((l) => l.includes("[Tool:get_section] START"))).toBe(
+      true,
+    );
+    expect(allLogs.some((l) => l.includes("[Tool:get_section] ERROR"))).toBe(
+      true,
+    );
   });
 });
 
@@ -127,11 +180,13 @@ describe("Security Verification", () => {
   beforeEach(() => {
     logSpy = vi.spyOn(console, "log").mockImplementation(() => {});
     errorSpy = vi.spyOn(console, "error").mockImplementation(() => {});
+    vi.stubEnv("GARYS_EVENTS_MCP_ENABLED", "false");
   });
 
   afterEach(() => {
     logSpy.mockRestore();
     errorSpy.mockRestore();
+    vi.unstubAllEnvs();
   });
 
   // TEST-SEC-01: Context isolation — LLM input cannot escalate privileges
@@ -140,18 +195,28 @@ describe("Security Verification", () => {
     // LLM sends {role: "ADMIN"} in input — should be ignored; context.role remains AUTHENTICATED
     // ANONYMOUS can't access generate_chart, but AUTHENTICATED can
     // The point: even if input contains {role: "ADMIN"}, the middleware uses context.role
-    const result = await executor("calculator", { operation: "add", a: 1, b: 1 }, authCtx);
+    const result = await executor(
+      "calculator",
+      { operation: "add", a: 1, b: 1 },
+      authCtx,
+    );
     expect(result).toMatchObject({ result: 2 });
     // Also verify ANONYMOUS is still blocked from restricted tools regardless of input
-    await expect(executor("generate_chart", { data: [], type: "bar", role: "ADMIN" }, anonCtx))
-      .rejects.toThrow(ToolAccessDeniedError);
+    await expect(
+      executor(
+        "generate_chart",
+        { data: [], type: "bar", role: "ADMIN" },
+        anonCtx,
+      ),
+    ).rejects.toThrow(ToolAccessDeniedError);
   });
 
   // TEST-SEC-02: RBAC blocks at middleware, not command
   it("ANONYMOUS executing generate_audio → ToolAccessDeniedError", async () => {
     const { executor } = buildStack();
-    await expect(executor("generate_audio", { text: "hi", title: "test" }, anonCtx))
-      .rejects.toThrow(ToolAccessDeniedError);
+    await expect(
+      executor("generate_audio", { text: "hi", title: "test" }, anonCtx),
+    ).rejects.toThrow(ToolAccessDeniedError);
   });
 
   // TEST-SEC-03: Per-descriptor role arrays work for custom tools
@@ -159,7 +224,10 @@ describe("Security Verification", () => {
     const registry = createToolRegistry(mockCorpusRepo);
     registry.register({
       name: "admin_secret",
-      schema: { description: "Admin only", input_schema: { type: "object", properties: {} } },
+      schema: {
+        description: "Admin only",
+        input_schema: { type: "object", properties: {} },
+      },
       command: { execute: async () => "secret" },
       roles: ["ADMIN"],
       category: "system",
@@ -173,9 +241,106 @@ describe("Security Verification", () => {
     await expect(exec("admin_secret", {}, adminCtx)).resolves.toBe("secret");
 
     // All others rejected
-    await expect(exec("admin_secret", {}, anonCtx)).rejects.toThrow(ToolAccessDeniedError);
-    await expect(exec("admin_secret", {}, authCtx)).rejects.toThrow(ToolAccessDeniedError);
-    await expect(exec("admin_secret", {}, { role: "STAFF", userId: "staff-1" }))
-      .rejects.toThrow(ToolAccessDeniedError);
+    await expect(exec("admin_secret", {}, anonCtx)).rejects.toThrow(
+      ToolAccessDeniedError,
+    );
+    await expect(exec("admin_secret", {}, authCtx)).rejects.toThrow(
+      ToolAccessDeniedError,
+    );
+    await expect(
+      exec("admin_secret", {}, { role: "STAFF", userId: "staff-1" }),
+    ).rejects.toThrow(ToolAccessDeniedError);
+  });
+});
+
+describe("Garys Events MCP Tool Registration", () => {
+  afterEach(() => {
+    vi.unstubAllEnvs();
+  });
+
+  it("does not register when MCP is disabled", () => {
+    vi.stubEnv("GARYS_EVENTS_MCP_ENABLED", "false");
+
+    const { registry } = buildStack();
+    expect(registry.getToolNames()).not.toContain("garys_events_query_events");
+    expect(registry.getToolNames()).not.toContain("garys_events.query_events");
+  });
+
+  it("registers alias name when dot-name compatibility is disabled", () => {
+    vi.stubEnv("GARYS_EVENTS_MCP_ENABLED", "true");
+    vi.stubEnv("GARYS_EVENTS_MCP_FAIL_OPEN", "false");
+    vi.stubEnv("GARYS_EVENTS_CHAT_DOT_NAME_COMPATIBLE", "false");
+
+    const { registry } = buildStack();
+    const names = registry.getToolNames();
+
+    expect(names).toContain("garys_events_query_events");
+    expect(names).not.toContain("garys_events.query_events");
+  });
+
+  it("registers canonical dot name when compatibility is enabled", () => {
+    vi.stubEnv("GARYS_EVENTS_MCP_ENABLED", "true");
+    vi.stubEnv("GARYS_EVENTS_MCP_FAIL_OPEN", "false");
+    vi.stubEnv("GARYS_EVENTS_CHAT_DOT_NAME_COMPATIBLE", "true");
+
+    const { registry } = buildStack();
+    const names = registry.getToolNames();
+
+    expect(names).toContain("garys_events.query_events");
+  });
+
+  it("is visible to authenticated roles but hidden from anonymous", () => {
+    vi.stubEnv("GARYS_EVENTS_MCP_ENABLED", "true");
+    vi.stubEnv("GARYS_EVENTS_MCP_FAIL_OPEN", "false");
+    vi.stubEnv("GARYS_EVENTS_CHAT_DOT_NAME_COMPATIBLE", "false");
+
+    const { registry } = buildStack();
+    const anonSchemas = registry
+      .getSchemasForRole("ANONYMOUS")
+      .map((schema) => schema.name);
+    const authSchemas = registry
+      .getSchemasForRole("AUTHENTICATED")
+      .map((schema) => schema.name);
+
+    expect(anonSchemas).not.toContain("garys_events_query_events");
+    expect(authSchemas).toContain("garys_events_query_events");
+  });
+
+  it("does not register in fail-open mode when repo path is missing", () => {
+    vi.stubEnv("GARYS_EVENTS_MCP_ENABLED", "true");
+    vi.stubEnv("GARYS_EVENTS_MCP_FAIL_OPEN", "true");
+    vi.stubEnv("GARYS_EVENTS_MCP_REPO_PATH", "/nonexistent/repo/path");
+    vi.stubEnv("GARYS_EVENTS_REST_API_BASE_URL", "http://api.example.com");
+
+    const { registry } = buildStack();
+    expect(registry.getToolNames()).not.toContain("garys_events_query_events");
+  });
+
+  it("does not register in fail-open mode when REST base URL is missing", () => {
+    vi.stubEnv("GARYS_EVENTS_MCP_ENABLED", "true");
+    vi.stubEnv("GARYS_EVENTS_MCP_FAIL_OPEN", "true");
+    vi.stubEnv("GARYS_EVENTS_REST_API_BASE_URL", "");
+
+    const { registry } = buildStack();
+    expect(registry.getToolNames()).not.toContain("garys_events_query_events");
+  });
+
+  it("registers in fail-closed mode even when repo path is missing", () => {
+    vi.stubEnv("GARYS_EVENTS_MCP_ENABLED", "true");
+    vi.stubEnv("GARYS_EVENTS_MCP_FAIL_OPEN", "false");
+    vi.stubEnv("GARYS_EVENTS_MCP_REPO_PATH", "/nonexistent/repo/path");
+    vi.stubEnv("GARYS_EVENTS_REST_API_BASE_URL", "http://api.example.com");
+
+    const { registry } = buildStack();
+    expect(registry.getToolNames()).toContain("garys_events_query_events");
+  });
+
+  it("registers in fail-closed mode even when REST base URL is missing", () => {
+    vi.stubEnv("GARYS_EVENTS_MCP_ENABLED", "true");
+    vi.stubEnv("GARYS_EVENTS_MCP_FAIL_OPEN", "false");
+    vi.stubEnv("GARYS_EVENTS_REST_API_BASE_URL", "");
+
+    const { registry } = buildStack();
+    expect(registry.getToolNames()).toContain("garys_events_query_events");
   });
 });

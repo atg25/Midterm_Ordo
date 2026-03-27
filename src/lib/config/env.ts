@@ -58,10 +58,7 @@ export function getAnthropicApiKey(): string {
 }
 
 export function getOpenaiApiKey(): string {
-  const value = readPrimaryThenLegacy(
-    "OPENAI_API_KEY",
-    "API__OPENAI_API_KEY",
-  );
+  const value = readPrimaryThenLegacy("OPENAI_API_KEY", "API__OPENAI_API_KEY");
   return requireNonEmpty(value, "OPENAI_API_KEY/API__OPENAI_API_KEY");
 }
 
@@ -88,24 +85,111 @@ function parsePositiveIntegerEnv(
   return parsed;
 }
 
+function parseBooleanEnv(
+  value: string | undefined,
+  fallback: boolean,
+): boolean {
+  if (!value) {
+    return fallback;
+  }
+
+  const normalized = value.trim().toLowerCase();
+  if (["1", "true", "yes", "on"].includes(normalized)) {
+    return true;
+  }
+  if (["0", "false", "no", "off"].includes(normalized)) {
+    return false;
+  }
+
+  return fallback;
+}
+
 export function getAnthropicRequestTimeoutMs(): number {
   return parsePositiveIntegerEnv(
-    readPrimaryThenLegacy("ANTHROPIC_REQUEST_TIMEOUT_MS", "API__ANTHROPIC_REQUEST_TIMEOUT_MS"),
+    readPrimaryThenLegacy(
+      "ANTHROPIC_REQUEST_TIMEOUT_MS",
+      "API__ANTHROPIC_REQUEST_TIMEOUT_MS",
+    ),
     45000,
   );
 }
 
 export function getAnthropicRequestRetryAttempts(): number {
   return parsePositiveIntegerEnv(
-    readPrimaryThenLegacy("ANTHROPIC_RETRY_ATTEMPTS", "API__ANTHROPIC_RETRY_ATTEMPTS"),
+    readPrimaryThenLegacy(
+      "ANTHROPIC_RETRY_ATTEMPTS",
+      "API__ANTHROPIC_RETRY_ATTEMPTS",
+    ),
     3,
   );
 }
 
 export function getAnthropicRequestRetryDelayMs(): number {
   return parsePositiveIntegerEnv(
-    readPrimaryThenLegacy("ANTHROPIC_RETRY_DELAY_MS", "API__ANTHROPIC_RETRY_DELAY_MS"),
+    readPrimaryThenLegacy(
+      "ANTHROPIC_RETRY_DELAY_MS",
+      "API__ANTHROPIC_RETRY_DELAY_MS",
+    ),
     150,
+  );
+}
+
+export function getGarysEventsMcpEnabled(): boolean {
+  return parseBooleanEnv(readEnv("GARYS_EVENTS_MCP_ENABLED"), true);
+}
+
+export function getGarysEventsMcpFailOpen(): boolean {
+  return parseBooleanEnv(readEnv("GARYS_EVENTS_MCP_FAIL_OPEN"), true);
+}
+
+export function getGarysEventsChatDotNameCompatible(): boolean {
+  return parseBooleanEnv(
+    readEnv("GARYS_EVENTS_CHAT_DOT_NAME_COMPATIBLE"),
+    false,
+  );
+}
+
+export function getGarysEventsMcpRepoPath(): string {
+  return readEnv("GARYS_EVENTS_MCP_REPO_PATH") ?? "../PyPack_GarysGuide";
+}
+
+export function getGarysEventsMcpModule(): string {
+  return readEnv("GARYS_EVENTS_MCP_MODULE") ?? "garys_nyc_events.mcp.server";
+}
+
+export function getGarysEventsRestApiBaseUrl(): string | undefined {
+  return readEnv("GARYS_EVENTS_REST_API_BASE_URL");
+}
+
+export function getGarysEventsRestApiToken(): string | undefined {
+  return readEnv("GARYS_EVENTS_REST_API_TOKEN", "API_TOKEN");
+}
+
+export function getGarysEventsRestApiTimeoutMs(): number {
+  return parsePositiveIntegerEnv(
+    readEnv("GARYS_EVENTS_REST_API_TIMEOUT_MS"),
+    10000,
+  );
+}
+
+export function getGarysEventsMcpStartupTimeoutMs(): number {
+  return parsePositiveIntegerEnv(
+    readEnv("GARYS_EVENTS_MCP_STARTUP_TIMEOUT_MS"),
+    8000,
+  );
+}
+
+export function getGarysEventsMcpStartupRetryAttempts(): number {
+  return parsePositiveIntegerEnv(
+    readEnv("GARYS_EVENTS_MCP_STARTUP_RETRY_ATTEMPTS"),
+    1,
+  );
+}
+
+export function getGarysEventsMcpStartupRetryDelayMs(): number {
+  return parsePositiveIntegerEnv(
+    readEnv("GARYS_EVENTS_MCP_STARTUP_RETRY_DELAY_MS"),
+    250,
   );
 }
 

@@ -1,9 +1,15 @@
 import { ToolRegistry } from "@/core/tool-registry/ToolRegistry";
-import { composeMiddleware, type ToolExecuteFn } from "@/core/tool-registry/ToolMiddleware";
+import {
+  composeMiddleware,
+  type ToolExecuteFn,
+} from "@/core/tool-registry/ToolMiddleware";
 import { LoggingMiddleware } from "@/core/tool-registry/LoggingMiddleware";
 import { RbacGuardMiddleware } from "@/core/tool-registry/RbacGuardMiddleware";
 import { RoleAwareSearchFormatter } from "@/core/tool-registry/ToolResultFormatter";
-import { getCorpusRepository, getBlogPostRepository } from "@/adapters/RepositoryFactory";
+import {
+  getCorpusRepository,
+  getBlogPostRepository,
+} from "@/adapters/RepositoryFactory";
 import type { CorpusRepository } from "@/core/use-cases/CorpusRepository";
 
 import { LocalEmbedder } from "@/adapters/LocalEmbedder";
@@ -13,7 +19,11 @@ import { getDb } from "@/lib/db";
 import { UserPreferencesDataMapper } from "@/adapters/UserPreferencesDataMapper";
 
 import { getSearchHandler } from "./search-pipeline";
-import { getEmbeddingPipelineFactory, getBookPipeline, getCorpusPipeline } from "./embedding-module";
+import {
+  getEmbeddingPipelineFactory,
+  getBookPipeline,
+  getCorpusPipeline,
+} from "./embedding-module";
 
 import { calculatorTool } from "@/core/use-cases/tools/calculator.tool";
 import { setThemeTool } from "@/core/use-cases/tools/set-theme.tool";
@@ -31,9 +41,13 @@ import { createAdminWebSearchTool } from "@/core/use-cases/tools/admin-web-searc
 import { createAdminPrioritizeLeadsTool } from "@/core/use-cases/tools/admin-prioritize-leads.tool";
 import { createAdminPrioritizeOfferTool } from "@/core/use-cases/tools/admin-prioritize-offer.tool";
 import { createAdminTriageRoutingRiskTool } from "@/core/use-cases/tools/admin-triage-routing-risk.tool";
-import { createDraftContentTool, createPublishContentTool } from "@/core/use-cases/tools/admin-content.tool";
+import {
+  createDraftContentTool,
+  createPublishContentTool,
+} from "@/core/use-cases/tools/admin-content.tool";
 import { createSearchMyConversationsTool } from "@/core/use-cases/tools/search-my-conversations.tool";
 import { createSetPreferenceTool } from "@/core/use-cases/tools/set-preference.tool";
+import { createGarysEventsQueryTool } from "@/core/use-cases/tools/garys-events-query.tool";
 import {
   createGetMyProfileTool,
   createGetMyReferralQrTool,
@@ -47,8 +61,12 @@ import {
   loadOperatorAnonymousOpportunities,
   loadOperatorRoutingReview,
 } from "@/lib/operator/operator-signal-loaders";
+import { shouldRegisterGarysEventsTool } from "@/lib/mcp/garys-events-runtime";
 
-export function createToolRegistry(corpusRepo: CorpusRepository, handler?: SearchHandler): ToolRegistry {
+export function createToolRegistry(
+  corpusRepo: CorpusRepository,
+  handler?: SearchHandler,
+): ToolRegistry {
   const reg = new ToolRegistry(new RoleAwareSearchFormatter());
   const db = getDb();
   const prefsRepo = new UserPreferencesDataMapper(db);
@@ -84,13 +102,24 @@ export function createToolRegistry(corpusRepo: CorpusRepository, handler?: Searc
   // Admin-only: web search (UI component does the real work via /api/web-search)
   reg.register(createAdminWebSearchTool());
   reg.register(createAdminPrioritizeLeadsTool(loadOperatorLeadQueue));
-  reg.register(createAdminPrioritizeOfferTool(loadOperatorFunnelRecommendations, loadOperatorAnonymousOpportunities, loadOperatorLeadQueue));
+  reg.register(
+    createAdminPrioritizeOfferTool(
+      loadOperatorFunnelRecommendations,
+      loadOperatorAnonymousOpportunities,
+      loadOperatorLeadQueue,
+    ),
+  );
   reg.register(createAdminTriageRoutingRiskTool(loadOperatorRoutingReview));
 
   // Admin-only: blog content pipeline
   const blogRepo = getBlogPostRepository();
   reg.register(createDraftContentTool(blogRepo));
   reg.register(createPublishContentTool(blogRepo));
+
+  // Optional external MCP tool: auto-hide when fail-open mode cannot resolve subprocess runtime.
+  if (shouldRegisterGarysEventsTool()) {
+    reg.register(createGarysEventsQueryTool());
+  }
 
   // Apply tools.json filtering
   const toolConfig = getInstanceTools();
@@ -124,4 +153,9 @@ export function getToolExecutor(): ToolExecuteFn {
 }
 
 // Re-export for backward compatibility
-export { getEmbeddingPipelineFactory, getBookPipeline, getCorpusPipeline, getSearchHandler };
+export {
+  getEmbeddingPipelineFactory,
+  getBookPipeline,
+  getCorpusPipeline,
+  getSearchHandler,
+};
