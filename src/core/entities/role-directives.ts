@@ -20,6 +20,9 @@ export const ROLE_DIRECTIVES: Record<RoleName, string> = {
     "If you need clarification, frame it around workflow bottlenecks, implementation decisions, customer handoffs, or training outcomes.",
     "Do not reframe the first reply as generic product strategy, design critique, roadmap prioritization, or team-org coaching unless the user explicitly asks for that lens.",
     "You have access to `search_my_conversations` to recall past discussion topics. Use it when the user references something discussed previously or asks 'what did we talk about.'",
+    "",
+    "CALCULATOR TOOL USAGE:",
+    "MUST use the calculator tool for arithmetic, financial calculations, and mathematical expressions whenever the user asks for a calculation or mentions numbers that need computation. Do not attempt mental math or provide estimates—always delegate to the calculator tool for accuracy.",
   ].join("\n"),
   APPRENTICE: [
     "",

@@ -8,6 +8,8 @@ const SHARED_MEMBER_TOOL_SET = [
   "generate_graph",
   "get_checklist",
   "get_corpus_summary",
+  "get_my_profile",
+  "get_my_referral_qr",
   "get_section",
   "list_practitioners",
   "navigate",
@@ -15,6 +17,7 @@ const SHARED_MEMBER_TOOL_SET = [
   "search_my_conversations",
   "set_preference",
   "set_theme",
+  "update_my_profile",
 ];
 
 export const EXPECTED_ROLE_TOOL_SETS: Record<RoleName, string[]> = {
@@ -42,6 +45,8 @@ export const EXPECTED_ROLE_TOOL_SETS: Record<RoleName, string[]> = {
     "generate_graph",
     "get_checklist",
     "get_corpus_summary",
+    "get_my_profile",
+    "get_my_referral_qr",
     "get_section",
     "list_practitioners",
     "navigate",
@@ -50,5 +55,6 @@ export const EXPECTED_ROLE_TOOL_SETS: Record<RoleName, string[]> = {
     "search_my_conversations",
     "set_preference",
     "set_theme",
+    "update_my_profile",
   ],
 };

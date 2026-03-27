@@ -36,8 +36,9 @@ describe("TD-C3 hardening audit", () => {
   });
 
   it("F6: accepted bare-catch inventory in src stays explicit", () => {
-    const files = listFiles("src")
-      .filter((path) => path.endsWith(".ts") || path.endsWith(".tsx"));
+    const files = listFiles("src").filter(
+      (path) => path.endsWith(".ts") || path.endsWith(".tsx"),
+    );
 
     const inventory = files
       .map((path) => ({
@@ -49,7 +50,7 @@ describe("TD-C3 hardening audit", () => {
       .sort();
 
     expect(inventory).toEqual([
-      "src/adapters/ChatPresenter.ts:1",
+      "src/adapters/ChatPresenter.ts:3",
       "src/adapters/ChatStreamAdapter.ts:1",
       "src/adapters/FileSystemCorpusRepository.ts:4",
       "src/adapters/MessageDataMapper.ts:1",
@@ -59,16 +60,21 @@ describe("TD-C3 hardening audit", () => {
       "src/app/register/page.tsx:1",
       "src/components/AudioPlayer.tsx:1",
       "src/components/ContentModal.tsx:1",
+      "src/components/GraphRenderer.tsx:1",
       "src/components/MermaidRenderer.tsx:1",
       "src/components/ThemeProvider.tsx:1",
       "src/components/WebSearchResultCard.tsx:1",
+      "src/components/profile/ProfileSettingsPanel.tsx:1",
       "src/core/use-cases/tools/UiTools.ts:1",
+      "src/core/use-cases/tools/graph-payload.ts:1",
+      "src/frameworks/ui/useChatSurfaceState.tsx:1",
       "src/lib/auth.ts:2",
       "src/lib/chat/anthropic-stream.ts:1",
       "src/lib/chat/disposability.ts:1",
       "src/lib/chat/sse-parser.ts:1",
       "src/lib/config/instance.ts:1",
       "src/lib/evals/staging-canary.ts:1",
+      "src/lib/mcp/garys-events-runtime.ts:2",
     ]);
   });
 });

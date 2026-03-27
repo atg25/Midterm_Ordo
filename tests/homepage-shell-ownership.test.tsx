@@ -11,7 +11,7 @@ let mockMessages = [
     id: "hero-1",
     role: "assistant" as const,
     content:
-      "Describe the workflow problem, orchestration gap, or training goal.\n\n__suggestions__:[\"Audit this workflow\",\"Stress-test this AI plan\",\"Train my team\",\"Show me the weak point\"]",
+      'Describe the workflow problem, orchestration gap, or training goal.\n\n__suggestions__:["Audit this workflow","Stress-test this AI plan","Train my team","Show me the weak point"]',
     timestamp: new Date("2026-03-18T10:00:00.000Z"),
     parts: [{ type: "text" as const, text: "hero" }],
   },
@@ -99,7 +99,7 @@ describe("homepage shell ownership", () => {
         id: "hero-1",
         role: "assistant",
         content:
-          "Describe the workflow problem, orchestration gap, or training goal.\n\n__suggestions__:[\"Audit this workflow\",\"Stress-test this AI plan\",\"Train my team\",\"Show me the weak point\"]",
+          'Describe the workflow problem, orchestration gap, or training goal.\n\n__suggestions__:["Audit this workflow","Stress-test this AI plan","Train my team","Show me the weak point"]',
         timestamp: new Date("2026-03-18T10:00:00.000Z"),
         parts: [{ type: "text", text: "hero" }],
       },
@@ -161,12 +161,18 @@ describe("homepage shell ownership", () => {
     );
 
     const nav = screen.getByRole("navigation", { name: "Primary" });
-    expect(within(nav).getByRole("link", { name: /studio ordo home/i })).toBeInTheDocument();
-    expect(within(nav).queryByRole("link", { name: "Library" })).toBeNull();
-    expect(within(nav).queryByRole("link", { name: "Home" })).toBeNull();
+    expect(
+      within(nav).getByRole("link", { name: /studio ordo home/i }),
+    ).toBeInTheDocument();
+    expect(
+      within(nav).getByRole("link", { name: "Library" }),
+    ).toBeInTheDocument();
+    expect(within(nav).getByRole("link", { name: "Home" })).toBeInTheDocument();
     expect(within(nav).queryByRole("link", { name: "Dashboard" })).toBeNull();
     expect(within(nav).getByTestId("account-menu")).toBeInTheDocument();
-    expect(nav.querySelector('[data-shell-nav-region="primary-links"]')).toBeNull();
+    expect(
+      nav.querySelector('[data-shell-nav-region="primary-links"]'),
+    ).not.toBeNull();
     expect(within(nav).queryByText(/site links/i)).not.toBeInTheDocument();
   });
 

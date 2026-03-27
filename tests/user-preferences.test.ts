@@ -5,8 +5,15 @@ import { UserPreferencesDataMapper } from "@/adapters/UserPreferencesDataMapper"
 import { SystemPromptBuilder } from "@/core/use-cases/SystemPromptBuilder";
 import { createSetPreferenceTool } from "@/core/use-cases/tools/set-preference.tool";
 
-const nullPrefsRepo = { set: async () => {}, get: async () => null, getAll: async () => [], delete: async () => {} };
-const setPreferenceTool = createSetPreferenceTool(nullPrefsRepo as Parameters<typeof createSetPreferenceTool>[0]);
+const nullPrefsRepo = {
+  set: async () => {},
+  get: async () => null,
+  getAll: async () => [],
+  delete: async () => {},
+};
+const setPreferenceTool = createSetPreferenceTool(
+  nullPrefsRepo as Parameters<typeof createSetPreferenceTool>[0],
+);
 
 function freshDb(): Database.Database {
   const db = new Database(":memory:");
@@ -136,9 +143,7 @@ describe("SystemPromptBuilder.withUserPreferences", () => {
       },
     ]);
     const output = builder.build();
-    expect(output).toContain(
-      'business_context="Wedding \\"luxury\\" studio"',
-    );
+    expect(output).toContain('business_context="Wedding \\"luxury\\" studio"');
   });
 
   it("P15: preferences context block appears at priority 30", () => {
@@ -149,9 +154,7 @@ describe("SystemPromptBuilder.withUserPreferences", () => {
         content: "[DIRECTIVE]",
         priority: 20,
       })
-      .withUserPreferences([
-        { key: "tone", value: "casual", updatedAt: "" },
-      ])
+      .withUserPreferences([{ key: "tone", value: "casual", updatedAt: "" }])
       .withSection({ key: "summary", content: "[SUMMARY]", priority: 40 });
     const output = builder.build();
     const identityIdx = output.indexOf("[IDENTITY]");
@@ -241,9 +244,9 @@ describe("UserPreferencesDataMapper — negative", () => {
   });
 
   it("N1: set rejects unknown key", async () => {
-    await expect(
-      mapper.set(userId, "invalid_key", "value"),
-    ).rejects.toThrow("Unknown preference key");
+    await expect(mapper.set(userId, "invalid_key", "value")).rejects.toThrow(
+      "Unknown preference key",
+    );
   });
 
   it("N2: set rejects value exceeding max length", async () => {
@@ -268,6 +271,7 @@ describe("UserPreferencesDataMapper — negative", () => {
     // Same as N4 — API route rejects anonymous
     expect(setPreferenceTool.roles).toEqual([
       "AUTHENTICATED",
+      "APPRENTICE",
       "STAFF",
       "ADMIN",
     ]);
@@ -280,9 +284,9 @@ describe("UserPreferencesDataMapper — negative", () => {
   });
 
   it("N7: PUT rejects unknown keys via DataMapper", async () => {
-    await expect(
-      mapper.set(userId, "invalid", "test"),
-    ).rejects.toThrow("Unknown preference key");
+    await expect(mapper.set(userId, "invalid", "test")).rejects.toThrow(
+      "Unknown preference key",
+    );
   });
 
   it("N8: PUT rejects non-string values (validation logic)", () => {

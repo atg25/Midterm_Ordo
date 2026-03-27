@@ -33,7 +33,9 @@ type StreamRouteConversationState = {
 type MockControl = {
   mockResolvedValue(value: unknown): unknown;
   mockReturnValue(value: unknown): unknown;
-  mockImplementation(fn: (...args: any[]) => unknown): unknown;
+  // Use a generic function type that accepts any function
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  mockImplementation(fn: (...args: any[]) => any): unknown;
 };
 
 export type StreamRouteMockSet = {
@@ -115,10 +117,14 @@ export function seedChatStreamRouteMocks(mocks: StreamRouteMockSet): void {
     role: "user",
     content: "",
   });
-  mocks.getConversationMock.mockResolvedValue(createStreamRouteConversationState());
+  mocks.getConversationMock.mockResolvedValue(
+    createStreamRouteConversationState(),
+  );
   mocks.updateRoutingSnapshotMock.mockResolvedValue(undefined);
   mocks.recordToolUsedMock.mockResolvedValue(undefined);
-  mocks.getActiveForUserMock.mockResolvedValue(createStreamRouteConversationState());
+  mocks.getActiveForUserMock.mockResolvedValue(
+    createStreamRouteConversationState(),
+  );
   mocks.analyzeRoutingMock.mockResolvedValue(
     createConversationRoutingSnapshot({
       lane: "organization",
@@ -137,7 +143,11 @@ export function seedChatStreamRouteMocks(mocks: StreamRouteMockSet): void {
     summaryText: null,
   });
   mocks.runClaudeAgentLoopStreamMock.mockImplementation(
-    async ({ callbacks }: { callbacks: { onDelta: (text: string) => void } }) => {
+    async ({
+      callbacks,
+    }: {
+      callbacks: { onDelta: (text: string) => void };
+    }) => {
       callbacks.onDelta("stub reply");
     },
   );
@@ -148,8 +158,8 @@ export function seedChatStreamRouteMocks(mocks: StreamRouteMockSet): void {
       priority: 10,
     });
   });
-  mocks.looksLikeMathMock.mockImplementation(
-    (text: string) => text.includes("+"),
+  mocks.looksLikeMathMock.mockImplementation((text: string) =>
+    text.includes("+"),
   );
   mocks.getSchemasForRoleMock.mockReturnValue([]);
   mocks.toolExecutorFactoryMock.mockReturnValue(() => undefined);

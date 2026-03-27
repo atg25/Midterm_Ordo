@@ -99,14 +99,24 @@ describe("shell visual system", () => {
     }
 
     const nav = screen.getByRole("navigation", { name: "Primary" });
-    expect(within(nav).getByRole("link", { name: /studio ordo home/i }).className).toContain("whitespace-nowrap");
-    expect(nav.querySelector('[data-shell-nav-region="primary-links"]')).toBeNull();
-    expect(nav.firstElementChild?.className).toContain("justify-between");
+    expect(
+      within(nav).getByRole("link", { name: /studio ordo home/i }).className,
+    ).toContain("whitespace-nowrap");
+    expect(
+      nav.querySelector('[data-shell-nav-region="primary-links"]'),
+    ).not.toBeNull();
+    expect(nav.firstElementChild?.className).toContain("shell-nav-frame");
 
     const footer = screen.getByRole("contentinfo");
-    expect(within(footer).getByText("Information").className).toContain("shell-section-heading");
-    expect(within(footer).getByRole("link", { name: "Library" }).className).toContain("shell-nav-label");
-    expect(within(footer).getByText(/© 2026 Studio Ordo/i).className).toContain("shell-micro-text");
+    expect(within(footer).getByText("Information").className).toContain(
+      "shell-section-heading",
+    );
+    expect(
+      within(footer).getByRole("link", { name: "Library" }).className,
+    ).toContain("shell-nav-label");
+    expect(within(footer).getByText(/© 2026 Studio Ordo/i).className).toContain(
+      "shell-micro-text",
+    );
   });
 
   it("uses shared shell role primitives inside the real account menu", async () => {
@@ -118,18 +128,31 @@ describe("shell visual system", () => {
 
     fireEvent.click(screen.getByRole("button", { name: /test user/i }));
 
-    const legibilityToggle = await screen.findByRole("button", { name: "System Legibility" });
-    expect(screen.getByRole("button", { name: /test user/i }).className).toContain("shell-account-trigger");
+    const legibilityToggle = await screen.findByRole("button", {
+      name: "System Legibility",
+    });
+    expect(
+      screen.getByRole("button", { name: /test user/i }).className,
+    ).toContain("shell-account-trigger");
     expect(legibilityToggle.className).toContain("shell-account-label");
-    expect(screen.getByRole("link", { name: "Profile" })).toHaveAttribute("href", "/profile");
-    expect(screen.getByRole("link", { name: "Profile" }).className).toContain("shell-account-label");
+    expect(screen.getByRole("link", { name: "Profile" })).toHaveAttribute(
+      "href",
+      "/profile",
+    );
+    expect(screen.getByRole("link", { name: "Profile" }).className).toContain(
+      "shell-account-label",
+    );
     expect(screen.queryByRole("link", { name: "Dashboard" })).toBeNull();
     expect(screen.queryByRole("link", { name: "Profile Settings" })).toBeNull();
 
     fireEvent.click(legibilityToggle);
 
-    expect(screen.getByText("Type Scale").className).toContain("shell-micro-text");
-    expect(screen.getByRole("button", { name: "Sign Out" }).className).toContain("shell-section-heading");
+    expect(screen.getByText("Type Scale").className).toContain(
+      "shell-micro-text",
+    );
+    expect(
+      screen.getByRole("button", { name: "Sign Out" }).className,
+    ).toContain("shell-section-heading");
   });
 
   it("applies shared shell heading and meta roles in the real chat header", () => {
@@ -144,9 +167,15 @@ describe("shell visual system", () => {
       />,
     );
 
-    expect(screen.getByRole("heading", { name: "PD Advisor" }).className).toContain("shell-panel-heading");
-    expect(screen.getByText("Intelligent Orchestrator").className).toContain("shell-meta-text");
-    expect(screen.getByRole("button", { name: "Set density to compact" }).className).toContain("shell-micro-text");
+    expect(
+      screen.getByRole("heading", { name: "PD Advisor" }).className,
+    ).toContain("shell-panel-heading");
+    expect(screen.getByText("Intelligent Orchestrator").className).toContain(
+      "shell-meta-text",
+    );
+    expect(
+      screen.getByRole("button", { name: "Set density to compact" }).className,
+    ).toContain("shell-micro-text");
   });
 
   it("keeps unauthenticated account links on shared shell nav label styling", () => {
@@ -156,10 +185,18 @@ describe("shell visual system", () => {
       </ThemeProvider>,
     );
 
-    expect(screen.getByRole("link", { name: "Sign In" }).className).toContain("shell-account-trigger");
-    expect(screen.getByRole("link", { name: "Sign In" }).className).toContain("shell-account-label");
-    expect(screen.getByRole("link", { name: "Register" }).className).toContain("shell-account-trigger");
-    expect(screen.getByRole("link", { name: "Register" }).className).toContain("shell-account-label");
+    expect(screen.getByRole("link", { name: "Sign In" }).className).toContain(
+      "shell-account-trigger",
+    );
+    expect(screen.getByRole("link", { name: "Sign In" }).className).toContain(
+      "shell-account-label",
+    );
+    expect(screen.getByRole("link", { name: "Register" }).className).toContain(
+      "shell-account-trigger",
+    );
+    expect(screen.getByRole("link", { name: "Register" }).className).toContain(
+      "shell-account-label",
+    );
   });
 
   it("lets anonymous users toggle dark mode from the account rail", () => {
@@ -173,7 +210,9 @@ describe("shell visual system", () => {
     fireEvent.click(toggle);
 
     expect(document.documentElement.classList.contains("dark")).toBe(true);
-    expect(screen.getByRole("button", { name: "Switch to light mode" })).toBeInTheDocument();
+    expect(
+      screen.getByRole("button", { name: "Switch to light mode" }),
+    ).toBeInTheDocument();
   });
 
   it("applies shared shell meta roles in the floating chat header variant", () => {
@@ -187,11 +226,21 @@ describe("shell visual system", () => {
     );
 
     expect(screen.queryByText("PD Advisor")).not.toBeInTheDocument();
-    expect(screen.queryByText("Intelligent Orchestrator")).not.toBeInTheDocument();
-    expect(screen.getByRole("button", { name: "Enter Full Screen" })).toBeInTheDocument();
-    expect(screen.getByRole("button", { name: "Minimize Chat" })).toBeInTheDocument();
-    expect(screen.queryByRole("button", { name: /set density to compact/i })).not.toBeInTheDocument();
-    expect(screen.queryByPlaceholderText(/filter session/i)).not.toBeInTheDocument();
+    expect(
+      screen.queryByText("Intelligent Orchestrator"),
+    ).not.toBeInTheDocument();
+    expect(
+      screen.getByRole("button", { name: "Enter Full Screen" }),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByRole("button", { name: "Minimize Chat" }),
+    ).toBeInTheDocument();
+    expect(
+      screen.queryByRole("button", { name: /set density to compact/i }),
+    ).not.toBeInTheDocument();
+    expect(
+      screen.queryByPlaceholderText(/filter session/i),
+    ).not.toBeInTheDocument();
   });
 
   it("renders embedded and floating headers in the same tree without prop leakage", () => {
@@ -215,17 +264,29 @@ describe("shell visual system", () => {
     );
 
     // Embedded header retains its controls
-    expect(screen.getByRole("heading", { name: "PD Advisor" })).toBeInTheDocument();
+    expect(
+      screen.getByRole("heading", { name: "PD Advisor" }),
+    ).toBeInTheDocument();
     expect(screen.getByText("Intelligent Orchestrator")).toBeInTheDocument();
-    expect(screen.getByRole("button", { name: "Set density to compact" })).toBeInTheDocument();
-    expect(screen.getByPlaceholderText("Filter session...")).toBeInTheDocument();
+    expect(
+      screen.getByRole("button", { name: "Set density to compact" }),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByPlaceholderText("Filter session..."),
+    ).toBeInTheDocument();
 
     // Floating header retains only its controls
-    expect(screen.getByRole("button", { name: "Enter Full Screen" })).toBeInTheDocument();
-    expect(screen.getByRole("button", { name: "Minimize Chat" })).toBeInTheDocument();
+    expect(
+      screen.getByRole("button", { name: "Enter Full Screen" }),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByRole("button", { name: "Minimize Chat" }),
+    ).toBeInTheDocument();
 
     // Only one heading, one subtitle, one search — all from the embedded header
-    expect(screen.getAllByRole("heading", { name: "PD Advisor" })).toHaveLength(1);
+    expect(screen.getAllByRole("heading", { name: "PD Advisor" })).toHaveLength(
+      1,
+    );
     expect(screen.getAllByPlaceholderText("Filter session...")).toHaveLength(1);
   });
 
@@ -243,13 +304,21 @@ describe("shell visual system", () => {
     );
 
     // Floating header must not expose any theme-derived controls
-    expect(screen.queryByRole("button", { name: /set density/i })).not.toBeInTheDocument();
-    expect(screen.queryByPlaceholderText(/filter session/i)).not.toBeInTheDocument();
+    expect(
+      screen.queryByRole("button", { name: /set density/i }),
+    ).not.toBeInTheDocument();
+    expect(
+      screen.queryByPlaceholderText(/filter session/i),
+    ).not.toBeInTheDocument();
     expect(screen.queryByText(/compact/i)).not.toBeInTheDocument();
     expect(screen.queryByText(/relaxed/i)).not.toBeInTheDocument();
 
     // Only window-chrome controls exist
-    expect(screen.getByRole("button", { name: "Enter Full Screen" })).toBeInTheDocument();
-    expect(screen.getByRole("button", { name: "Minimize Chat" })).toBeInTheDocument();
+    expect(
+      screen.getByRole("button", { name: "Enter Full Screen" }),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByRole("button", { name: "Minimize Chat" }),
+    ).toBeInTheDocument();
   });
 });
