@@ -48,6 +48,7 @@ import {
 import { createSearchMyConversationsTool } from "@/core/use-cases/tools/search-my-conversations.tool";
 import { createSetPreferenceTool } from "@/core/use-cases/tools/set-preference.tool";
 import { createGarysEventsQueryTool } from "@/core/use-cases/tools/garys-events-query.tool";
+import { createWebscraperTool } from "@/core/use-cases/tools/webscraper.tool";
 import {
   createGetMyProfileTool,
   createGetMyReferralQrTool,
@@ -62,6 +63,7 @@ import {
   loadOperatorRoutingReview,
 } from "@/lib/operator/operator-signal-loaders";
 import { shouldRegisterGarysEventsTool } from "@/lib/mcp/garys-events-runtime";
+import { shouldRegisterWebscraperTool } from "@/lib/mcp/webscraper-runtime";
 
 export function createToolRegistry(
   corpusRepo: CorpusRepository,
@@ -119,6 +121,11 @@ export function createToolRegistry(
   // Optional external MCP tool: auto-hide when fail-open mode cannot resolve subprocess runtime.
   if (shouldRegisterGarysEventsTool()) {
     reg.register(createGarysEventsQueryTool());
+  }
+
+  // Optional external MCP tool: PyPack Webscraper
+  if (shouldRegisterWebscraperTool()) {
+    reg.register(createWebscraperTool());
   }
 
   // Apply tools.json filtering

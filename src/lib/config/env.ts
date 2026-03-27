@@ -193,6 +193,66 @@ export function getGarysEventsMcpStartupRetryDelayMs(): number {
   );
 }
 
+// ---------------------------------------------------------------------------
+// Webscraper MCP Configuration
+// ---------------------------------------------------------------------------
+
+export function getWebscraperMcpEnabled(): boolean {
+  return parseBooleanEnv(readEnv("WEBSCRAPER_MCP_ENABLED"), false);
+}
+
+export function getWebscraperMcpFailOpen(): boolean {
+  return parseBooleanEnv(readEnv("WEBSCRAPER_MCP_FAIL_OPEN"), true);
+}
+
+export function getWebscraperChatDotNameCompatible(): boolean {
+  return parseBooleanEnv(readEnv("WEBSCRAPER_CHAT_DOT_NAME_COMPATIBLE"), false);
+}
+
+export function getWebscraperMcpRepoPath(): string {
+  return readEnv("WEBSCRAPER_MCP_REPO_PATH") ?? "../ph_ai_tracker";
+}
+
+export function getWebscraperMcpModule(): string {
+  return readEnv("WEBSCRAPER_MCP_MODULE") ?? "ph_ai_tracker.api";
+}
+
+export function getWebscraperRestApiBaseUrl(): string | undefined {
+  return readEnv("WEBSCRAPER_REST_API_BASE_URL");
+}
+
+export function getWebscraperRestApiToken(): string | undefined {
+  return readEnv("WEBSCRAPER_REST_API_TOKEN", "WEBSCRAPER_API_TOKEN");
+}
+
+export function getWebscraperRestApiTimeoutMs(): number {
+  return parsePositiveIntegerEnv(
+    readEnv("WEBSCRAPER_REST_API_TIMEOUT_MS"),
+    10000,
+  );
+}
+
+export function getWebscraperMcpStartupTimeoutMs(): number {
+  return parsePositiveIntegerEnv(
+    readEnv("WEBSCRAPER_MCP_STARTUP_TIMEOUT_MS"),
+    8000,
+  );
+}
+
+export function getWebscraperMcpStartupRetryAttempts(): number {
+  return parsePositiveIntegerEnv(
+    readEnv("WEBSCRAPER_MCP_STARTUP_RETRY_ATTEMPTS"),
+    1,
+  );
+}
+
+export function getWebscraperMcpStartupRetryDelayMs(): number {
+  return parsePositiveIntegerEnv(
+    readEnv("WEBSCRAPER_MCP_STARTUP_RETRY_DELAY_MS"),
+    250,
+  );
+}
+
 export function getModelFallbacks(): string[] {
   const configured = readPrimaryThenLegacy(
     "ANTHROPIC_MODEL",
